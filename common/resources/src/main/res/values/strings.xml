@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Start General Section -->
+    <string name="close">Закрыть</string>
+    <string name="apply">Применить</string>
+    <string name="dismiss">Отменить</string>
+    <string name="refresh">Обновить</string>
+    <string name="notifications">Уведомления</string>
+    <string name="item_quantity">%d шт</string>
+    <string name="item_volume">%d мл</string>
+    <string name="next">Далее</string>
+    <string name="other">Другое</string>
+    <string name="start">Начать</string>
+    <string name="settings">Настройки</string>
+    <string name="add">Добавить</string>
+    <string name="finish">Завершить</string>
+    <string name="confirm">Подтвердить</string>
+    <string name="power_type">Тип питания</string>
+    <string name="lease">Аренда</string>
+    <string name="comment">Комментарий</string>
+    <string name="save">Сохранить</string>
+    <!-- End General Section -->
+
+    <!-- Start Error Section -->
+    <string name="error">Ошибка</string>
+    <string name="error_server">Что-то пошло не так</string>
+    <string name="something_went_wrong">Что-то пошло не так</string>
+    <string name="network_error_title">Нет Интернет соединения</string>
+    <string name="network_error_description">Проверьте Ваше Интернет соединение и обновите страницу</string>
+    <!-- End Error Section -->
+
+    <!-- Start To-Do section -->
+    <string name="todo_1">Извините, это функция еще не разработана</string>
+    <string name="todo_2">Мы работаем над этой функцией</string>
+    <string name="todo_3">Эта функция будет доступна в ближайшее время</string>
+    <!-- End To-Do section -->
+</resources>
