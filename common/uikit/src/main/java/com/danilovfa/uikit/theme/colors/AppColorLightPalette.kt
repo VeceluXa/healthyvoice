@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.Color
 val appColorLightPalette: AppThemeColors = AppThemeColors(
     backgroundPrimary = AppColor.white,
     backgroundOnPrimary = AppColor.black,
-    backgroundSecondary = AppColor.yellow,
+    backgroundSecondary = AppColor.green_80,
     backgroundOnSecondary = AppColor.black,
     backgroundTertiary = Color.Black,
     backgroundOnTertiary = AppColor.white,
@@ -16,7 +16,7 @@ val appColorLightPalette: AppThemeColors = AppThemeColors(
     buttonPrimary = AppColor.black,
     buttonOnPrimary = AppColor.white,
     buttonPrimaryDisabled = AppColor.grey_60,
-    buttonSecondary = AppColor.yellow,
+    buttonSecondary = AppColor.green_80,
     buttonOnSecondary = AppColor.black,
 
     textPrimary = AppColor.black,

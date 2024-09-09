@@ -7,5 +7,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":common:libs:recorder"))
 
+    implementation(libs.androidx.activity.compose)
 }

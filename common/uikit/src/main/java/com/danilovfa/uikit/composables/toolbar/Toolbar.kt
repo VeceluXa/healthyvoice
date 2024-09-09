@@ -43,12 +43,14 @@ import com.danilovfa.uikit.theme.AppTypography
 fun Toolbar(
     modifier: Modifier = Modifier,
     title: String = "",
+    startIcon: @Composable (() -> Unit)? = null,
     enableShadow: Boolean = false
 ) {
     Toolbar(
         title = title,
         navigationIcon = null,
         onNavigationClick = {},
+        startIcon = startIcon,
         modifier = modifier,
         enableShadow = enableShadow
     )
@@ -59,6 +61,7 @@ fun Toolbar(
     navigationIcon: NavigationIcon?,
     onNavigationClick: () -> Unit,
     modifier: Modifier = Modifier,
+    startIcon: (@Composable () -> Unit)? = null,
     color: Color = AppTheme.colors.backgroundPrimary,
     title: String = "",
     enableShadow: Boolean = false
@@ -73,6 +76,8 @@ fun Toolbar(
     ) {
         Row(Modifier.fillMaxHeight(), verticalAlignment = Alignment.CenterVertically) {
             NavigationIcon(navigationIcon, onNavigationClick)
+
+            startIcon?.invoke()
 
             Column(
                 Modifier

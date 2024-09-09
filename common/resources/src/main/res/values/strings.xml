@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Start General Section -->
+    <string name="app_title">Healthy Voice</string>
     <string name="close">Закрыть</string>
     <string name="apply">Применить</string>
     <string name="dismiss">Отменить</string>
@@ -34,4 +35,9 @@
     <string name="todo_2">Мы работаем над этой функцией</string>
     <string name="todo_3">Эта функция будет доступна в ближайшее время</string>
     <!-- End To-Do section -->
+
+    <!-- Start Record Section -->
+    <string name="record_permission_rationale_title">Отсутствует разрешение на запись аудио</string>
+    <string name="record_permission_rationale_description">Разрешите приложению HealthyVoice доступ к записи аудио в настройках</string>
+    <!-- End Record Section -->
 </resources>

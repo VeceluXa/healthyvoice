@@ -10,6 +10,8 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -19,6 +21,8 @@ import androidx.compose.material.icons.outlined.MarkEmailRead
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.res.painterResource
+import com.danilovfa.resources.R
 
 object AppIcon {
     val VerticalMore: Painter @Composable get() = rememberVectorPainter(Icons.Filled.MoreVert)
@@ -36,4 +40,7 @@ object AppIcon {
     val ExpandMore: Painter @Composable get() = rememberVectorPainter(Icons.Filled.ExpandMore)
     val Add: Painter @Composable get() = rememberVectorPainter(Icons.Filled.Add)
     val Delete: Painter @Composable get() = rememberVectorPainter(Icons.Outlined.Delete)
+    val AppIcon: Painter @Composable get() = painterResource(R.drawable.icon_app)
+    val Play: Painter @Composable get() = rememberVectorPainter(Icons.Filled.PlayArrow)
+    val Pause: Painter @Composable get() = rememberVectorPainter(Icons.Filled.Pause)
 }

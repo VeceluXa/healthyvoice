@@ -38,6 +38,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -53,6 +54,7 @@ dependencies {
     implementation(project(":features:root"))
     implementation(project(":common:uikit"))
     implementation(project(":common:core"))
+    implementation(project(":common:libs:recorder"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle)

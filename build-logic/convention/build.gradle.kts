@@ -41,5 +41,9 @@ gradlePlugin {
             id = "com.danilovfa.android.feature"
             implementationClass = "AndroidFeatureConventionPlugin"
         }
+        register("androidLibraryCore") {
+            id = "com.danilovfa.android.library.core"
+            implementationClass = "AndroidLibraryCoreConventionPlugin"
+        }
     }
 }

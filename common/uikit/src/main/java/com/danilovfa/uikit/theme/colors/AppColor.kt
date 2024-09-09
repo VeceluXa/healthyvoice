@@ -10,6 +10,7 @@ internal object AppColor {
     val yellow = Color(0xFFEFBF04)
     val orange = Color(0xFFFE763B)
     val green_100 = Color(0xFF15C603)
+    val green_80 = Color(0xFF00AF00)
     val green_50 = Color(0xFF117E05)
     val green_20 = Color(0xFF63EC5E)
     val purple = Color(0xFF8269E5)
