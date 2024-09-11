@@ -1,6 +1,7 @@
 package com.danilovfa.feature.record
 
 import android.Manifest
+import androidx.compose.ui.res.painterResource
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 import com.arkivanov.mvikotlin.core.store.StoreFactory
@@ -17,6 +18,7 @@ import com.danilovfa.feature.record.store.RecordStore.Intent
 import com.danilovfa.feature.record.store.RecordStore.Label
 import com.danilovfa.feature.record.store.RecordStore.State
 import com.danilovfa.feature.record.store.RecordStoreFactory
+import com.danilovfa.resources.drawable.AppIllustration
 import com.danilovfa.resources.drawable.strings
 
 class DefaultRecordComponent(
@@ -36,6 +38,7 @@ class DefaultRecordComponent(
                 is Label.Analyze -> output(Output.Analyze(label.filename))
                 Label.RequestAudioPermission -> requestPermission(Manifest.permission.RECORD_AUDIO)
                 Label.ShowRationale -> showAudioPermissionRationale()
+                Label.ShowHelpDialog -> showHelpDialog()
             }
         }
     }
@@ -52,6 +55,17 @@ class DefaultRecordComponent(
                 offerEvent(RecordComponent.Events.OpenAppSettings)
                 dismissAlertDialog()
             },
+            onDismissClick = ::dismissAlertDialog
+        )
+        updateAlertDialogState(alertDialogState)
+    }
+
+    private fun showHelpDialog() {
+        val alertDialogState = AlertDialogState.DefaultDialogState(
+            title = Text.Resource(strings.record_help_dialog_title),
+            text = Text.Resource(strings.record_help_dialog_description),
+            illustration = { AppIllustration.RecordHelpDialog },
+            dismissButtonTitle = Text.Resource(strings.its_clear),
             onDismissClick = ::dismissAlertDialog
         )
         updateAlertDialogState(alertDialogState)

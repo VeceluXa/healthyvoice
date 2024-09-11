@@ -36,6 +36,7 @@ internal class RecordStoreExecutor : KoinComponent,
         )
 
         Intent.OnRecordStopClicked -> stopRecording()
+        Intent.OnShowHelpDialogClicked -> publish(Label.ShowHelpDialog)
     }
 
     private fun onRecordClicked() {

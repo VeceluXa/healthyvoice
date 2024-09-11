@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.Visibility
@@ -45,4 +46,5 @@ object AppIcon {
     val Play: Painter @Composable get() = rememberVectorPainter(Icons.Filled.PlayArrow)
     val Pause: Painter @Composable get() = rememberVectorPainter(Icons.Filled.Pause)
     val Stop: Painter @Composable get() = rememberVectorPainter(Icons.Filled.Stop)
+    val Question: Painter @Composable get() = rememberVectorPainter(Icons.Filled.QuestionMark)
 }

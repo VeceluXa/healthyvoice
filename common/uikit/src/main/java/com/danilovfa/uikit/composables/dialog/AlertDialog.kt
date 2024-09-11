@@ -242,14 +242,6 @@ private fun DefaultAlertDialog(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            illustration?.let { painter ->
-                Image(
-                    painter = painter,
-                    contentDescription = null
-                )
-                VSpacer(8.dp)
-            }
-
             title?.get(context).takeUnless { it == "" }?.let { title ->
                 Text(
                     text = title,
@@ -259,6 +251,14 @@ private fun DefaultAlertDialog(
                         .fillMaxWidth(),
                 )
 
+                VSpacer(8.dp)
+            }
+
+            illustration?.let { painter ->
+                Image(
+                    painter = painter,
+                    contentDescription = null
+                )
                 VSpacer(8.dp)
             }
 

@@ -5,6 +5,7 @@
     <string name="close">Закрыть</string>
     <string name="apply">Применить</string>
     <string name="dismiss">Отменить</string>
+    <string name="its_clear">Понятно</string>
     <string name="refresh">Обновить</string>
     <string name="notifications">Уведомления</string>
     <string name="item_quantity">%d шт</string>
@@ -39,5 +40,7 @@
     <!-- Start Record Section -->
     <string name="record_permission_rationale_title">Отсутствует разрешение на запись аудио</string>
     <string name="record_permission_rationale_description">Разрешите приложению HealthyVoice доступ к записи аудио в настройках</string>
+    <string name="record_help_dialog_title">Как правильно записывать голос?</string>
+    <string name="record_help_dialog_description">Поднесите телефон ко рту и громко говорите 5 секунд, для правильной записи аудио.</string>
     <!-- End Record Section -->
 </resources>

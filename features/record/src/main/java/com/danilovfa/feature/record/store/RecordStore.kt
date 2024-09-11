@@ -16,6 +16,8 @@ interface RecordStore : Store<Intent, State, Label> {
         data object OnRecordStopClicked : Intent()
 
         data class OnPermissionStatusChanged(val permissionStatus: PermissionStatus) : Intent()
+
+        data object OnShowHelpDialogClicked : Intent()
     }
 
     @Immutable
@@ -29,5 +31,6 @@ interface RecordStore : Store<Intent, State, Label> {
         data class Analyze(val filename: String) : Label()
         data object RequestAudioPermission : Label()
         data object ShowRationale : Label()
+        data object ShowHelpDialog : Label()
     }
 }

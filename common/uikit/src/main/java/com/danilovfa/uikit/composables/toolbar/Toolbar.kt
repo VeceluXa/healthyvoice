@@ -98,6 +98,7 @@ fun Toolbar(
     color: Color = AppTheme.colors.backgroundPrimary,
     actions: @Composable RowScope.() -> Unit = {},
     contentBelowToolbar: @Composable (ColumnScope.() -> Unit)? = null,
+    startIcon: (@Composable () -> Unit)? = null,
     title: String = "",
     enableShadow: Boolean = true,
     isActionsVisible: Boolean = true,
@@ -114,6 +115,8 @@ fun Toolbar(
         ) {
             Row(Modifier.fillMaxHeight(), verticalAlignment = Alignment.CenterVertically) {
                 NavigationIcon(navigationIcon, onNavigationClick)
+
+                startIcon?.invoke()
 
                 Column(
                     Modifier

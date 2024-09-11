@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -103,6 +104,8 @@ private fun RecordLayout(
             .systemBarsPadding()
     ) {
         Toolbar(
+            navigationIcon = null,
+            onNavigationClick = {},
             title = stringResource(strings.app_title),
             startIcon = {
                 Image(
@@ -110,6 +113,23 @@ private fun RecordLayout(
                     contentDescription = "App",
                     modifier = Modifier.padding(start = AppDimension.layoutHorizontalMargin)
                 )
+            },
+            actions = {
+                IconButton(
+                    onClick = { onIntent(Intent.OnShowHelpDialogClicked) }
+                ) {
+                    Icon(
+                        painter = AppIcon.Question,
+                        tint = AppTheme.colors.textDisabled,
+                        contentDescription = "Help",
+                        modifier = Modifier
+                            .background(
+                                color = AppTheme.colors.surface,
+                                shape = CircleShape
+                            )
+                            .padding(AppDimension.layoutSmallMargin)
+                    )
+                }
             }
         )
         RecordContent(
