@@ -6,6 +6,7 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.danilovfa.feature.record.store.RecordStore.Intent
 import com.danilovfa.feature.record.store.RecordStore.Label
 import com.danilovfa.feature.record.store.RecordStore.State
+import kotlinx.datetime.Instant
 
 internal class RecordStoreFactory(
     private val storeFactory: StoreFactory
@@ -22,17 +23,18 @@ internal class RecordStoreFactory(
 
     sealed class Msg {
         data class UpdatePlaying(val isPlaying: Boolean) : Msg()
-        data class UpdateRecordingTime(val timeMillis: Long) : Msg()
+        data class UpdateRecordingStartTime(val startTime: Instant?) : Msg()
+        data class UpdateAmplitudes(val amplitudes: List<Int>) : Msg()
         data class AddAmplitude(val amplitude: Int) : Msg()
     }
 
     private val reducer = Reducer<State, Msg> { msg ->
         when (msg) {
             is Msg.UpdatePlaying -> copy(isRecording = msg.isPlaying)
-            is Msg.UpdateRecordingTime -> copy(recordingTimeMillis = msg.timeMillis)
+            is Msg.UpdateRecordingStartTime -> copy(recordingStartTime = msg.startTime)
+            is Msg.UpdateAmplitudes -> copy(amplitudes = msg.amplitudes)
             is Msg.AddAmplitude -> {
-                amplitudes.add(msg.amplitude)
-                this
+                copy(amplitudes = amplitudes + msg.amplitude)
             }
         }
     }

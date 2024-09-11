@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.WarningAmber
@@ -43,4 +44,5 @@ object AppIcon {
     val AppIcon: Painter @Composable get() = painterResource(R.drawable.icon_app)
     val Play: Painter @Composable get() = rememberVectorPainter(Icons.Filled.PlayArrow)
     val Pause: Painter @Composable get() = rememberVectorPainter(Icons.Filled.Pause)
+    val Stop: Painter @Composable get() = rememberVectorPainter(Icons.Filled.Stop)
 }

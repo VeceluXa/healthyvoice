@@ -2,11 +2,20 @@ package com.danilovfa.libs.recorder.recorder
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
-import com.danilovfa.libs.recorder.utils.Constants
+import android.util.Log
+import com.danilovfa.libs.recorder.utils.RecorderConstants
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
@@ -19,15 +28,16 @@ import kotlin.math.abs
 
 class Mp3Recorder(
     private val context: Context,
-    private val sampleRate: Int = Constants.SAMPLE_RATE,
-    private val channel: Int = Constants.CHANNEL,
-    private val audioFormat: Int = Constants.AUDIO_FORMAT
+    private val sampleRate: Int = RecorderConstants.SAMPLE_RATE,
+    private val channel: Int = RecorderConstants.CHANNEL,
+    private val audioFormat: Int = RecorderConstants.AUDIO_FORMAT
 ) : Recorder {
 
     private var buffer: ByteArray = ByteArray(0)
     private var isPaused = AtomicBoolean(false)
     private var isStopped = AtomicBoolean(false)
-    private var amplitude = AtomicInteger(0)
+    private val _amplitude = MutableSharedFlow<Int>(0)
+    override val amplitude = _amplitude.asSharedFlow()
 
     private var outputStream: FileOutputStream? = null
 
@@ -46,7 +56,7 @@ class Mp3Recorder(
         sampleRate,
         channel,
         audioFormat,
-        minBufferSize * Constants.DURATION
+        minBufferSize * RecorderConstants.DURATION
     )
 
     override fun setOutputFile(path: String) {
@@ -60,6 +70,9 @@ class Mp3Recorder(
     override fun prepare() {  }
 
     override suspend fun start() = withContext(Dispatchers.IO) {
+        isStopped.set(false)
+        isPaused.set(false)
+
         val rawData = ShortArray(minBufferSize)
         buffer = ByteArray((7200 * rawData.size * 2 * 1.25).toInt())
 
@@ -85,14 +98,17 @@ class Mp3Recorder(
             if (!isPaused.get()) {
                 val count = audioRecord.read(rawData, 0, minBufferSize)
 
+                Log.d("Mp3Recorder", "Count: $count")
                 updateAmplitude(rawData)
             }
         }
     }
 
     override fun stop() {
+        audioRecord.stop()
         isPaused.set(true)
         isStopped.set(true)
+        outputStream?.close()
     }
 
     override fun resume() {
@@ -107,16 +123,14 @@ class Mp3Recorder(
         outputStream?.close()
     }
 
-    override fun getMaxAmplitude(): Int {
-        return amplitude.get()
-    }
-
-    private fun updateAmplitude(data: ShortArray) {
+    private suspend fun updateAmplitude(data: ShortArray) {
         var sum = 0L
         for (i in 0 until minBufferSize step 2) {
             sum += abs(data[i].toInt())
         }
-        amplitude.set((sum / (minBufferSize / 8)).toInt())
+        val newAmplitude = sum.toInt() / (minBufferSize / 8)
+        Log.d("Mp3Recorder", "Amplitude: $newAmplitude")
+        _amplitude.emit(newAmplitude)
     }
 
     companion object {
