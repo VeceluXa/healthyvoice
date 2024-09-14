@@ -1,38 +1,38 @@
 package com.danilovfa.feature.record.store
 
-import android.util.Log
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.danilovfa.core.base.presentation.event.PermissionStatus
-import com.danilovfa.core.library.flow.throttleLatest
+import com.danilovfa.data.record.domain.repository.RecordRepository
 import com.danilovfa.feature.record.store.RecordStore.Intent
 import com.danilovfa.feature.record.store.RecordStore.Label
 import com.danilovfa.feature.record.store.RecordStore.State
 import com.danilovfa.feature.record.store.RecordStoreFactory.Msg
-import com.danilovfa.libs.recorder.recorder.Recorder
+import com.danilovfa.libs.recorder.recorder.AudioRecorder
+import com.danilovfa.libs.recorder.recorder.WavAudioRecorder
+import com.danilovfa.libs.recorder.writer.DefaultRecordWriter
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import timber.log.Timber
+import java.io.File
+import java.util.UUID
 
 internal class RecordStoreExecutor : KoinComponent,
     CoroutineExecutor<Intent, Nothing, State, Msg, Label>() {
 
-    private val recorder: Recorder by inject()
+    private val recordRepository: RecordRepository by inject()
+    private var recorder: AudioRecorder? = null
 
     private var timerJob: Job? = null
     private var amplitudeJob: Job? = null
 
-    override fun executeIntent(intent: Intent, getState: () -> State) = when (intent) {
+    override fun executeIntent(intent: Intent, getState: () -> State): Unit = when (intent) {
         Intent.OnRecordStartClicked -> onRecordClicked()
         is Intent.OnPermissionStatusChanged -> onPermissionStatusChanged(
             permissionStatus = intent.permissionStatus,
-            initialTime = getState().recordingStartTime
         )
 
         Intent.OnRecordStopClicked -> stopRecording()
@@ -43,70 +43,67 @@ internal class RecordStoreExecutor : KoinComponent,
         publish(Label.RequestAudioPermission)
     }
 
-    private fun onPermissionStatusChanged(
-        permissionStatus: PermissionStatus,
-        initialTime: Instant?,
-    ) =
+    private fun onPermissionStatusChanged(permissionStatus: PermissionStatus) =
         when (permissionStatus) {
             PermissionStatus.Denied -> publish(Label.ShowRationale)
 
             PermissionStatus.Granted -> {
                 dispatch(Msg.UpdatePlaying(true))
-                startRecording(initialTime)
+                startRecording()
             }
 
             PermissionStatus.NeedsRationale -> publish(Label.ShowRationale)
         }
 
-    private fun startRecording(initialTime: Instant?) {
-        timerJob = scope.launch {
-            launch { recorder.start() }
-            observeAmplitudes()
-            startTimer(initialTime)
+    private fun startRecording() {
+        val filename = "${UUID.randomUUID()}.wav"
+        val file = File(recordRepository.getRecordingsDir(), filename)
+
+        recorder = WavAudioRecorder(
+            file = file,
+            recordWriter = DefaultRecordWriter(
+                amplitudeListener = {
+                    Timber.tag(TAG).d("Amplitude: $it")
+                    dispatch(Msg.AddAmplitude(it))
+                }
+            )
+        )
+
+        scope.launch {
+            launch {
+                recorder?.startRecording()
+            }
+            startTimer(filename)
         }
     }
 
-    private fun observeAmplitudes() {
-        amplitudeJob?.cancel()
-        dispatch(Msg.UpdateAmplitudes(emptyList()))
-
-        amplitudeJob = recorder.amplitude
-//            .throttleLatest(AMPLITUDE_DEBOUNCE)
-            .onEach {
-                Log.d("RecorderGraph", "Amplitude: $it")
-                dispatch(Msg.AddAmplitude(it))
-            }
-            .launchIn(scope)
-    }
-
-    private suspend fun startTimer(initialTime: Instant?) {
-        val startTime = if (initialTime == null) {
-            val time = Clock.System.now()
-            dispatch(Msg.UpdateRecordingStartTime(time))
-            time
-        } else initialTime
+    private suspend fun startTimer(filename: String) {
+        val startTime = Clock.System.now()
+        dispatch(Msg.UpdateRecordingStartTime(startTime))
 
         var currentTime = Clock.System.now()
 
-//        while (currentTime.toEpochMilliseconds() - startTime.toEpochMilliseconds() <= END_TIME_MILLIS) {
-//            delay(TIMER_DELAY)
-//            currentTime = Clock.System.now()
-//        }
-//
-//        stopRecording()
+        while (currentTime.toEpochMilliseconds() - startTime.toEpochMilliseconds() <= END_TIME_MILLIS) {
+            delay(TIMER_DELAY)
+            currentTime = Clock.System.now()
+        }
+
+        stopRecording()
+        publish(Label.Analyze(filename))
     }
 
     private fun stopRecording() {
-        timerJob?.cancel()
-        recorder.stop()
+        amplitudeJob?.cancel()
         dispatch(Msg.UpdatePlaying(false))
         dispatch(Msg.UpdateRecordingStartTime(null))
         dispatch(Msg.UpdateAmplitudes(emptyList()))
+        recorder?.stopRecording()
     }
 
     companion object {
+        private const val TAG = "RecordStore"
         private const val AMPLITUDE_DEBOUNCE = 150L
         private const val TIMER_DELAY = 50L
-        private const val END_TIME_MILLIS = 5000L
+        private const val END_TIME_MILLIS = 10000L
     }
 }

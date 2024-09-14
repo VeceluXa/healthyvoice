@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -42,7 +41,7 @@ import com.danilovfa.core.library.context.launchAppSettings
 import com.danilovfa.core.library.time.tickerInstant
 import com.danilovfa.feature.record.store.RecordStore.Intent
 import com.danilovfa.feature.record.store.RecordStore.State
-import com.danilovfa.libs.recorder.utils.RecorderConstants
+import com.danilovfa.libs.recorder.utils.AudioConstants
 import com.danilovfa.resources.drawable.AppIcon
 import com.danilovfa.resources.drawable.strings
 import com.danilovfa.uikit.composables.animation.AnimatedVisibilityNullableValue
@@ -229,8 +228,8 @@ private fun getAmplitudeHeight(
     amplitude: Int,
     graphHeight: Float
 ): Float {
-    val height = graphHeight * amplitude / (RecorderConstants.MAX_AMPLITUDE)
-    Log.d("RecordGraph", height.toString())
+    val height = graphHeight * amplitude / (AudioConstants.MAX_AMPLITUDE)
+//    Log.d("RecordGraph", height.toString())
     return height
 }
 

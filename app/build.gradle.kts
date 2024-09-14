@@ -55,6 +55,7 @@ dependencies {
     implementation(project(":common:uikit"))
     implementation(project(":common:core"))
     implementation(project(":common:libs:recorder"))
+    implementation(project(":data:record"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle)

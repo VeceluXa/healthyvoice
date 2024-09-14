@@ -4,33 +4,23 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.media.AudioRecord
 import android.media.MediaRecorder
-import android.util.Log
-import com.danilovfa.libs.recorder.utils.RecorderConstants
+import com.danilovfa.core.library.type.toByteArray
+import com.danilovfa.libs.recorder.utils.AudioConstants
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.io.File
 import java.io.FileDescriptor
-import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.abs
 
-class Mp3Recorder(
+class RawRecorder(
     private val context: Context,
-    private val sampleRate: Int = RecorderConstants.SAMPLE_RATE,
-    private val channel: Int = RecorderConstants.CHANNEL,
-    private val audioFormat: Int = RecorderConstants.AUDIO_FORMAT
+    private val sampleRate: Int = AudioConstants.FREQUENCY_44100,
+    private val channel: Int = AudioConstants.CHANNEL,
+    private val audioFormat: Int = AudioConstants.AUDIO_FORMAT
 ) : Recorder {
 
     private var buffer: ByteArray = ByteArray(0)
@@ -52,11 +42,11 @@ class Mp3Recorder(
 
     @SuppressLint("MissingPermission")
     private val audioRecord = AudioRecord(
-        MediaRecorder.AudioSource.CAMCORDER,
+        MediaRecorder.AudioSource.MIC,
         sampleRate,
         channel,
         audioFormat,
-        minBufferSize * RecorderConstants.DURATION
+        minBufferSize
     )
 
     override fun setOutputFile(path: String) {
@@ -74,18 +64,18 @@ class Mp3Recorder(
         isPaused.set(false)
 
         val rawData = ShortArray(minBufferSize)
-        buffer = ByteArray((7200 * rawData.size * 2 * 1.25).toInt())
+//        buffer = ByteArray((7200 * rawData.size * 2 * 1.25).toInt())
 
-        outputStream = try {
-            if (fileDescriptor != null) {
-                FileOutputStream(fileDescriptor)
-            } else if (outputFile != null) {
-                FileOutputStream(outputFile?.let { File(it) })
-            } else null
-        } catch (e: FileNotFoundException) {
-            Timber.tag(TAG).e(e, "Couldn't open output stream")
-            return@withContext
-        }
+//        outputStream = try {
+//            if (fileDescriptor != null) {
+//                FileOutputStream(fileDescriptor)
+//            } else if (outputFile != null) {
+//                FileOutputStream(outputFile?.let { File(it) })
+//            } else null
+//        } catch (e: FileNotFoundException) {
+//            Timber.tag(TAG).e(e, "Couldn't open output stream")
+//            return@withContext
+//        }
 
         try {
             audioRecord.startRecording()
@@ -94,21 +84,28 @@ class Mp3Recorder(
             return@withContext
         }
 
+        var rawSize = 0
         while (!isStopped.get()) {
             if (!isPaused.get()) {
-                val count = audioRecord.read(rawData, 0, minBufferSize)
+                audioRecord.read(rawData, 0, minBufferSize)
+                buffer += rawData.toByteArray()
 
-                Log.d("Mp3Recorder", "Count: $count")
+                rawSize += rawData.size
+
+                Timber.tag(TAG).d("BufferSize: ${buffer.size}, audioRecordSize: ${rawSize}")
                 updateAmplitude(rawData)
             }
         }
     }
 
-    override fun stop() {
+    override fun stop(): ByteArray {
         audioRecord.stop()
         isPaused.set(true)
         isStopped.set(true)
         outputStream?.close()
+        return buffer.apply {
+            buffer = ByteArray(0)
+        }
     }
 
     override fun resume() {
@@ -129,11 +126,11 @@ class Mp3Recorder(
             sum += abs(data[i].toInt())
         }
         val newAmplitude = sum.toInt() / (minBufferSize / 8)
-        Log.d("Mp3Recorder", "Amplitude: $newAmplitude")
+        Timber.tag(TAG).d("Amplitude: $newAmplitude")
         _amplitude.emit(newAmplitude)
     }
 
     companion object {
-        private const val TAG = "Mp3Recorder"
+        private const val TAG = "RawRecorder"
     }
 }

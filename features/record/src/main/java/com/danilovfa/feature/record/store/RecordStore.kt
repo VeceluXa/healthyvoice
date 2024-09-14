@@ -1,7 +1,6 @@
 package com.danilovfa.feature.record.store
 
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.arkivanov.mvikotlin.core.store.Store
 import com.danilovfa.core.base.presentation.event.PermissionStatus
 import com.danilovfa.feature.record.store.RecordStore.Intent
@@ -32,5 +31,6 @@ interface RecordStore : Store<Intent, State, Label> {
         data object RequestAudioPermission : Label()
         data object ShowRationale : Label()
         data object ShowHelpDialog : Label()
+        data class ShowError(val message: String) : Label()
     }
 }

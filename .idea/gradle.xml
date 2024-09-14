@@ -30,6 +30,10 @@
             <option value="$PROJECT_DIR$/common/libs/recorder" />
             <option value="$PROJECT_DIR$/common/resources" />
             <option value="$PROJECT_DIR$/common/uikit" />
+            <option value="$PROJECT_DIR$/data" />
+            <option value="$PROJECT_DIR$/data/analyze" />
+            <option value="$PROJECT_DIR$/data/common" />
+            <option value="$PROJECT_DIR$/data/record" />
             <option value="$PROJECT_DIR$/features" />
             <option value="$PROJECT_DIR$/features/analyze" />
             <option value="$PROJECT_DIR$/features/record" />

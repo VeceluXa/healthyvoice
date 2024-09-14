@@ -20,6 +20,7 @@ import com.danilovfa.feature.record.store.RecordStore.State
 import com.danilovfa.feature.record.store.RecordStoreFactory
 import com.danilovfa.resources.drawable.AppIllustration
 import com.danilovfa.resources.drawable.strings
+import com.danilovfa.uikit.composables.event.showError
 
 class DefaultRecordComponent(
     private val storeFactory: StoreFactory,
@@ -39,6 +40,7 @@ class DefaultRecordComponent(
                 Label.RequestAudioPermission -> requestPermission(Manifest.permission.RECORD_AUDIO)
                 Label.ShowRationale -> showAudioPermissionRationale()
                 Label.ShowHelpDialog -> showHelpDialog()
+                is Label.ShowError -> showError(label.message)
             }
         }
     }

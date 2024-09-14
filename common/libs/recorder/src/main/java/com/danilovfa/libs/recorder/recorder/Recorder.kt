@@ -11,7 +11,7 @@ interface Recorder {
     fun setOutputFile(fileDescriptor: FileDescriptor)
     fun prepare()
     suspend fun start()
-    fun stop()
+    fun stop(): ByteArray
     fun resume()
     fun pause()
     fun release()

@@ -8,6 +8,7 @@ android {
 
 dependencies {
     implementation(project(":common:libs:recorder"))
+    implementation(project(":data:record"))
 
     implementation(libs.androidx.activity.compose)
 }
