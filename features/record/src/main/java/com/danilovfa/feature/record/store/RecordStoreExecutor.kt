@@ -1,7 +1,11 @@
 package com.danilovfa.feature.record.store
 
+import android.content.Context
+import android.net.Uri
+import androidx.core.net.toFile
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.danilovfa.core.base.presentation.event.PermissionStatus
+import com.danilovfa.core.library.text.Text
 import com.danilovfa.data.record.domain.repository.RecordRepository
 import com.danilovfa.feature.record.store.RecordStore.Intent
 import com.danilovfa.feature.record.store.RecordStore.Label
@@ -9,7 +13,9 @@ import com.danilovfa.feature.record.store.RecordStore.State
 import com.danilovfa.feature.record.store.RecordStoreFactory.Msg
 import com.danilovfa.libs.recorder.recorder.AudioRecorder
 import com.danilovfa.libs.recorder.recorder.WavAudioRecorder
+import com.danilovfa.libs.recorder.recorder.wav.WavHeader
 import com.danilovfa.libs.recorder.writer.DefaultRecordWriter
+import com.danilovfa.resources.drawable.strings
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -37,6 +43,8 @@ internal class RecordStoreExecutor : KoinComponent,
 
         Intent.OnRecordStopClicked -> stopRecording()
         Intent.OnShowHelpDialogClicked -> publish(Label.ShowHelpDialog)
+        Intent.OnImportRecordingClicked -> publish(Label.OpenFilePicker)
+        is Intent.OnRecordImported -> importRecording(intent.uri, intent.context)
     }
 
     private fun onRecordClicked() {
@@ -98,6 +106,32 @@ internal class RecordStoreExecutor : KoinComponent,
         dispatch(Msg.UpdateRecordingStartTime(null))
         dispatch(Msg.UpdateAmplitudes(emptyList()))
         recorder?.stopRecording()
+    }
+
+    private fun importRecording(uri: Uri, context: Context) {
+        scope.launch {
+            val fileType = uri.path?.let { path ->
+                path.substring(path.lastIndexOf('.'))
+            }
+
+            if (fileType != ".wav") {
+                publish(Label.ShowError(Text.Resource(strings.record_wrong_format)))
+                return@launch
+            }
+
+            context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                inputStream.readBytes().takeUnless { it.size < WavHeader.HEADER_SIZE_BYTES }
+                    ?.let { bytes ->
+                        recordRepository.saveEncodedRecording(bytes)
+                            .onFailure {
+                                publish(Label.ShowError(Text.Plain(it.message ?: "")))
+                            }
+                            .onSuccess {
+                                publish(Label.Analyze(it))
+                            }
+                    }
+            }
+        }
     }
 
     companion object {

@@ -40,7 +40,10 @@
     <!-- Start Record Section -->
     <string name="record_permission_rationale_title">Отсутствует разрешение на запись аудио</string>
     <string name="record_permission_rationale_description">Разрешите приложению HealthyVoice доступ к записи аудио в настройках</string>
+    <string name="record_menu_help">Помощь</string>
+    <string name="record_menu_import">Импортировать запись</string>
     <string name="record_help_dialog_title">Как правильно записывать голос?</string>
     <string name="record_help_dialog_description">Поднесите телефон ко рту и громко говорите 5 секунд, для правильной записи аудио.</string>
+    <string name="record_wrong_format">Файл записи должен быть с расширением .wav</string>
     <!-- End Record Section -->
 </resources>

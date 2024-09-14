@@ -6,7 +6,7 @@ import com.danilovfa.libs.recorder.source.AudioSource
 /**
  * Class for write header information
  */
-internal class WavHeader(private val audioSource: AudioSource, private val length: Long) {
+class WavHeader(private val audioSource: AudioSource, private val length: Long) {
 
     /**
      * generate wav header using [audioSource], [length] and assign them to [ByteArray]

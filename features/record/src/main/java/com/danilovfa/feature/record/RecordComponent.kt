@@ -13,5 +13,6 @@ interface RecordComponent : StatefulComponent<State, Intent> {
 
     sealed class Events : Event {
         data object OpenAppSettings : Events()
+        data object OpenFilePicker : Events()
     }
 }

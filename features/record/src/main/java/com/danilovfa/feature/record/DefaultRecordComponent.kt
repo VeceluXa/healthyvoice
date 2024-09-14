@@ -40,7 +40,8 @@ class DefaultRecordComponent(
                 Label.RequestAudioPermission -> requestPermission(Manifest.permission.RECORD_AUDIO)
                 Label.ShowRationale -> showAudioPermissionRationale()
                 Label.ShowHelpDialog -> showHelpDialog()
-                is Label.ShowError -> showError(label.message)
+                is Label.ShowError -> showError(label.text)
+                Label.OpenFilePicker -> offerEvent(RecordComponent.Events.OpenFilePicker)
             }
         }
     }

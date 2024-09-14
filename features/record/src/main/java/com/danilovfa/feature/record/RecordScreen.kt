@@ -1,6 +1,5 @@
 package com.danilovfa.feature.record
 
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateDpAsState
@@ -18,12 +17,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,6 +42,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.danilovfa.core.library.context.launchAppSettings
+import com.danilovfa.core.library.text.Text
 import com.danilovfa.core.library.time.tickerInstant
 import com.danilovfa.feature.record.store.RecordStore.Intent
 import com.danilovfa.feature.record.store.RecordStore.State
@@ -48,11 +53,16 @@ import com.danilovfa.uikit.composables.animation.AnimatedVisibilityNullableValue
 import com.danilovfa.uikit.composables.dialog.AlertDialog
 import com.danilovfa.uikit.composables.event.ObserveEvents
 import com.danilovfa.uikit.composables.event.permission.ObserveRequestPermissionEvents
+import com.danilovfa.uikit.composables.popup.MenuItem
+import com.danilovfa.uikit.composables.popup.MenuItemsData
+import com.danilovfa.uikit.composables.popup.PopupMenu
 import com.danilovfa.uikit.composables.toolbar.Toolbar
 import com.danilovfa.uikit.theme.AppDimension
 import com.danilovfa.uikit.theme.AppTheme
 import com.danilovfa.uikit.theme.AppTypography
 import kotlinx.datetime.Instant
+import timber.log.Timber
+import android.content.Intent as AndroidIntent
 
 @Composable
 fun RecordScreen(
@@ -62,15 +72,33 @@ fun RecordScreen(
     val state by component.stateFlow.collectAsState()
     val alertDialogState by component.alertDialogStateFlow.collectAsState()
 
-    val launcher =
+    val settingsLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             component.onIntent(Intent.OnRecordStartClicked)
+        }
+
+    val filePickerLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            it.data?.data?.let { uri ->
+                component.onIntent(Intent.OnRecordImported(context, uri))
+            }
         }
 
     ObserveEvents(component.events) { event ->
         when (event) {
             is RecordComponent.Events.OpenAppSettings -> {
-                launcher.launchAppSettings(context.packageName)
+                settingsLauncher.launchAppSettings(context.packageName)
+                true
+            }
+
+            is RecordComponent.Events.OpenFilePicker -> {
+                val intent = AndroidIntent(AndroidIntent.ACTION_GET_CONTENT).apply {
+                    type = "audio/*"
+//                    addCategory(AndroidIntent.CATEGORY_OPENABLE)
+                }
+
+                filePickerLauncher.launch(intent)
+
                 true
             }
 
@@ -102,34 +130,9 @@ private fun RecordLayout(
             .background(AppTheme.colors.backgroundPrimary)
             .systemBarsPadding()
     ) {
-        Toolbar(
-            navigationIcon = null,
-            onNavigationClick = {},
-            title = stringResource(strings.app_title),
-            startIcon = {
-                Image(
-                    painter = AppIcon.AppIcon,
-                    contentDescription = "App",
-                    modifier = Modifier.padding(start = AppDimension.layoutHorizontalMargin)
-                )
-            },
-            actions = {
-                IconButton(
-                    onClick = { onIntent(Intent.OnShowHelpDialogClicked) }
-                ) {
-                    Icon(
-                        painter = AppIcon.Question,
-                        tint = AppTheme.colors.textDisabled,
-                        contentDescription = "Help",
-                        modifier = Modifier
-                            .background(
-                                color = AppTheme.colors.surface,
-                                shape = CircleShape
-                            )
-                            .padding(AppDimension.layoutSmallMargin)
-                    )
-                }
-            }
+        RecordToolbar(
+            onShowHelpDialogClicked = { onIntent(Intent.OnShowHelpDialogClicked) },
+            onImportClicked = { onIntent(Intent.OnImportRecordingClicked) }
         )
         RecordContent(
             state = state,
@@ -137,6 +140,50 @@ private fun RecordLayout(
             modifier = Modifier.weight(1f)
         )
     }
+}
+
+@Composable
+private fun RecordToolbar(
+    onShowHelpDialogClicked: () -> Unit,
+    onImportClicked: () -> Unit
+) {
+    var isMenuExpanded = remember { mutableStateOf(false) }
+
+    Toolbar(
+        navigationIcon = null,
+        onNavigationClick = {},
+        title = stringResource(strings.app_title),
+        startIcon = {
+            Image(
+                painter = AppIcon.AppIcon,
+                contentDescription = "App",
+                modifier = Modifier.padding(start = AppDimension.layoutHorizontalMargin)
+            )
+        },
+        actions = {
+            IconButton(
+                onClick = { isMenuExpanded.value = true }
+            ) {
+                Icon(
+                    painter = AppIcon.VerticalMore,
+                    tint = AppTheme.colors.buttonPrimary,
+                    contentDescription = "More",
+                )
+            }
+
+            PopupMenu(
+                MenuItemsData(
+                    title = Text.Resource(strings.record_menu_import),
+                    onClick = onImportClicked
+                ),
+                MenuItemsData(
+                    title = Text.Resource(strings.record_menu_help),
+                    onClick = onShowHelpDialogClicked
+                ),
+                expandedState = isMenuExpanded
+            )
+        }
+    )
 }
 
 @Composable
@@ -229,7 +276,6 @@ private fun getAmplitudeHeight(
     graphHeight: Float
 ): Float {
     val height = graphHeight * amplitude / (AudioConstants.MAX_AMPLITUDE)
-//    Log.d("RecordGraph", height.toString())
     return height
 }
 
