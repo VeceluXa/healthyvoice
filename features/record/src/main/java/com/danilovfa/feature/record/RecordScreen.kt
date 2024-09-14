@@ -17,8 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -27,7 +25,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,7 +33,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
@@ -53,7 +49,6 @@ import com.danilovfa.uikit.composables.animation.AnimatedVisibilityNullableValue
 import com.danilovfa.uikit.composables.dialog.AlertDialog
 import com.danilovfa.uikit.composables.event.ObserveEvents
 import com.danilovfa.uikit.composables.event.permission.ObserveRequestPermissionEvents
-import com.danilovfa.uikit.composables.popup.MenuItem
 import com.danilovfa.uikit.composables.popup.MenuItemsData
 import com.danilovfa.uikit.composables.popup.PopupMenu
 import com.danilovfa.uikit.composables.toolbar.Toolbar
@@ -61,7 +56,6 @@ import com.danilovfa.uikit.theme.AppDimension
 import com.danilovfa.uikit.theme.AppTheme
 import com.danilovfa.uikit.theme.AppTypography
 import kotlinx.datetime.Instant
-import timber.log.Timber
 import android.content.Intent as AndroidIntent
 
 @Composable
@@ -94,7 +88,7 @@ fun RecordScreen(
             is RecordComponent.Events.OpenFilePicker -> {
                 val intent = AndroidIntent(AndroidIntent.ACTION_GET_CONTENT).apply {
                     type = "audio/*"
-//                    addCategory(AndroidIntent.CATEGORY_OPENABLE)
+                    addCategory(AndroidIntent.CATEGORY_OPENABLE)
                 }
 
                 filePickerLauncher.launch(intent)
@@ -147,7 +141,7 @@ private fun RecordToolbar(
     onShowHelpDialogClicked: () -> Unit,
     onImportClicked: () -> Unit
 ) {
-    var isMenuExpanded = remember { mutableStateOf(false) }
+    val isMenuExpanded = remember { mutableStateOf(false) }
 
     Toolbar(
         navigationIcon = null,
@@ -225,8 +219,6 @@ private fun RecordingGraph(
     amplitudes: List<Int>,
     modifier: Modifier = Modifier
 ) {
-    val density = LocalDensity.current
-
     val amplitudeWidth = 5.dp
     val distanceBetweenAmplitudes = 3.dp
     val amplitudeColor = AppTheme.colors.buttonSecondary
@@ -287,9 +279,9 @@ private fun Timer(
     AnimatedVisibilityNullableValue(
         value = startTime,
         modifier = modifier
-    ) { startTime ->
+    ) { initialTime ->
         val currentTime by tickerInstant(delay = 10L)
-        val diff = currentTime.toEpochMilliseconds() - startTime.toEpochMilliseconds()
+        val diff = currentTime.toEpochMilliseconds() - initialTime.toEpochMilliseconds()
 
         val millis = (diff % 1000).toString().padStart(3, '0')
         val seconds = (diff / 1000).toString().padStart(1, '0')

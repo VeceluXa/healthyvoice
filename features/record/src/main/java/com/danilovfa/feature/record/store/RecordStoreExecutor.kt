@@ -2,7 +2,6 @@ package com.danilovfa.feature.record.store
 
 import android.content.Context
 import android.net.Uri
-import androidx.core.net.toFile
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.danilovfa.core.base.presentation.event.PermissionStatus
 import com.danilovfa.core.library.text.Text
@@ -136,7 +135,6 @@ internal class RecordStoreExecutor : KoinComponent,
 
     companion object {
         private const val TAG = "RecordStore"
-        private const val AMPLITUDE_DEBOUNCE = 150L
         private const val TIMER_DELAY = 50L
         private const val END_TIME_MILLIS = 10000L
     }
