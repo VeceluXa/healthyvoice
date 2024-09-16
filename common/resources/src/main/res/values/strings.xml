@@ -46,4 +46,12 @@
     <string name="record_help_dialog_description">Поднесите телефон ко рту и громко говорите 5 секунд, для правильной записи аудио.</string>
     <string name="record_wrong_format">Файл записи должен быть с расширением .wav</string>
     <!-- End Record Section -->
+
+    <!-- Start Analyze Section -->
+    <string name="analyze_title">Анализ</string>
+    <string name="analyze_error_navigate_back">Вернуться назад</string>
+    <string name="analyze_back_confirm_title">Вернуться назад?</string>
+    <string name="analyze_back_confirm_text">Вы потеряете текущую запись и анализ!</string>
+    <string name="analyze_voice_parameters">Параметры голоса</string>
+    <!-- End Analyze Section -->
 </resources>

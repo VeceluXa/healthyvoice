@@ -5,7 +5,7 @@ import android.media.AudioRecord
 import com.danilovfa.libs.recorder.config.AudioRecordConfig
 
 @SuppressLint("MissingPermission")
-internal open class DefaultAudioSource(
+open class DefaultAudioSource(
     var audioRecordConfig: AudioRecordConfig = AudioRecordConfig.defaultConfig()
 ) : AudioSource {
 

@@ -36,7 +36,7 @@ class DefaultRecordComponent(
     init {
         observeLabels(store.labels) { label ->
             when (label) {
-                is Label.Analyze -> output(Output.Analyze(label.filename))
+                is Label.Analyze -> output(Output.Analyze(label.audioData))
                 Label.RequestAudioPermission -> requestPermission(Manifest.permission.RECORD_AUDIO)
                 Label.ShowRationale -> showAudioPermissionRationale()
                 Label.ShowHelpDialog -> showHelpDialog()

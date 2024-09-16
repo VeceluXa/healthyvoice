@@ -22,10 +22,10 @@ open class WavAudioRecorder(file: File, recordWriter: RecordWriter) :
         wavFile?.let {
             it.seek(0)
             it.write(
-                WavHeader(
-                    recordWriter.getAudioSource(),
-                    file.length()
-                ).getWavFileHeaderByteArray()
+                WavHeader.getWavFileHeaderByteArray(
+                    audioSource = recordWriter.getAudioSource(),
+                    length = file.length()
+                )
             )
             it.close()
         }

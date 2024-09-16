@@ -1,0 +1,137 @@
+package com.danilovfa.feature.analyze.store
+
+import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
+import com.chaquo.python.PyObject
+import com.chaquo.python.Python
+import com.danilovfa.core.library.log.LOG_TAG
+import com.danilovfa.core.library.text.Text
+import com.danilovfa.data.common.model.AudioData
+import com.danilovfa.data.record.domain.repository.RecordRepository
+import com.danilovfa.feature.analyze.model.AnalyzeParametersUi
+import com.danilovfa.feature.analyze.store.AnalyzeStore.Intent
+import com.danilovfa.feature.analyze.store.AnalyzeStore.Label
+import com.danilovfa.feature.analyze.store.AnalyzeStore.State
+import com.danilovfa.feature.analyze.store.AnalyzeStoreFactory.Action
+import com.danilovfa.feature.analyze.store.AnalyzeStoreFactory.Msg
+import com.danilovfa.libs.recorder.utils.AudioConstants
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import timber.log.Timber
+
+internal class AnalyzeStoreExecutor : KoinComponent,
+    CoroutineExecutor<Intent, Action, State, Msg, Label>() {
+
+    private val recordRepository: RecordRepository by inject()
+
+    override fun executeAction(action: Action, getState: () -> State) = when (action) {
+        Action.ProcessRecording -> processRecording(getState().audioData)
+    }
+
+    override fun executeIntent(intent: Intent, getState: () -> State) = when (intent) {
+        Intent.OnBackClicked -> publish(Label.ShowConfirmNavigateBack)
+        Intent.OnBackConfirmed -> publish(Label.NavigateBack)
+        Intent.RetryAnalyze -> processRecording(getState().audioData)
+    }
+
+    private fun processRecording(audioData: AudioData) {
+        scope.launch {
+            dispatch(Msg.UpdateLoading(true))
+            val recordingRaw = recordRepository.loadRecordingShort(audioData.filename).getOrElse {
+                Timber.tag(TAG).e(it)
+                publish(Label.ShowError(text = Text.Plain(it.message ?: "")))
+                dispatch(Msg.UpdateLoading(false))
+                return@launch
+            }
+            dispatch(Msg.UpdateLoading(false))
+
+            scope.launch { getParameters(recordingRaw) }
+            scope.launch { getWaveform(audioData, recordingRaw) }
+        }
+    }
+
+    private suspend fun getWaveform(audioData: AudioData, rawData: Array<Short>) {
+        val amplitudes = rawData.toList()
+
+        dispatch(Msg.UpdateAmplitudes(amplitudes))
+    }
+
+    private suspend fun getParameters(rawData: Array<Short>) {
+        // Example
+//            val exampleParams = AnalyzeParametersUi(59.596046f, 34.73272f, 39.788563f, 1.0780922f, 0.6416628f, 0.7725709f, 0.865017f)
+//            dispatch(Msg.UpdateParameters(exampleParams))
+//            dispatch(Msg.UpdateLoading(false))
+//            return@launch
+
+
+        if (Python.isStarted().not()) {
+            Timber.tag(TAG).e("Python is not initialized!")
+            publish(Label.ShowError())
+            return
+        }
+
+        val analyzer = Python.getInstance().getModule("signal_processor")
+
+        try {
+            analyze(analyzer, rawData)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Timber.tag(LOG_TAG).e(e)
+            publish(Label.ShowError())
+        }
+    }
+
+    private suspend fun analyze(analyzer: PyObject, recordingRaw: Array<Short>) {
+        var startTime = Clock.System.now().toEpochMilliseconds()
+
+        Timber.tag(TAG).d("Started python analysis")
+
+        val pySegments = withContext(Dispatchers.Default) {
+            analyzer.callAttr("voice_segmentation", recordingRaw, AudioConstants.FREQUENCY_44100)
+        }
+
+        Timber.tag(TAG)
+            .d("voice_segmentation: ${Clock.System.now().toEpochMilliseconds() - startTime} ms")
+        startTime = Clock.System.now().toEpochMilliseconds()
+
+        val pyParams = withContext(Dispatchers.Default) {
+            analyzer.callAttr("voice_parameters", recordingRaw, pySegments)
+        }
+
+        Timber.tag(TAG)
+            .d("voice_parameters: ${Clock.System.now().toEpochMilliseconds() - startTime} ms")
+
+        updateParameters(pyParams)
+
+    }
+
+    private fun updateParameters(pyParams: PyObject) {
+        val paramsList = pyParams.asList().map {
+            it.toFloat()
+        }
+
+        val params = AnalyzeParametersUi(
+            j1 = paramsList.getOrNull(0) ?: 0f,
+            j3 = paramsList.getOrNull(1) ?: 0f,
+            j5 = paramsList.getOrNull(2) ?: 0f,
+            s1 = paramsList.getOrNull(3) ?: 0f,
+            s3 = paramsList.getOrNull(4) ?: 0f,
+            s5 = paramsList.getOrNull(5) ?: 0f,
+            s11 = paramsList.getOrNull(6) ?: 0f,
+        )
+
+        Timber.tag(TAG).d("Params: $params")
+
+        dispatch(Msg.UpdateParameters(params))
+
+    }
+
+    companion object {
+        private const val TAG = "RecordingAnalyze"
+    }
+}

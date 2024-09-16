@@ -38,7 +38,7 @@ val appColorLightPalette: AppThemeColors = AppThemeColors(
 
     divider = AppColor.grey_50,
     shimmerGradient = GradientColor(
-        colorStart = AppColor.grey_10,
+        colorStart = AppColor.grey_40,
         colorCenter = AppColor.grey_50,
         colorEnd = AppColor.grey_80,
     ),

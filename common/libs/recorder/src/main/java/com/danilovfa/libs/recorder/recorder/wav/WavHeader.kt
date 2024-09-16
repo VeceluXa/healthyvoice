@@ -1,17 +1,19 @@
 package com.danilovfa.libs.recorder.recorder.wav
 
 import android.media.AudioFormat
+import android.media.MediaRecorder
+import com.danilovfa.libs.recorder.config.AudioRecordConfig
 import com.danilovfa.libs.recorder.source.AudioSource
 
 /**
  * Class for write header information
  */
-class WavHeader(private val audioSource: AudioSource, private val length: Long) {
+object WavHeader {
 
     /**
      * generate wav header using [audioSource], [length] and assign them to [ByteArray]
      */
-    internal fun getWavFileHeaderByteArray(): ByteArray {
+    internal fun getWavFileHeaderByteArray(audioSource: AudioSource, length: Long): ByteArray {
         val frequency = audioSource.getAudioConfig().frequency.toLong()
         val channels = if (audioSource.getAudioConfig().channel == AudioFormat.CHANNEL_IN_MONO) 1 else 2
         val bitsPerSample = when (audioSource.getAudioConfig().audioEncoding) {
@@ -20,8 +22,42 @@ class WavHeader(private val audioSource: AudioSource, private val length: Long) 
             else -> 16
         }.toByte()
 
-        return wavFileHeader(length - 44, length - 44 + 36, frequency,
-            channels, bitsPerSample.toLong() * frequency * channels.toLong() / 8, bitsPerSample
+        return wavFileHeader(
+            totalAudioLen = length - 44,
+            totalDataLen = length - 44 + 36,
+            longSampleRate = frequency,
+            channels = channels,
+            byteRate = bitsPerSample.toLong() * frequency * channels.toLong() / 8,
+            bitsPerSample = bitsPerSample
+        )
+    }
+
+    fun getConfigFromHeader(header: ByteArray): AudioRecordConfig {
+        require(header.size >= HEADER_SIZE_BYTES) { "Header size is not valid!" }
+
+        val bitsPerSample = header[34].toInt()
+
+        val audioEncoding = when (bitsPerSample) {
+            16 -> AudioFormat.ENCODING_PCM_16BIT
+            else -> AudioFormat.ENCODING_PCM_8BIT
+        }
+
+        val channel = when (header[32].toInt() / (bitsPerSample / 8)) {
+            1 -> AudioFormat.CHANNEL_IN_MONO
+            else -> AudioFormat.CHANNEL_IN_STEREO
+        }
+
+        val frequency = (header[24].toInt() and 0xFF) or
+                ((header[25].toInt() and 0xFF) shl 8) or
+                ((header[26].toInt() and 0xFF) shl 16) or
+                ((header[27].toInt() and 0xFF) shl 24)
+
+
+        return AudioRecordConfig(
+            audioSource = MediaRecorder.AudioSource.MIC,
+            audioEncoding = audioEncoding,
+            channel = channel,
+            frequency = frequency,
         )
     }
 
@@ -77,7 +113,5 @@ class WavHeader(private val audioSource: AudioSource, private val length: Long) 
         return header
     }
 
-    companion object {
-        const val HEADER_SIZE_BYTES = 44
-    }
+    const val HEADER_SIZE_BYTES = 44
 }

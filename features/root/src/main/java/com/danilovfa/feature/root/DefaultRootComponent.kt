@@ -1,13 +1,12 @@
 package com.danilovfa.feature.root
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.pushNew
-import com.arkivanov.decompose.value.Value
 import com.arkivanov.mvikotlin.core.store.StoreFactory
+import com.danilovfa.data.common.model.AudioData
 import com.danilovfa.feature.analyze.AnalyzeComponent
 import com.danilovfa.feature.analyze.DefaultAnalyzeComponent
 import com.danilovfa.feature.record.DefaultRecordComponent
@@ -34,6 +33,7 @@ class DefaultRootComponent(
     private fun child(config: Config, componentContext: ComponentContext): Child = when (config) {
         is Config.Analyze -> Child.Analyze(
             DefaultAnalyzeComponent(
+                audioData = config.audioData,
                 storeFactory = storeFactory,
                 componentContext = componentContext,
                 output = ::onAnalyzeOutput
@@ -50,7 +50,7 @@ class DefaultRootComponent(
     }
 
     private fun onRecordOutput(output: RecordComponent.Output) = when (output) {
-        is RecordComponent.Output.Analyze -> navigation.pushNew(Config.Analyze(output.filename))
+        is RecordComponent.Output.Analyze -> navigation.pushNew(Config.Analyze(output.audioData))
     }
 
     private fun onAnalyzeOutput(output: AnalyzeComponent.Output) = when (output) {
@@ -64,6 +64,6 @@ class DefaultRootComponent(
         data object Record : Config()
 
         @Serializable
-        data class Analyze(val filename: String) : Config()
+        data class Analyze(val audioData: AudioData) : Config()
     }
 }

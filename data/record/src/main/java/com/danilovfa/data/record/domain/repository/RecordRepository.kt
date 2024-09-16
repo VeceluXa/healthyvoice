@@ -8,5 +8,7 @@ interface RecordRepository {
 
     suspend fun saveEncodedRecording(data: ByteArray): Result<String>
 
-    suspend fun loadRecording(filename: String): Result<ByteArray>
+    suspend fun loadRecordingByte(filename: String): Result<ByteArray>
+
+    suspend fun loadRecordingShort(filename: String): Result<Array<Short>>
 }

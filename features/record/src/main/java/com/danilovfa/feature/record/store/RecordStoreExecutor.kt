@@ -1,18 +1,25 @@
 package com.danilovfa.feature.record.store
 
 import android.content.Context
+import android.media.AudioFormat.CHANNEL_IN_MONO
+import android.media.AudioFormat.ENCODING_PCM_16BIT
+import android.media.AudioRecord
 import android.net.Uri
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.danilovfa.core.base.presentation.event.PermissionStatus
+import com.danilovfa.core.library.log.LOG_TAG
 import com.danilovfa.core.library.text.Text
+import com.danilovfa.data.common.model.AudioData
 import com.danilovfa.data.record.domain.repository.RecordRepository
 import com.danilovfa.feature.record.store.RecordStore.Intent
 import com.danilovfa.feature.record.store.RecordStore.Label
 import com.danilovfa.feature.record.store.RecordStore.State
 import com.danilovfa.feature.record.store.RecordStoreFactory.Msg
+import com.danilovfa.libs.recorder.config.AudioRecordConfig
 import com.danilovfa.libs.recorder.recorder.AudioRecorder
 import com.danilovfa.libs.recorder.recorder.WavAudioRecorder
 import com.danilovfa.libs.recorder.recorder.wav.WavHeader
+import com.danilovfa.libs.recorder.source.DefaultAudioSource
 import com.danilovfa.libs.recorder.writer.DefaultRecordWriter
 import com.danilovfa.resources.drawable.strings
 import kotlinx.coroutines.Job
@@ -66,9 +73,13 @@ internal class RecordStoreExecutor : KoinComponent,
         val filename = "${UUID.randomUUID()}.wav"
         val file = File(recordRepository.getRecordingsDir(), filename)
 
+        val config = AudioRecordConfig.defaultConfig()
+        val audioSource = DefaultAudioSource(audioRecordConfig = config)
+
         recorder = WavAudioRecorder(
             file = file,
             recordWriter = DefaultRecordWriter(
+                audioSource = audioSource,
                 amplitudeListener = {
                     Timber.tag(TAG).d("Amplitude: $it")
                     dispatch(Msg.AddAmplitude(it))
@@ -76,15 +87,25 @@ internal class RecordStoreExecutor : KoinComponent,
             )
         )
 
+
         scope.launch {
             launch {
                 recorder?.startRecording()
             }
-            startTimer(filename)
+
+            startTimer()
+            stopRecording()
+            publish(
+                Label.Analyze(
+                    getAudioData(
+                        filename, config, audioSource.getBufferSize()
+                    )
+                )
+            )
         }
     }
 
-    private suspend fun startTimer(filename: String) {
+    private suspend fun startTimer() {
         val startTime = Clock.System.now()
         dispatch(Msg.UpdateRecordingStartTime(startTime))
 
@@ -94,9 +115,6 @@ internal class RecordStoreExecutor : KoinComponent,
             delay(TIMER_DELAY)
             currentTime = Clock.System.now()
         }
-
-        stopRecording()
-        publish(Label.Analyze(filename))
     }
 
     private fun stopRecording() {
@@ -125,13 +143,40 @@ internal class RecordStoreExecutor : KoinComponent,
                             .onFailure {
                                 publish(Label.ShowError(Text.Plain(it.message ?: "")))
                             }
-                            .onSuccess {
-                                publish(Label.Analyze(it))
+                            .onSuccess { filename ->
+                                val config = WavHeader.getConfigFromHeader(bytes.copyOfRange(0, 45))
+                                val bufferSize = AudioRecord.getMinBufferSize(
+                                    config.frequency,
+                                    config.channel,
+                                    config.audioEncoding
+                                )
+
+                                Timber.tag(LOG_TAG).d("Header: $config")
+
+                                publish(Label.Analyze(getAudioData(filename, config, bufferSize)))
                             }
                     }
             }
         }
     }
+
+    private fun getAudioData(
+        filename: String,
+        config: AudioRecordConfig,
+        bufferSize: Int
+    ): AudioData = AudioData(
+        filename = filename,
+        frequency = config.frequency,
+        channel = when (config.channel) {
+            CHANNEL_IN_MONO -> 1
+            else -> 2
+        },
+        bitsPerSample = when (config.audioEncoding) {
+            ENCODING_PCM_16BIT -> 16
+            else -> 8
+        },
+        bufferSize = bufferSize
+    )
 
     companion object {
         private const val TAG = "RecordStore"

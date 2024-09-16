@@ -1,6 +1,8 @@
 package com.danilovfa.healthyvoice
 
 import android.app.Application
+import com.chaquo.python.Python
+import com.chaquo.python.android.AndroidPlatform
 import com.danilovfa.healthyvoice.di.modules
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -13,6 +15,7 @@ class App : Application() {
         super.onCreate()
         initLogging()
         initKoin()
+        initPython()
     }
 
     private fun initKoin() {
@@ -29,5 +32,9 @@ class App : Application() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
+    }
+
+    private fun initPython() {
+        Python.start(AndroidPlatform(this))
     }
 }

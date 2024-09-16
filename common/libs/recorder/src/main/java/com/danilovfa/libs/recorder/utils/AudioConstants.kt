@@ -3,7 +3,7 @@ package com.danilovfa.libs.recorder.utils
 import android.media.AudioFormat
 
 object AudioConstants {
-    internal const val FREQUENCY_44100 = 44100
+    const val FREQUENCY_44100 = 44100
     internal const val AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT
     internal const val CHANNEL = AudioFormat.CHANNEL_IN_MONO
 

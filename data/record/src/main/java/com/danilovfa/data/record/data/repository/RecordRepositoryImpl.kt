@@ -31,7 +31,7 @@ internal class RecordRepositoryImpl(
         }
     }
 
-    override suspend fun loadRecording(filename: String): Result<ByteArray> = withContext(ioDispatcher) {
+    override suspend fun loadRecordingByte(filename: String): Result<ByteArray> = withContext(ioDispatcher) {
         val file = File(getRecordingsDir(), filename)
 
         return@withContext try {
@@ -42,6 +42,38 @@ internal class RecordRepositoryImpl(
             Result.failure(e)
         }
     }
+
+    override suspend fun loadRecordingShort(filename: String): Result<Array<Short>> = withContext(ioDispatcher) {
+        val file = File(getRecordingsDir(), filename)
+
+        return@withContext try {
+            val shortArray = ShortArray((file.length() / 2).toInt())
+
+            FileInputStream(file).use { inputStream ->
+
+                // TODO Make proper header skipping
+                inputStream.skip(44L)
+
+                var byteHigh = inputStream.read()
+                var byteLow = inputStream.read()
+                var i = 0
+
+                while (byteHigh != -1 && byteLow != -1) {
+                    shortArray[i] = (((byteHigh and 0xFF) shl 8) or (byteLow and 0xFF)).toShort()
+
+                    i++
+                    byteHigh = inputStream.read()
+                    byteLow = inputStream.read()
+                }
+            }
+
+            Result.success(shortArray.toTypedArray())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
 
     override fun getRecordingsDir(): File {
         val cacheDir = context.cacheDir

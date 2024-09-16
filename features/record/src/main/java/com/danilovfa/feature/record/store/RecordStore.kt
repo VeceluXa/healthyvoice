@@ -6,6 +6,7 @@ import androidx.compose.runtime.Immutable
 import com.arkivanov.mvikotlin.core.store.Store
 import com.danilovfa.core.base.presentation.event.PermissionStatus
 import com.danilovfa.core.library.text.Text
+import com.danilovfa.data.common.model.AudioData
 import com.danilovfa.feature.record.store.RecordStore.Intent
 import com.danilovfa.feature.record.store.RecordStore.Label
 import com.danilovfa.feature.record.store.RecordStore.State
@@ -34,7 +35,7 @@ interface RecordStore : Store<Intent, State, Label> {
     )
 
     sealed class Label {
-        data class Analyze(val filename: String) : Label()
+        data class Analyze(val audioData: AudioData) : Label()
         data object RequestAudioPermission : Label()
         data object ShowRationale : Label()
         data object ShowHelpDialog : Label()
