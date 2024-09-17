@@ -1,12 +1,10 @@
 package com.danilovfa.feature.analyze
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
@@ -21,12 +19,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.danilovfa.data.common.model.AudioData
-import com.danilovfa.feature.analyze.composable.WAVEFORM_HEIGHT_DP
-import com.danilovfa.feature.analyze.composable.Waveform
-import com.danilovfa.feature.analyze.composable.WaveformAmplitudes
+import com.danilovfa.feature.analyze.waveform.WAVEFORM_HEIGHT_DP
+import com.danilovfa.feature.analyze.waveform.RecordingWaveform
 import com.danilovfa.feature.analyze.model.AnalyzeParametersUi
 import com.danilovfa.feature.analyze.store.AnalyzeStore.Intent
 import com.danilovfa.feature.analyze.store.AnalyzeStore.State
+import com.danilovfa.feature.analyze.waveform.rememberWaveformController
 import com.danilovfa.resources.drawable.strings
 import com.danilovfa.uikit.composables.VSpacer
 import com.danilovfa.uikit.composables.dialog.AlertDialog
@@ -37,7 +35,6 @@ import com.danilovfa.uikit.composables.state.ShimmerItem
 import com.danilovfa.uikit.composables.text.Text
 import com.danilovfa.uikit.composables.toolbar.NavigationIcon
 import com.danilovfa.uikit.composables.toolbar.Toolbar
-import com.danilovfa.uikit.modifier.surface
 import com.danilovfa.uikit.theme.AppDimension
 import com.danilovfa.uikit.theme.AppTheme
 import com.danilovfa.uikit.theme.AppTypography
@@ -103,7 +100,7 @@ private fun AnalyzeContent(
         VSpacer(AppDimension.layoutMainMargin)
         
         if (state.amplitudes.isNotEmpty()) {
-            Waveform(amplitudes = WaveformAmplitudes(state.amplitudes.subList(3000, 6000)))
+            RecordingWaveform(state.amplitudes)
         } else {
             LargeShimmerItem(
                 height = WAVEFORM_HEIGHT_DP.dp,

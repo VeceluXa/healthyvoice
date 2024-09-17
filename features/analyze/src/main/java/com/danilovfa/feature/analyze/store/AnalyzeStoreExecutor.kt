@@ -22,6 +22,7 @@ import kotlinx.datetime.Clock
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import timber.log.Timber
+import kotlin.math.roundToInt
 
 internal class AnalyzeStoreExecutor : KoinComponent,
     CoroutineExecutor<Intent, Action, State, Msg, Label>() {
@@ -55,7 +56,15 @@ internal class AnalyzeStoreExecutor : KoinComponent,
     }
 
     private suspend fun getWaveform(audioData: AudioData, rawData: Array<Short>) {
-        val amplitudes = rawData.toList()
+        val amplitudes = rawData
+            .toList()
+            .chunked(10)
+            .map { chunk ->
+                chunk.average().roundToInt().toShort()
+//                ShortArrayAudioChunk(chunk.toShortArray())
+//                    .getMaxAmplitude(audioData.bufferSize)
+//                    .toShort()
+            }
 
         dispatch(Msg.UpdateAmplitudes(amplitudes))
     }

@@ -38,8 +38,7 @@ internal class RecordStoreExecutor : KoinComponent,
     private val recordRepository: RecordRepository by inject()
     private var recorder: AudioRecorder? = null
 
-    private var timerJob: Job? = null
-    private var amplitudeJob: Job? = null
+    private var recorderJob: Job? = null
 
     override fun executeIntent(intent: Intent, getState: () -> State): Unit = when (intent) {
         Intent.OnRecordStartClicked -> onRecordClicked()
@@ -88,24 +87,26 @@ internal class RecordStoreExecutor : KoinComponent,
         )
 
 
-        scope.launch {
+        recorderJob?.cancel()
+        recorderJob = scope.launch {
             launch {
                 recorder?.startRecording()
             }
 
-            startTimer()
-            stopRecording()
-            publish(
-                Label.Analyze(
-                    getAudioData(
-                        filename, config, audioSource.getBufferSize()
+            startTimer {
+                stopRecording()
+                publish(
+                    Label.Analyze(
+                        getAudioData(
+                            filename, config, audioSource.getBufferSize()
+                        )
                     )
                 )
-            )
+            }
         }
     }
 
-    private suspend fun startTimer() {
+    private suspend fun startTimer(onCompleted: () -> Unit) {
         val startTime = Clock.System.now()
         dispatch(Msg.UpdateRecordingStartTime(startTime))
 
@@ -115,14 +116,16 @@ internal class RecordStoreExecutor : KoinComponent,
             delay(TIMER_DELAY)
             currentTime = Clock.System.now()
         }
+
+        onCompleted()
     }
 
     private fun stopRecording() {
-        amplitudeJob?.cancel()
         dispatch(Msg.UpdatePlaying(false))
         dispatch(Msg.UpdateRecordingStartTime(null))
         dispatch(Msg.UpdateAmplitudes(emptyList()))
         recorder?.stopRecording()
+        recorderJob?.cancel()
     }
 
     private fun importRecording(uri: Uri, context: Context) {

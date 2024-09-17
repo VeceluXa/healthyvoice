@@ -62,8 +62,8 @@ internal class RecordRepositoryImpl(
                     shortArray[i] = (((byteHigh and 0xFF) shl 8) or (byteLow and 0xFF)).toShort()
 
                     i++
-                    byteHigh = inputStream.read()
                     byteLow = inputStream.read()
+                    byteHigh = inputStream.read()
                 }
             }
 

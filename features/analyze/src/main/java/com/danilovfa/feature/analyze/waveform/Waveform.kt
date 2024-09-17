@@ -1,14 +1,12 @@
-package com.danilovfa.feature.analyze.composable
+package com.danilovfa.feature.analyze.waveform
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,43 +20,50 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.danilovfa.uikit.theme.AppTheme
-import kotlinx.coroutines.delay
+import timber.log.Timber
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
 
 internal const val WAVEFORM_HEIGHT_DP = 300
 private const val SPACE_BETWEEN_DOTS = 5
+private const val MAX_ZOOM = 8f
 
 private const val EmptyAmplitudePlaceholder = 0f
 private const val OffscreenSpikesMultiplier = 2
-private const val BezierPerformanceLimit = 10
+private const val BezierPerformanceLimit = 500
 
 @Composable
-internal fun Waveform(
-    amplitudes: WaveformAmplitudes,
+internal fun RecordingWaveform(
+    amplitudes: List<Short>,
     modifier: Modifier = Modifier,
     brush: Brush = SolidColor(AppTheme.colors.buttonSecondary),
     bezierIntensity: Float = 0.35f,
 ) {
     val density = LocalDensity.current
-    val screenWidthPx = with (density) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
+    val screenWidthPx = with(density) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
 
-    var minScrollDelta by remember {
-        mutableStateOf(10000f)
+    var scale by remember {
+        mutableStateOf(1f)
     }
 
     var scrollDelta by remember {
-        mutableStateOf(-(screenWidthPx / 2))
+        mutableStateOf(-0f)//-(screenWidthPx / 2))
     }
 
-    val waveformHeightPx = with(LocalDensity.current) {
-        WAVEFORM_HEIGHT_DP.dp.toPx()
+    val waveformController = rememberWaveformController(amplitudes) { prev, new ->
+        scrollDelta = (scrollDelta / prev * new * scale)
+    }
+
+    val minScale = screenWidthPx / waveformController.points.size.toFloat()
+
+    val minScrollDelta by remember {
+        derivedStateOf {
+            (waveformController.points.size.toFloat() * scale).coerceAtLeast(screenWidthPx)
+        }
     }
 
     Box(
@@ -66,61 +71,99 @@ internal fun Waveform(
             .fillMaxWidth()
             .height(WAVEFORM_HEIGHT_DP.dp)
             .pointerInput(Unit) {
+                detectTransformGestures { _, pan, zoom, _ ->
+                    if (scale * zoom in minScale..MAX_ZOOM) {
+                        scale *= zoom
 
+                        //waveformController.scale(scale)
+                        Timber
+                            .tag("Waveform")
+                            .d("Amplitudes Size: ${waveformController.points.size}")
+
+                        scrollDelta = ((scrollDelta + pan.x) * zoom).coerceIn(-minScrollDelta..0f)
+                    } else {
+                        scrollDelta = (scrollDelta + pan.x).coerceIn(-minScrollDelta..0f)
+                    }
+
+                    Timber
+                        .tag("Waveform")
+                        .d("Zoom: $scale, Pan: $scrollDelta")
+                }
             }
     ) {
-        Canvas(
+        Waveform(
+            points = waveformController.points, 
+            scrollDelta = scrollDelta, 
+            minScrollDelta = minScrollDelta,
+            brush = brush,
+            bezierIntensity = bezierIntensity,
             modifier = Modifier
                 .matchParentSize()
-        ) {
-            val spikeDistance = abs(minScrollDelta) / amplitudes.values.size
-            val spikesOnScreen = ceil(size.width / spikeDistance).toInt()
-            val sideSpikesCount = ceil(spikesOnScreen / 2f).toInt()
+        )
+    }
+}
 
-            val middleSpikeIndex = floor(-scrollDelta / spikeDistance).toInt()
-            val minVisibleSpikeIndex = middleSpikeIndex - sideSpikesCount
-            val maxVisibleSpikeIndex =
-                middleSpikeIndex + (sideSpikesCount * OffscreenSpikesMultiplier)
-            val spikesIndices = minVisibleSpikeIndex..maxVisibleSpikeIndex
+@Composable
+private fun Waveform(
+    points: List<Float>,
+    scrollDelta: Float,
+    minScrollDelta: Float,
+    modifier: Modifier = Modifier,
+    brush: Brush = SolidColor(AppTheme.colors.buttonSecondary),
+    bezierIntensity: Float = 0.35f
+) {
+    val waveformHeightPx = with(LocalDensity.current) {
+        WAVEFORM_HEIGHT_DP.dp.toPx()
+    }
+    
+    Canvas(modifier = modifier) {
+        val spikeDistance = abs(minScrollDelta) / points.size
+        val spikesOnScreen = ceil(size.width / spikeDistance).toInt()
+        val sideSpikesCount = ceil(spikesOnScreen / 2f).toInt()
 
-            val startX = 0f//scrollDelta % spikeDistance
-            val path = Path().apply {
-                if (spikesOnScreen > BezierPerformanceLimit) waveform(
-                    amplitudes = amplitudes.values,
-                    visibleSpikesIndexes = spikesIndices,
-                    spikeDistance = spikeDistance,
-                    startX = startX,
-                    startY = center.y,
-                    waveformHeightPx = waveformHeightPx
-                ) else bezierInterpolatedWaveform(
-                    amplitudes = amplitudes.values,
-                    visibleSpikesIndexes = spikesIndices,
-                    spikeDistance = spikeDistance,
-                    startX = startX,
-                    startY = center.y,
-                    bezierIntensity = bezierIntensity,
-                    waveformHeightPx = waveformHeightPx
-                )
-            }
+        val middleSpikeIndex = floor(-(scrollDelta / 2) / spikeDistance).toInt()
+        val minVisibleSpikeIndex = middleSpikeIndex - sideSpikesCount
+        val maxVisibleSpikeIndex =
+            middleSpikeIndex + (sideSpikesCount * OffscreenSpikesMultiplier)
+        val spikesIndices = minVisibleSpikeIndex..maxVisibleSpikeIndex
 
-            drawPath(
-                path = path,
-                brush = brush,
+        val startX = scrollDelta % spikeDistance
+        val path = Path().apply {
+            if (spikesOnScreen > BezierPerformanceLimit) waveform(
+                amplitudes = points,
+                visibleSpikesIndexes = spikesIndices,
+                spikeDistance = spikeDistance,
+                startX = startX,
+                startY = center.y,
+                waveformHeightPx = waveformHeightPx
+            ) else bezierInterpolatedWaveform(
+                amplitudes = points,
+                visibleSpikesIndexes = spikesIndices,
+                spikeDistance = spikeDistance,
+                startX = startX,
+                startY = center.y,
+                bezierIntensity = bezierIntensity,
+                waveformHeightPx = waveformHeightPx
             )
+        }
+
+        drawPath(
+            path = path,
+            brush = brush,
+        )
 //            flip(FlipDirection.Vertical) {
 //                drawPath(
 //                    path = path,
 //                    brush = brush,
 //                )
 //            }
-            drawLine(
-                brush = brush,
-                start = Offset(0f, size.center.y),
-                end = Offset(size.width, size.center.y),
-                strokeWidth = 1.dp.toPx(),
-                cap = StrokeCap.Round,
-            )
-        }
+        drawLine(
+            brush = brush,
+            start = Offset(0f, size.center.y),
+            end = Offset(size.width, size.center.y),
+            strokeWidth = 1.dp.toPx(),
+            cap = StrokeCap.Round,
+        )
     }
 }
 
@@ -201,19 +244,3 @@ private fun Float.getY(startY: Float, heightPx: Float): Float {
 private val IntRange.size get() = endInclusive - start + 1
 
 
-data class WaveformAmplitudes(
-    val values: List<Float>
-) {
-
-    companion object {
-        @JvmName("fromShort")
-        operator fun invoke(values: List<Short>) = WaveformAmplitudes(normalizeValues(values))
-
-        private fun normalizeValues(values: List<Short>): List<Float> {
-            return values.map {
-                it.toFloat() / Short.MAX_VALUE
-            }
-        }
-    }
-
-}
