@@ -4,22 +4,33 @@ import soundfile as sf
 from scipy.signal import find_peaks, firwin
 
 
-def voice_segmentation(data,fs):
-    N = 2000
-    x = data[:2*N]
+def voice_segmentation(data,fs):    
 
     print("RecordingAnalyze voice_segmentation: Started processing")
 
-    lags = np.array(range(0, N-1))
-    r_xx = np.zeros_like(lags).astype(float)
+    # Slow autocorrelation
+    # N = 2048
+    # x = data[:2*N]
+    # lags = np.array(range(0, N-1))
+    # r_xx = np.zeros_like(lags).astype(float)
+    # for lag in lags:
+    #     tmp_sum = 0
+    #     for n in range(N):
+    #         if ((n+lag)<N) and ((n+lag)>=0):
+    #             tmp_sum = tmp_sum + x[n]*x[n+lag]
+    #     r_xx[lag] = tmp_sum
 
-    for lag in lags:
-        tmp_sum = 0
-        for n in range(N):
-            if ((n+lag)<N) and ((n+lag)>=0):
-                tmp_sum = tmp_sum + x[n]*x[n+lag]
-        r_xx[lag] = tmp_sum
-        
+    # Fast autocorrelation
+    N = 2*2048
+    x = data[:N]
+    r_xx = np.zeros((2*N)).astype(float)
+
+    x_ = np.zeros((2*N))
+    x_[:N] = x
+    X = np.fft.fft(x_)
+    r_xx = np.real(np.fft.ifft(X*np.conj(X)))
+    r_xx = r_xx[:N]
+
     print("RecordingAnalyze voice_segmentation: Computed r_xx")
 
     peaks, _ = find_peaks(r_xx)
