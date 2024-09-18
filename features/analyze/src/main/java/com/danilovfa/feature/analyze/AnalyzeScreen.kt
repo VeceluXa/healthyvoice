@@ -24,7 +24,6 @@ import com.danilovfa.feature.analyze.waveform.RecordingWaveform
 import com.danilovfa.feature.analyze.model.AnalyzeParametersUi
 import com.danilovfa.feature.analyze.store.AnalyzeStore.Intent
 import com.danilovfa.feature.analyze.store.AnalyzeStore.State
-import com.danilovfa.feature.analyze.waveform.rememberWaveformController
 import com.danilovfa.resources.drawable.strings
 import com.danilovfa.uikit.composables.VSpacer
 import com.danilovfa.uikit.composables.dialog.AlertDialog
@@ -232,7 +231,8 @@ private fun Preview() {
                     frequency = 0,
                     channel = 0,
                     bitsPerSample = 0,
-                    bufferSize = 0
+                    bufferSize = 0,
+                    audioDurationMillis = 0
                 )
             ),
             onIntent = {}

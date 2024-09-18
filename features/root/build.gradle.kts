@@ -10,4 +10,5 @@ dependencies {
     implementation(project(":data:common"))
     implementation(project(":features:record"))
     implementation(project(":features:analyze"))
+    implementation(project(":features:cut"))
 }

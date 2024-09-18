@@ -8,5 +8,13 @@ data class AudioData(
     val frequency: Int,
     val channel: Int,
     val bitsPerSample: Int,
-    val bufferSize: Int
+    val bufferSize: Int,
+    val audioDurationMillis: Int,
+    val audioCut: AudioCut? = null
+)
+
+@Serializable
+data class AudioCut(
+    val startMillis: Int,
+    val endMillis: Int
 )

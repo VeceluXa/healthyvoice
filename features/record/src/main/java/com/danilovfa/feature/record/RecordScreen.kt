@@ -102,7 +102,9 @@ fun RecordScreen(
 
     ObserveRequestPermissionEvents(
         requestPermissionEvents = component.requestPermissionFlow,
-        onPermissionResult = { component.onIntent(Intent.OnPermissionStatusChanged(it)) }
+        onPermissionResult = {
+            component.onIntent(Intent.OnPermissionStatusChanged(it))
+        }
     )
 
     RecordLayout(

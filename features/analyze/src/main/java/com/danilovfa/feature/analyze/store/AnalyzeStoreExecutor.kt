@@ -61,22 +61,12 @@ internal class AnalyzeStoreExecutor : KoinComponent,
             .chunked(10)
             .map { chunk ->
                 chunk.average().roundToInt().toShort()
-//                ShortArrayAudioChunk(chunk.toShortArray())
-//                    .getMaxAmplitude(audioData.bufferSize)
-//                    .toShort()
             }
 
         dispatch(Msg.UpdateAmplitudes(amplitudes))
     }
 
     private suspend fun getParameters(rawData: Array<Short>) {
-        // Example
-//            val exampleParams = AnalyzeParametersUi(59.596046f, 34.73272f, 39.788563f, 1.0780922f, 0.6416628f, 0.7725709f, 0.865017f)
-//            dispatch(Msg.UpdateParameters(exampleParams))
-//            dispatch(Msg.UpdateLoading(false))
-//            return@launch
-
-
         if (Python.isStarted().not()) {
             Timber.tag(TAG).e("Python is not initialized!")
             publish(Label.ShowError())

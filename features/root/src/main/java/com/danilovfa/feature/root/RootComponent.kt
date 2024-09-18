@@ -3,6 +3,7 @@ package com.danilovfa.feature.root
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.Value
 import com.danilovfa.feature.analyze.AnalyzeComponent
+import com.danilovfa.feature.cut.CutComponent
 import com.danilovfa.feature.record.RecordComponent
 
 interface RootComponent {
@@ -11,6 +12,7 @@ interface RootComponent {
 
     sealed class Child {
         data class Record(val component: RecordComponent) : Child()
+        data class Cut(val component: CutComponent) : Child()
         data class Analyze(val component: AnalyzeComponent) : Child()
     }
 }

@@ -43,7 +43,7 @@ val appColorLightPalette: AppThemeColors = AppThemeColors(
         colorEnd = AppColor.grey_80,
     ),
 
-    mapRouteColor = AppColor.blue
+    graphSelect = AppColor.blue
 )
 
 val appTextSelectionColorsLightPalette = TextSelectionColors(

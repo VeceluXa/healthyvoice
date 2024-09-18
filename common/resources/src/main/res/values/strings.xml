@@ -7,6 +7,7 @@
     <string name="dismiss">Отменить</string>
     <string name="its_clear">Понятно</string>
     <string name="refresh">Обновить</string>
+    <string name="try_again">Попробовать еще раз</string>
     <string name="notifications">Уведомления</string>
     <string name="item_quantity">%d шт</string>
     <string name="item_volume">%d мл</string>
@@ -46,6 +47,12 @@
     <string name="record_help_dialog_description">Поднесите телефон ко рту и громко говорите 5 секунд, для правильной записи аудио.</string>
     <string name="record_wrong_format">Файл записи должен быть с расширением .wav</string>
     <!-- End Record Section -->
+
+    <!-- Start Cut Section -->
+    <string name="cut_title">Выделение отрезков</string>
+    <string name="cut_analyze_button">Анализировать запись</string>
+    <string name="cut_load_error">Что-то пошло не так при открытии записи</string>
+    <!-- End Cut Section -->
 
     <!-- Start Analyze Section -->
     <string name="analyze_title">Анализ</string>
