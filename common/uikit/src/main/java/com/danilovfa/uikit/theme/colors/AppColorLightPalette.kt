@@ -27,7 +27,7 @@ val appColorLightPalette: AppThemeColors = AppThemeColors(
     surfaceSuccess = AppColor.green_20.copy(alpha = 0.15f),
     onSurfaceSuccess = AppColor.green_100,
     error = AppColor.red_100,
-    indicator = AppColor.blue,
+    indicator = AppColor.blue_20,
 
     toggleBorderSelected = AppColor.black,
     toggleBorderUnselected = AppColor.grey_80,
@@ -43,7 +43,8 @@ val appColorLightPalette: AppThemeColors = AppThemeColors(
         colorEnd = AppColor.grey_80,
     ),
 
-    graphSelect = AppColor.blue
+    graphSelectBackground = AppColor.blue_20,
+    graphSelect = AppColor.blue_100
 )
 
 val appTextSelectionColorsLightPalette = TextSelectionColors(

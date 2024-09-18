@@ -112,7 +112,7 @@ private fun Preview() {
                     bitsPerSample = 0,
                     frequency = 0,
                     bufferSize = 0,
-                    channel = 1,
+                    channels = 1,
                     audioDurationMillis = 0
                 )
             ),

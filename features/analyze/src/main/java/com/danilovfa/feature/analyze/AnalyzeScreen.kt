@@ -99,7 +99,11 @@ private fun AnalyzeContent(
         VSpacer(AppDimension.layoutMainMargin)
         
         if (state.amplitudes.isNotEmpty()) {
-            RecordingWaveform(state.amplitudes)
+            RecordingWaveform(
+                amplitudes = state.amplitudes,
+                cut = state.audioData.audioCut,
+                durationMillis = state.audioData.audioDurationMillis
+            )
         } else {
             LargeShimmerItem(
                 height = WAVEFORM_HEIGHT_DP.dp,
@@ -229,7 +233,7 @@ private fun Preview() {
                 audioData = AudioData(
                     filename = UUID.randomUUID().toString(),
                     frequency = 0,
-                    channel = 0,
+                    channels = 0,
                     bitsPerSample = 0,
                     bufferSize = 0,
                     audioDurationMillis = 0

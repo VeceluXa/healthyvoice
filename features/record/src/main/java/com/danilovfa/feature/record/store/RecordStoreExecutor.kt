@@ -220,7 +220,7 @@ internal class RecordStoreExecutor : KoinComponent,
     ): AudioData = AudioData(
         filename = filename,
         frequency = config.frequency,
-        channel = when (config.channel) {
+        channels = when (config.channel) {
             AudioFormat.CHANNEL_IN_MONO -> 1
             else -> 2
         },
@@ -235,6 +235,6 @@ internal class RecordStoreExecutor : KoinComponent,
     companion object {
         private const val TAG = "RecordStore"
         private const val TIMER_DELAY = 50L
-        private const val END_TIME_MILLIS = 10000L
+        private const val END_TIME_MILLIS = 6_000L
     }
 }

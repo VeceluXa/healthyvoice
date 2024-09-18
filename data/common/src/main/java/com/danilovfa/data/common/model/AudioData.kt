@@ -6,12 +6,14 @@ import kotlinx.serialization.Serializable
 data class AudioData(
     val filename: String,
     val frequency: Int,
-    val channel: Int,
+    val channels: Int,
     val bitsPerSample: Int,
     val bufferSize: Int,
     val audioDurationMillis: Int,
     val audioCut: AudioCut? = null
-)
+) {
+    val byteRate = (bitsPerSample.toLong() / 8) * frequency * channels.toLong()
+}
 
 @Serializable
 data class AudioCut(

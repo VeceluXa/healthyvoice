@@ -51,7 +51,7 @@ fun CutGraph(
     val distanceBetweenAmplitudesPx = (graphWidthPx / amplitudes.size) / 3
     val amplitudeColor = AppTheme.colors.buttonSecondary
 
-    val cutColor = AppTheme.colors.graphSelect.copy(alpha = 0.5f)
+    val cutColor = AppTheme.colors.graphSelectBackground.copy(alpha = 0.5f)
 
     var startOffsetPx by remember {
         mutableStateOf(graphWidthPx / durationMillis * startOffsetMillis)
