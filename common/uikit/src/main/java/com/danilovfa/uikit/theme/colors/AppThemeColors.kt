@@ -41,7 +41,8 @@ data class AppThemeColors(
 
     val shimmerGradient: GradientColor,
 
-    val mapRouteColor: Color
+    val graphSelectBackground: Color,
+    val graphSelect: Color
 )
 
 data class GradientColor(

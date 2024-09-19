@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.danilovfa.feature.analyze.AnalyzeScreen
+import com.danilovfa.feature.cut.CutScreen
 import com.danilovfa.feature.record.RecordScreen
 import com.danilovfa.uikit.composables.snackbar.SnackbarHost
 
@@ -19,6 +20,7 @@ fun RootScreen(
             when (val child = it.instance) {
                 is RootComponent.Child.Analyze -> AnalyzeScreen(child.component)
                 is RootComponent.Child.Record -> RecordScreen(child.component)
+                is RootComponent.Child.Cut -> CutScreen(child.component)
             }
         }
     }

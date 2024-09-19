@@ -12,7 +12,12 @@ import com.danilovfa.libs.recorder.utils.AudioConstants
  * @param channel Channel for AudioRecord, such as [AudioFormat.CHANNEL_IN_MONO]
  * @param frequency Frequency of AudioRecord, such as 44100
  */
-data class AudioRecordConfig(val audioSource: Int, val audioEncoding: Int, val channel: Int, val frequency: Int) {
+data class AudioRecordConfig(
+    val audioSource: Int,
+    val audioEncoding: Int,
+    val channel: Int,
+    val frequency: Int
+) {
 
     companion object {
 
@@ -24,7 +29,7 @@ data class AudioRecordConfig(val audioSource: Int, val audioEncoding: Int, val c
             audioSource = MediaRecorder.AudioSource.VOICE_RECOGNITION,
             audioEncoding = AudioFormat.ENCODING_PCM_16BIT,
             channel = AudioFormat.CHANNEL_IN_MONO,
-            frequency = AudioConstants.FREQUENCY_44100
+            frequency = AudioConstants.FREQUENCY_44100,
         )
     }
 }

@@ -1,13 +1,11 @@
 package com.danilovfa.feature.record.store
 
 import android.content.Context
-import android.media.AudioFormat.CHANNEL_IN_MONO
-import android.media.AudioFormat.ENCODING_PCM_16BIT
+import android.media.AudioFormat
 import android.media.AudioRecord
 import android.net.Uri
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.danilovfa.core.base.presentation.event.PermissionStatus
-import com.danilovfa.core.library.log.LOG_TAG
 import com.danilovfa.core.library.text.Text
 import com.danilovfa.data.common.model.AudioData
 import com.danilovfa.data.record.domain.repository.RecordRepository
@@ -22,14 +20,17 @@ import com.danilovfa.libs.recorder.recorder.wav.WavHeader
 import com.danilovfa.libs.recorder.source.DefaultAudioSource
 import com.danilovfa.libs.recorder.writer.DefaultRecordWriter
 import com.danilovfa.resources.drawable.strings
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import timber.log.Timber
 import java.io.File
+import java.io.FileInputStream
 import java.util.UUID
 
 internal class RecordStoreExecutor : KoinComponent,
@@ -39,6 +40,11 @@ internal class RecordStoreExecutor : KoinComponent,
     private var recorder: AudioRecorder? = null
 
     private var recorderJob: Job? = null
+
+    /**
+     * Needed because compose calls permission change on screen creation
+     */
+    private var hasRecordClicked: Boolean = false
 
     override fun executeIntent(intent: Intent, getState: () -> State): Unit = when (intent) {
         Intent.OnRecordStartClicked -> onRecordClicked()
@@ -53,6 +59,7 @@ internal class RecordStoreExecutor : KoinComponent,
     }
 
     private fun onRecordClicked() {
+        hasRecordClicked = true
         publish(Label.RequestAudioPermission)
     }
 
@@ -61,14 +68,19 @@ internal class RecordStoreExecutor : KoinComponent,
             PermissionStatus.Denied -> publish(Label.ShowRationale)
 
             PermissionStatus.Granted -> {
-                dispatch(Msg.UpdatePlaying(true))
-                startRecording()
+                if (hasRecordClicked) {
+                    dispatch(Msg.UpdatePlaying(true))
+                    startRecording()
+                }
+                Unit
             }
 
             PermissionStatus.NeedsRationale -> publish(Label.ShowRationale)
         }
 
     private fun startRecording() {
+        hasRecordClicked = false
+
         val filename = "${UUID.randomUUID()}.wav"
         val file = File(recordRepository.getRecordingsDir(), filename)
 
@@ -88,25 +100,18 @@ internal class RecordStoreExecutor : KoinComponent,
 
 
         recorderJob?.cancel()
-        recorderJob = scope.launch {
-            launch {
+        scope.launch {
+            recorderJob = launch {
                 recorder?.startRecording()
             }
 
-            startTimer {
-                stopRecording()
-                publish(
-                    Label.Analyze(
-                        getAudioData(
-                            filename, config, audioSource.getBufferSize()
-                        )
-                    )
-                )
-            }
+            startTimer()
+            stopRecording()
+            publish(Label.Analyze(getAudioDataFromFile(file)))
         }
     }
 
-    private suspend fun startTimer(onCompleted: () -> Unit) {
+    private suspend fun startTimer() {
         val startTime = Clock.System.now()
         dispatch(Msg.UpdateRecordingStartTime(startTime))
 
@@ -116,8 +121,6 @@ internal class RecordStoreExecutor : KoinComponent,
             delay(TIMER_DELAY)
             currentTime = Clock.System.now()
         }
-
-        onCompleted()
     }
 
     private fun stopRecording() {
@@ -147,43 +150,91 @@ internal class RecordStoreExecutor : KoinComponent,
                                 publish(Label.ShowError(Text.Plain(it.message ?: "")))
                             }
                             .onSuccess { filename ->
-                                val config = WavHeader.getConfigFromHeader(bytes.copyOfRange(0, 45))
-                                val bufferSize = AudioRecord.getMinBufferSize(
-                                    config.frequency,
-                                    config.channel,
-                                    config.audioEncoding
+                                publish(
+                                    Label.Analyze(
+                                        getAudioDataFromHeader(
+                                            header = bytes.copyOfRange(0, WavHeader.HEADER_SIZE_BYTES + 1),
+                                            filename = filename
+                                        )
+                                    )
                                 )
-
-                                Timber.tag(LOG_TAG).d("Header: $config")
-
-                                publish(Label.Analyze(getAudioData(filename, config, bufferSize)))
                             }
                     }
             }
         }
     }
 
+    private suspend fun getAudioDataFromFile(
+        file: File
+    ): AudioData {
+        val header = ByteArray(WavHeader.HEADER_SIZE_BYTES)
+
+        withContext(Dispatchers.IO) {
+            FileInputStream(file).use {
+                it.read(header)
+            }
+        }
+
+        return getAudioDataFromHeader(
+            header = header,
+            filename = file.name
+        )
+    }
+
+    private fun getAudioDataFromHeader(
+        header: ByteArray,
+        filename: String,
+    ): AudioData {
+        val config = WavHeader.getConfigFromHeader(header)
+        val audioLength = WavHeader.getAudioLengthBytes(header)
+
+        val bufferSize = AudioRecord.getMinBufferSize(
+            config.frequency,
+            config.channel,
+            config.audioEncoding
+        )
+
+        val channels = if (config.channel == AudioFormat.CHANNEL_IN_MONO) 1 else 2
+        val bitsPerSample = when (config.audioEncoding) {
+            AudioFormat.ENCODING_PCM_16BIT -> 16
+            AudioFormat.ENCODING_PCM_8BIT -> 8
+            else -> 16
+        }.toByte()
+
+        val byteRate = (bitsPerSample.toLong() / 8) * config.frequency * channels.toLong()
+        val durationMillis = ((audioLength.toFloat() / byteRate) * 1000).toInt()
+
+        return getAudioData(
+            filename = filename,
+            config = config,
+            bufferSize = bufferSize,
+            durationMillis = durationMillis
+        )
+    }
+
     private fun getAudioData(
         filename: String,
         config: AudioRecordConfig,
-        bufferSize: Int
+        bufferSize: Int,
+        durationMillis: Int
     ): AudioData = AudioData(
         filename = filename,
         frequency = config.frequency,
-        channel = when (config.channel) {
-            CHANNEL_IN_MONO -> 1
+        channels = when (config.channel) {
+            AudioFormat.CHANNEL_IN_MONO -> 1
             else -> 2
         },
         bitsPerSample = when (config.audioEncoding) {
-            ENCODING_PCM_16BIT -> 16
+            AudioFormat.ENCODING_PCM_16BIT -> 16
             else -> 8
         },
-        bufferSize = bufferSize
+        bufferSize = bufferSize,
+        audioDurationMillis = durationMillis
     )
 
     companion object {
         private const val TAG = "RecordStore"
         private const val TIMER_DELAY = 50L
-        private const val END_TIME_MILLIS = 10000L
+        private const val END_TIME_MILLIS = 6_000L
     }
 }

@@ -5,6 +5,7 @@ import com.chaquo.python.PyObject
 import com.chaquo.python.Python
 import com.danilovfa.core.library.log.LOG_TAG
 import com.danilovfa.core.library.text.Text
+import com.danilovfa.data.common.model.AudioCut
 import com.danilovfa.data.common.model.AudioData
 import com.danilovfa.data.record.domain.repository.RecordRepository
 import com.danilovfa.feature.analyze.model.AnalyzeParametersUi
@@ -50,7 +51,7 @@ internal class AnalyzeStoreExecutor : KoinComponent,
             }
             dispatch(Msg.UpdateLoading(false))
 
-            scope.launch { getParameters(recordingRaw) }
+            scope.launch { getParameters(audioData, recordingRaw) }
             scope.launch { getWaveform(audioData, recordingRaw) }
         }
     }
@@ -61,22 +62,12 @@ internal class AnalyzeStoreExecutor : KoinComponent,
             .chunked(10)
             .map { chunk ->
                 chunk.average().roundToInt().toShort()
-//                ShortArrayAudioChunk(chunk.toShortArray())
-//                    .getMaxAmplitude(audioData.bufferSize)
-//                    .toShort()
             }
 
         dispatch(Msg.UpdateAmplitudes(amplitudes))
     }
 
-    private suspend fun getParameters(rawData: Array<Short>) {
-        // Example
-//            val exampleParams = AnalyzeParametersUi(59.596046f, 34.73272f, 39.788563f, 1.0780922f, 0.6416628f, 0.7725709f, 0.865017f)
-//            dispatch(Msg.UpdateParameters(exampleParams))
-//            dispatch(Msg.UpdateLoading(false))
-//            return@launch
-
-
+    private suspend fun getParameters(audioData: AudioData, rawData: Array<Short>) {
         if (Python.isStarted().not()) {
             Timber.tag(TAG).e("Python is not initialized!")
             publish(Label.ShowError())
@@ -86,7 +77,12 @@ internal class AnalyzeStoreExecutor : KoinComponent,
         val analyzer = Python.getInstance().getModule("signal_processor")
 
         try {
-            analyze(analyzer, rawData)
+            val cutData = audioData.audioCut?.let { cut ->
+                val (startIndex, endIndex) = getCutIndices(cut, audioData.byteRate)
+                rawData.copyOfRange(startIndex, endIndex + 1)
+            } ?: rawData
+
+            analyze(analyzer, cutData)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -138,6 +134,16 @@ internal class AnalyzeStoreExecutor : KoinComponent,
 
         dispatch(Msg.UpdateParameters(params))
 
+    }
+
+    /**
+     * @return (start, end) cut indices of rawData
+     */
+    private fun getCutIndices(cut: AudioCut, byteRate: Long): Pair<Int, Int> {
+        val startIndexByte = (cut.startMillis * byteRate / 1000).toInt()
+        val endIndexByte = (cut.endMillis * byteRate / 1000).toInt()
+
+        return Pair(startIndexByte / 2, endIndexByte / 2)
     }
 
     companion object {

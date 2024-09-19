@@ -18,10 +18,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import com.danilovfa.data.common.model.AudioCut
 import com.danilovfa.uikit.theme.AppTheme
 import timber.log.Timber
 import kotlin.math.abs
@@ -39,6 +41,8 @@ private const val BezierPerformanceLimit = 500
 @Composable
 internal fun RecordingWaveform(
     amplitudes: List<Short>,
+    cut: AudioCut?,
+    durationMillis: Int,
     modifier: Modifier = Modifier,
     brush: Brush = SolidColor(AppTheme.colors.buttonSecondary),
     bezierIntensity: Float = 0.35f,
@@ -80,9 +84,9 @@ internal fun RecordingWaveform(
                             .tag("Waveform")
                             .d("Amplitudes Size: ${waveformController.points.size}")
 
-                        scrollDelta = ((scrollDelta + pan.x) * zoom).coerceIn(-minScrollDelta..0f)
+                        scrollDelta = ((scrollDelta + pan.x) * zoom).coerceIn((-minScrollDelta + screenWidthPx)..0f)
                     } else {
-                        scrollDelta = (scrollDelta + pan.x).coerceIn(-minScrollDelta..0f)
+                        scrollDelta = (scrollDelta + pan.x).coerceIn((-minScrollDelta + screenWidthPx)..0f)
                     }
 
                     Timber
@@ -95,7 +99,9 @@ internal fun RecordingWaveform(
             points = waveformController.points, 
             scrollDelta = scrollDelta, 
             minScrollDelta = minScrollDelta,
-            brush = brush,
+            cut = cut,
+            durationMillis = durationMillis,
+            amplitudesBrush = brush,
             bezierIntensity = bezierIntensity,
             modifier = Modifier
                 .matchParentSize()
@@ -108,8 +114,11 @@ private fun Waveform(
     points: List<Float>,
     scrollDelta: Float,
     minScrollDelta: Float,
+    cut: AudioCut?,
+    durationMillis: Int,
     modifier: Modifier = Modifier,
-    brush: Brush = SolidColor(AppTheme.colors.buttonSecondary),
+    amplitudesBrush: Brush = SolidColor(AppTheme.colors.buttonSecondary),
+    cutBrush: Brush = SolidColor(AppTheme.colors.graphSelect),
     bezierIntensity: Float = 0.35f
 ) {
     val waveformHeightPx = with(LocalDensity.current) {
@@ -121,13 +130,13 @@ private fun Waveform(
         val spikesOnScreen = ceil(size.width / spikeDistance).toInt()
         val sideSpikesCount = ceil(spikesOnScreen / 2f).toInt()
 
-        val middleSpikeIndex = floor(-(scrollDelta / 2) / spikeDistance).toInt()
+        val middleSpikeIndex = floor((-scrollDelta + size.width / 2) / spikeDistance).toInt()
         val minVisibleSpikeIndex = middleSpikeIndex - sideSpikesCount
         val maxVisibleSpikeIndex =
-            middleSpikeIndex + (sideSpikesCount * OffscreenSpikesMultiplier)
+            middleSpikeIndex + (sideSpikesCount)// * OffscreenSpikesMultiplier)
         val spikesIndices = minVisibleSpikeIndex..maxVisibleSpikeIndex
 
-        val startX = scrollDelta % spikeDistance
+        val startX = 0f//scrollDelta % spikeDistance
         val path = Path().apply {
             if (spikesOnScreen > BezierPerformanceLimit) waveform(
                 amplitudes = points,
@@ -149,20 +158,52 @@ private fun Waveform(
 
         drawPath(
             path = path,
-            brush = brush,
+            brush = amplitudesBrush,
         )
-//            flip(FlipDirection.Vertical) {
-//                drawPath(
-//                    path = path,
-//                    brush = brush,
-//                )
-//            }
+
         drawLine(
-            brush = brush,
+            brush = amplitudesBrush,
             start = Offset(0f, size.center.y),
             end = Offset(size.width, size.center.y),
             strokeWidth = 1.dp.toPx(),
             cap = StrokeCap.Round,
+        )
+
+        cut?.let {
+            drawCutLines(
+                cut = cut,
+                durationMillis = durationMillis,
+                minScrollDelta = minScrollDelta,
+                scrollDelta = scrollDelta,
+                brush = cutBrush
+            )
+        }
+    }
+}
+
+private fun DrawScope.drawCutLines(
+    cut: AudioCut,
+    durationMillis: Int,
+    minScrollDelta: Float,
+    scrollDelta: Float,
+    brush: Brush
+) {
+    val startOffsetPx = cut.startMillis.toFloat() / durationMillis * minScrollDelta + scrollDelta
+    val endOffsetPx = cut.endMillis.toFloat() / durationMillis * minScrollDelta + scrollDelta
+
+    listOf(startOffsetPx, endOffsetPx).forEach { offset ->
+        drawLine(
+            brush = brush,
+            start = Offset(
+                x = offset,
+                y = 0f
+            ),
+            end = Offset(
+                x = offset,
+                y = WAVEFORM_HEIGHT_DP.dp.toPx()
+            ),
+            strokeWidth = 2.dp.toPx(),
+            cap = StrokeCap.Round
         )
     }
 }

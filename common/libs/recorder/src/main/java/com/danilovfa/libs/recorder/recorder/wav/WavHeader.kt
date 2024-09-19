@@ -61,6 +61,17 @@ object WavHeader {
         )
     }
 
+    fun getAudioLengthBytes(header: ByteArray): Int {
+        require(header.size >= HEADER_SIZE_BYTES) { "Header size is not valid!" }
+
+        val audioLength = (header[40].toInt() and 0xFF) or
+                ((header[41].toInt() and 0xFF) shl 8) or
+                ((header[42].toInt() and 0xFF) shl 16) or
+                ((header[43].toInt() and 0xFF) shl 24)
+
+        return audioLength
+    }
+
     private fun wavFileHeader(
         totalAudioLen: Long, totalDataLen: Long, longSampleRate: Long,
         channels: Int, byteRate: Long, bitsPerSample: Byte
