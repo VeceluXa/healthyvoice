@@ -97,7 +97,7 @@ def voice_parameters(data, segments):
     print("RecordingAnalyze voice_parameters: Start processing")
 
     periods = np.array(segments[1:]) - np.array(segments[:-1])
-    amplitudes = np.zeros_like(periods, dtype=data.dtype)
+    amplitudes = np.zeros(len(periods), dtype=np.float64)
 
     for i in range(len(segments)-1):
         start_idx = segments[i]
