@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import soundfile as sf
 from scipy.signal import find_peaks, firwin
-
+import numba
 
 def voice_segmentation(data,fs):    
 
@@ -94,47 +94,51 @@ def perturbation_L(data, L):
     return PPQ_L
 
 def voice_parameters(data, segments):
-    periods = []
-    amplitudes = []
-
     print("RecordingAnalyze voice_parameters: Start processing")
+
+    periods = np.array(segments[1:]) - np.array(segments[:-1])
+    amplitudes = np.zeros_like(periods, dtype=data.dtype)
 
     for i in range(len(segments)-1):
         start_idx = segments[i]
         end_idx = segments[i+1]
-        period = end_idx - start_idx
-        periods.append(period)
 
         # Нахождение минимального и максимального значения амплитуды в периоде
-        min_amplitude = np.min(data[start_idx:end_idx])
-        max_amplitude = np.max(data[start_idx:end_idx])
+        min_amplitude,max_amplitude = minmax_np(data[start_idx:end_idx])
 
         # Вычисление амплитуды в периоде
-        amplitude = max_amplitude - min_amplitude
-        amplitudes.append(amplitude)
+        amplitudes[i] = max_amplitude - min_amplitude          
         
-    print("RecordingAnalyze voice_parameters: Calculated amplitudes")
-    
-    
 
-    J1 = perturbation_L(np.array(periods), 1)
-    print("RecordingAnalyze voice_parameters: Calculated J1")
+    J1 = perturbation_L(periods, 1)    
     
-    J3 = perturbation_L(np.array(periods), 3)
-    print("RecordingAnalyze voice_parameters: Calculated J3")
-    J5 = perturbation_L(np.array(periods), 5)
-    print("RecordingAnalyze voice_parameters: Calculated J5")
+    J3 = perturbation_L(periods, 3)
+    
+    J5 = perturbation_L(periods, 5)
 
-    S1 = perturbation_L(np.array(amplitudes), 1)
-    print("RecordingAnalyze voice_parameters: Calculated S1")
+    S1 = perturbation_L(amplitudes, 1)
     
-    S3 = perturbation_L(np.array(amplitudes), 3)
-    print("RecordingAnalyze voice_parameters: Calculated S3")
+    S3 = perturbation_L(amplitudes, 3)
     
-    S5 = perturbation_L(np.array(amplitudes), 5)
-    print("RecordingAnalyze voice_parameters: Calculated S5")
+    S5 = perturbation_L(amplitudes, 5)
     
-    S11 = perturbation_L(np.array(amplitudes), 11)
-    print("RecordingAnalyze voice_parameters: Calculated S11")
+    S11 = perturbation_L(amplitudes, 11)    
 
+    print("RecordingAnalyze voice_parameters: Finish processing")
     return J1, J3, J5, S1, S3, S5, S11
+  
+@numba.jit
+def minmax(x):
+    maximum = x[0]
+    minimum = x[0]
+    for i in x[1:]:
+        if i > maximum:
+            maximum = i
+        elif i < minimum:
+            minimum = i
+    return (minimum, maximum)
+
+def minmax_np(x):
+    maximum = np.max(x)
+    minimum = np.min(x)            
+    return (minimum, maximum)
