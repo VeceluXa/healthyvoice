@@ -62,6 +62,7 @@ chaquopy {
             install("matplotlib")
             install("soundfile")
             install("scipy")
+            install("numba")
         }
     }
 }

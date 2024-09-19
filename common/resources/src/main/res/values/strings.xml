@@ -49,7 +49,7 @@
     <!-- End Record Section -->
 
     <!-- Start Cut Section -->
-    <string name="cut_title">Выделение отрезков</string>
+    <string name="cut_title">Выбор сегмента для анализа</string>
     <string name="cut_analyze_button">Анализировать запись</string>
     <string name="cut_load_error">Что-то пошло не так при открытии записи</string>
     <!-- End Cut Section -->

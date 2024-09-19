@@ -36,6 +36,7 @@
             <option value="$PROJECT_DIR$/data/record" />
             <option value="$PROJECT_DIR$/features" />
             <option value="$PROJECT_DIR$/features/analyze" />
+            <option value="$PROJECT_DIR$/features/cut" />
             <option value="$PROJECT_DIR$/features/record" />
             <option value="$PROJECT_DIR$/features/root" />
           </set>
