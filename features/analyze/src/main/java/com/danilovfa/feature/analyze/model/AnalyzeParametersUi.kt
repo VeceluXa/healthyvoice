@@ -56,13 +56,13 @@ internal fun AnalyzeParametersUi.toParametersData(): List<ParameterDataUi> = lis
         normMax = 2.9f
     ),
     ParameterDataUi(
-        label = "DPF [%]",
+        label = "F0 [Hz]",
         value = f0Mean,
         normMin = 0.1f,
         normMax = 4.2f
     ),
     ParameterDataUi(
-        label = "DF F0 [Hz]",
+        label = "SD F0 [Hz]",
         value = f0Sd,
         normMin = 5.1f,
         normMax = 20.9f
