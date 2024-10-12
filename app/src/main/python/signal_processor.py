@@ -69,6 +69,7 @@ def WM_method(x, x_filtered, fs, I_N):
     fs – sampling frequency
     I_N – rough marking of the input signal
     """
+    x = np.array(x)
     PERC = 0.05
     Nc = len(I_N)
     F0 = np.zeros(Nc - 3)
@@ -147,6 +148,7 @@ def perturbation_L(data, L):
 
 def voice_parameters(data, segments, F0):
     print("RecordingAnalyze voice_parameters: Start processing")
+    data = np.array(data)
 
     periods = np.array(segments[1:]) - np.array(segments[:-1])
     amplitudes = np.zeros_like(periods, dtype=data.dtype)

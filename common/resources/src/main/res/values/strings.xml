@@ -60,5 +60,6 @@
     <string name="analyze_back_confirm_title">Вернуться назад?</string>
     <string name="analyze_back_confirm_text">Вы потеряете текущую запись и анализ!</string>
     <string name="analyze_voice_parameters">Параметры голоса</string>
+    <string name="analyze_norm">Норма</string>
     <!-- End Analyze Section -->
 </resources>

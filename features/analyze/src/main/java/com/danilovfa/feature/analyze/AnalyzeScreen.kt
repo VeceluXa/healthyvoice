@@ -1,6 +1,7 @@
 package com.danilovfa.feature.analyze
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -22,6 +24,8 @@ import com.danilovfa.data.common.model.AudioData
 import com.danilovfa.feature.analyze.waveform.WAVEFORM_HEIGHT_DP
 import com.danilovfa.feature.analyze.waveform.RecordingWaveform
 import com.danilovfa.feature.analyze.model.AnalyzeParametersUi
+import com.danilovfa.feature.analyze.model.ParameterDataUi
+import com.danilovfa.feature.analyze.model.toParametersData
 import com.danilovfa.feature.analyze.store.AnalyzeStore.Intent
 import com.danilovfa.feature.analyze.store.AnalyzeStore.State
 import com.danilovfa.resources.drawable.strings
@@ -145,41 +149,22 @@ private fun ParametersContent(
         modifier = modifier
             .fillMaxWidth()
     ) {
-        ParameterItem(
-            label = "J1",
-            value = parameters.j1,
-            backgroundColor = primaryBackgroundColor
-        )
-        ParameterItem(
-            label = "J3",
-            value = parameters.j3,
-            backgroundColor = secondaryBackgroundColor
-        )
-        ParameterItem(
-            label = "J5",
-            value = parameters.j5,
-            backgroundColor = primaryBackgroundColor
-        )
-        ParameterItem(
-            label = "S1",
-            value = parameters.s1,
-            backgroundColor = secondaryBackgroundColor
-        )
-        ParameterItem(
-            label = "S3",
-            value = parameters.s3,
-            backgroundColor = primaryBackgroundColor
-        )
-        ParameterItem(
-            label = "S5",
-            value = parameters.s5,
-            backgroundColor = secondaryBackgroundColor
-        )
-        ParameterItem(
-            label = "S11",
-            value = parameters.s11,
-            backgroundColor = primaryBackgroundColor
-        )
+        Row(Modifier.fillMaxWidth()) {
+            Box(Modifier.weight(4f / 6f))
+            Text(
+                text = stringResource(strings.analyze_norm),
+                textAlign = TextAlign.Center,
+                style = AppTypography.titleMedium20,
+                modifier = Modifier.weight(2f / 6f)
+            )
+        }
+
+        parameters.toParametersData().forEachIndexed { index, parameterDataUi ->
+            ParameterItem(
+                data = parameterDataUi,
+                backgroundColor = if (index % 2 == 0) primaryBackgroundColor else secondaryBackgroundColor
+            )
+        }
     }
 }
 
@@ -189,7 +174,7 @@ private fun ParametersLoader(modifier: Modifier = Modifier) {
         modifier = modifier
             .padding(horizontal = AppDimension.layoutHorizontalMargin)
     ) {
-        repeat(7) {
+        repeat(9) {
             ShimmerItem(
                 size = DpSize(
                     width = (100..140).random().dp,
@@ -203,8 +188,7 @@ private fun ParametersLoader(modifier: Modifier = Modifier) {
 
 @Composable
 private fun ParameterItem(
-    label: String,
-    value: Float,
+    data: ParameterDataUi,
     modifier: Modifier = Modifier,
     backgroundColor: Color = AppTheme.colors.backgroundPrimary
 ) {
@@ -218,9 +202,33 @@ private fun ParameterItem(
             )
     ) {
         Text(
-            text = "${label}: " + "%.2f".format(value),
-            style = AppTypography.bodyRegular16
+            text = data.label,
+            style = AppTypography.bodyMedium16,
+            modifier = Modifier.weight(1f)
         )
+
+        Row(modifier = Modifier.weight(1f)) {
+            Text(
+                text = "%.2f".format(data.value),
+                textAlign = TextAlign.Center,
+                style = AppTypography.bodyRegular16,
+                modifier = Modifier.weight(1f)
+            )
+
+            Text(
+                text = "%.2f".format(data.normMin),
+                textAlign = TextAlign.Center,
+                style = AppTypography.bodyRegular16,
+                modifier = Modifier.weight(1f)
+            )
+
+            Text(
+                text = "%.2f".format(data.normMax),
+                textAlign = TextAlign.Center,
+                style = AppTypography.bodyRegular16,
+                modifier = Modifier.weight(1f)
+            )
+        }
     }
 }
 

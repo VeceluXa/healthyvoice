@@ -98,14 +98,18 @@ internal class AnalyzeStoreExecutor : KoinComponent,
 
         val pySegments = withContext(Dispatchers.Default) {
             analyzer.callAttr("voice_segmentation", recordingRaw, AudioConstants.FREQUENCY_44100)
-        }
+        }.asList()
+
+        val pyWmMethod = withContext(Dispatchers.Default) {
+            analyzer.callAttr("WM_method", recordingRaw, pySegments[1], AudioConstants.FREQUENCY_44100, pySegments[0])
+        }.asList()
 
         Timber.tag(TAG)
             .d("voice_segmentation: ${Clock.System.now().toEpochMilliseconds() - startTime} ms")
         startTime = Clock.System.now().toEpochMilliseconds()
 
         val pyParams = withContext(Dispatchers.Default) {
-            analyzer.callAttr("voice_parameters", recordingRaw, pySegments)
+            analyzer.callAttr("voice_parameters", recordingRaw, pyWmMethod[1], pyWmMethod[0])
         }
 
         Timber.tag(TAG)
@@ -128,6 +132,8 @@ internal class AnalyzeStoreExecutor : KoinComponent,
             s3 = paramsList.getOrNull(4) ?: 0f,
             s5 = paramsList.getOrNull(5) ?: 0f,
             s11 = paramsList.getOrNull(6) ?: 0f,
+            f0Mean = paramsList.getOrNull(7) ?: 0f,
+            f0Sd = paramsList.getOrNull(8) ?: 0f
         )
 
         Timber.tag(TAG).d("Params: $params")
