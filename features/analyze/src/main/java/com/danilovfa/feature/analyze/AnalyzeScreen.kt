@@ -30,6 +30,7 @@ import com.danilovfa.feature.analyze.store.AnalyzeStore.Intent
 import com.danilovfa.feature.analyze.store.AnalyzeStore.State
 import com.danilovfa.resources.drawable.strings
 import com.danilovfa.uikit.composables.VSpacer
+import com.danilovfa.uikit.composables.WSpacer
 import com.danilovfa.uikit.composables.dialog.AlertDialog
 import com.danilovfa.uikit.composables.event.ObserveEvents
 import com.danilovfa.uikit.composables.state.LargeShimmerItem
@@ -215,19 +216,23 @@ private fun ParameterItem(
                 modifier = Modifier.weight(1f)
             )
 
-            Text(
-                text = "%.2f".format(data.normMin),
-                textAlign = TextAlign.Center,
-                style = AppTypography.bodyRegular16,
-                modifier = Modifier.weight(1f)
-            )
+            data.normMin?.let { normMin ->
+                Text(
+                    text = "%.2f".format(normMin),
+                    textAlign = TextAlign.Center,
+                    style = AppTypography.bodyRegular16,
+                    modifier = Modifier.weight(1f)
+                )
+            } ?: WSpacer()
 
-            Text(
-                text = "%.2f".format(data.normMax),
-                textAlign = TextAlign.Center,
-                style = AppTypography.bodyRegular16,
-                modifier = Modifier.weight(1f)
-            )
+            data.normMax?.let { normMax ->
+                Text(
+                    text = "%.2f".format(normMax),
+                    textAlign = TextAlign.Center,
+                    style = AppTypography.bodyRegular16,
+                    modifier = Modifier.weight(1f)
+                )
+            } ?: WSpacer()
         }
     }
 }

@@ -16,55 +16,55 @@ internal fun AnalyzeParametersUi.toParametersData(): List<ParameterDataUi> = lis
     ParameterDataUi(
         label = "Jitter:loc [%]",
         value = j1,
-        normMin = 1.1f,
-        normMax = 7.3f
+        normMin = 0.10f,
+        normMax = 1.61f
     ),
     ParameterDataUi(
         label = "Jitter:rap [%]",
         value = j3,
-        normMin = 1.1f,
-        normMax = 7.3f
+        normMin = 0.07f,
+        normMax = 0.99f
     ),
     ParameterDataUi(
         label = "Jitter:ppq5 [%]",
         value = j5,
-        normMin = 1.1f,
-        normMax = 7.3f
+        normMin = 0.09f,
+        normMax = 0.89f
     ),
     ParameterDataUi(
         label = "Shimmer:loc [%]",
         value = s1,
-        normMin = 1.1f,
-        normMax = 7.3f
+        normMin = 0.88f,
+        normMax = 11.22f
     ),
     ParameterDataUi(
         label = "Shimmer:apq3 [%]",
         value = s3,
-        normMin = 0.9f,
-        normMax = 5.3f
+        normMin = 0.45f,
+        normMax = 5.71f
     ),
     ParameterDataUi(
         label = "Shimmer:apq5 [%]",
         value = s5,
-        normMin = 1.1f,
-        normMax = 7.3f
+        normMin = 0.50f,
+        normMax = 6.99f
     ),
     ParameterDataUi(
         label = "Shimmer:apq11 [%]",
         value = s11,
-        normMin = 1.1f,
-        normMax = 2.9f
+        normMin = 0.80f,
+        normMax = 11.71f
     ),
     ParameterDataUi(
         label = "F0 [Hz]",
         value = f0Mean,
-        normMin = 0.1f,
-        normMax = 4.2f
+        normMin = null,
+        normMax = null
     ),
     ParameterDataUi(
         label = "SD F0 [Hz]",
         value = f0Sd,
-        normMin = 5.1f,
-        normMax = 20.9f
+        normMin = null,
+        normMax = null
     )
 )
