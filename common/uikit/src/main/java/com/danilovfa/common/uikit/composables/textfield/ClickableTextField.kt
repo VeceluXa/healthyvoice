@@ -16,7 +16,7 @@ import com.danilovfa.common.uikit.composables.text.Text
 import com.danilovfa.common.uikit.theme.AppTypography
 
 @Composable
-fun LargeSelectableTextField(
+fun ClickableTextFieldLarge(
     value: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -68,7 +68,7 @@ fun LargeSelectableTextField(
 }
 
 @Composable
-fun SelectableTextField(
+fun ClickableTextField(
     value: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,

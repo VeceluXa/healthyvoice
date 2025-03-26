@@ -35,6 +35,7 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -72,11 +73,14 @@ dependencies {
     implementation(project(":feature:root:presentation"))
     implementation(project(":common:uikit"))
     implementation(project(":common:libs:recorder"))
-    implementation(project(":feature:record:data"))
 
     implementation(project(":common:base"))
     implementation(project(":common:core:presentation"))
     implementation(project(":common:core:domain"))
+
+    implementation(project(":feature:common:data"))
+    implementation(project(":feature:patient:data"))
+    implementation(project(":feature:record:data"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle)

@@ -7,6 +7,7 @@ internal object AppColor {
     val black_80 = Color(0xFF1C1B1B)
 
     val white_100 = Color(0xFFFFFFFF)
+    val white_90 = Color(0xFFF1F3F0)
     val white_80 = Color(0xFFEEEDED)
     val white_60 = Color(0xFFB7B7B7)
 

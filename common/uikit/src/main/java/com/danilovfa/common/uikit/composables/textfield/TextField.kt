@@ -111,7 +111,7 @@ fun TextField(
 
 @Suppress("LongParameterList")
 @Composable
-fun OutlinedTextField(
+fun TextFieldOutlined(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -210,7 +210,7 @@ fun TextField(
 
 @Suppress("LongParameterList")
 @Composable
-fun LargeTextField(
+fun TextFieldLarge(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -236,7 +236,7 @@ fun LargeTextField(
     var textFieldValueState by remember { mutableStateOf(TextFieldValue(text = value)) }
     val textFieldValue = textFieldValueState.copy(text = value)
 
-    LargeTextField(
+    TextFieldLarge(
         value = textFieldValue,
         onValueChange = { fieldValue ->
             textFieldValueState = fieldValue
@@ -268,7 +268,7 @@ fun LargeTextField(
 
 @Suppress("LongParameterList")
 @Composable
-fun LargeTextField(
+fun TextFieldLarge(
     value: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit,
     modifier: Modifier = Modifier,
@@ -324,7 +324,7 @@ fun LargeTextField(
 
 @Suppress("LongParameterList")
 @Composable
-fun LargeOutlinedTextField(
+fun TextFieldOutlinedLarge(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -344,7 +344,7 @@ fun LargeOutlinedTextField(
     maxLines: Int = Int.MAX_VALUE,
     colors: TextFieldColors = AppTextFieldDefaults.outlinedTextFieldColors(),
 ) {
-    OutlinedTextField(
+    TextFieldOutlined(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier
@@ -562,19 +562,19 @@ private fun TextFieldPreview(@PreviewParameter(ThemePreviewParameter::class) isD
                 .padding(8.dp)
                 .background(AppTheme.colors.background)
         ) {
-            LargeTextField(
+            TextFieldLarge(
                 value = "With label",
                 onValueChange = {},
                 labelText = "Text Field",
                 trailingIcon = { Icon(AppIcon.Clear, "Clear") },
             )
-            LargeTextField(
+            TextFieldLarge(
                 value = "",
                 onValueChange = {},
                 labelText = "Text Field",
                 trailingIcon = { Icon(AppIcon.Clear, "Clear") },
             )
-            LargeTextField(
+            TextFieldLarge(
                 value = "With label",
                 onValueChange = {},
                 labelText = "Text Field",

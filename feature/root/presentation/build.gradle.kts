@@ -1,5 +1,5 @@
 plugins {
-    id("com.danilovfa.android.feature")
+    id("com.danilovfa.android.library.presentation")
 }
 
 android {
@@ -9,6 +9,7 @@ android {
 dependencies {
     implementation(project(":feature:record:domain"))
     implementation(project(":feature:record:presentation"))
-    implementation(project(":feature:analyze:presentation"))
+    implementation(project(":feature:analysis:presentation"))
+    implementation(project(":feature:patient:presentation"))
     implementation(project(":feature:cut:presentation"))
 }

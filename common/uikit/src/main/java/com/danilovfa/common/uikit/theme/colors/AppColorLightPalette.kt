@@ -6,7 +6,7 @@ val appColorLightPalette: AppThemeColors = AppThemeColors(
     background = AppColor.white_100,
     onBackground = AppColor.black_100,
 
-    surface = AppColor.white_80,
+    surface = AppColor.white_90,
     surfaceDisabled = AppColor.grey_10,
     onSurface = AppColor.black_100,
 

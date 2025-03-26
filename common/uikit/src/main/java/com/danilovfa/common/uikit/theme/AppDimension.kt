@@ -15,6 +15,7 @@ object AppDimension {
     val layoutMargin36: Dp = 36.dp
     val toolbarHorizontalMargin: Dp = 20.dp
     val minTouchSize: Dp = 48.dp
+    val iconSize: Dp = 24.dp
     val buttonHeight: Dp = 56.dp
 
     val bannersWidth: Dp = 168.dp

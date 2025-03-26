@@ -13,8 +13,10 @@ import com.danilovfa.presentation.cut.CutComponent
 import com.danilovfa.presentation.cut.DefaultCutComponent
 import com.danilovfa.presentation.record.DefaultRecordComponent
 import com.danilovfa.presentation.record.RecordComponent
-import com.danilovfa.presentation.analyze.AnalyzeComponent
-import com.danilovfa.presentation.analyze.DefaultAnalyzeComponent
+import com.danilovfa.presentation.analysis.AnalyzeComponent
+import com.danilovfa.presentation.analysis.DefaultAnalyzeComponent
+import com.danilovfa.presentation.patient.root.DefaultRootPatientComponent
+import com.danilovfa.presentation.patient.root.RootPatientComponent
 import com.danilovfa.presentation.root.RootComponent.Child
 import kotlinx.serialization.Serializable
 
@@ -27,7 +29,7 @@ class DefaultRootComponent(
     private val stack = childStack(
         source = navigation,
         serializer = Config.serializer(),
-        initialConfiguration = Config.Record,
+        initialStack = { listOf(Config.Patient) },
         handleBackButton = false,
         childFactory = ::child
     )
@@ -60,6 +62,14 @@ class DefaultRootComponent(
                 output = ::onAnalyzeOutput
             )
         )
+
+        Config.Patient -> Child.Patient(
+            DefaultRootPatientComponent(
+                storeFactory = storeFactory,
+                componentContext = componentContext,
+                output = ::onPatientOutput
+            )
+        )
     }
 
     private fun onRecordOutput(output: RecordComponent.Output) = when (output) {
@@ -75,6 +85,11 @@ class DefaultRootComponent(
         AnalyzeComponent.Output.NavigateBack -> navigation.pop()
     }
 
+    private fun onPatientOutput(output: RootPatientComponent.Output) = when (output) {
+        is RootPatientComponent.Output.NavigateAnalysis -> TODO()
+        is RootPatientComponent.Output.NavigateRecord -> navigation.pushNew(Config.Record)
+    }
+
     @Serializable
     sealed class Config {
 
@@ -86,5 +101,8 @@ class DefaultRootComponent(
 
         @Serializable
         data class Analyze(val audioData: AudioData) : Config()
+
+        @Serializable
+        data object Patient : Config()
     }
 }

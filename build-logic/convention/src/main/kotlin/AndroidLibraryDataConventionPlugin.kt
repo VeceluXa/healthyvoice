@@ -16,9 +16,10 @@ class AndroidLibraryDataConventionPlugin : Plugin<Project> {
                 add("implementation", project(":common:core:domain"))
                 add("implementation", project(":common:core:data"))
                 add("implementation", libs.findBundle("koin").get())
-                add("implementation", libs.findLibrary("timber").get())
+                add("implementation", libs.findLibrary("kotlin.datetime").get())
+                add("implementation", libs.findLibrary("kotlin.coroutines").get())
                 add("implementation", libs.findLibrary("kotlin.serialization.json").get())
-                add("implementation", libs.findLibrary("androidx.datastore").get())
+                add("implementation", libs.findLibrary("timber").get())
             }
         }
     }

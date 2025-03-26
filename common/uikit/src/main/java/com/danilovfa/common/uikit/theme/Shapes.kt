@@ -40,7 +40,7 @@ val Shapes.largeShimmer: CornerBasedShape
     get() = RoundedCornerShape(12.dp)
 
 val Shapes.tiny: CornerBasedShape
-    get() = RoundedCornerShape(12.dp)
+    get() = RoundedCornerShape(6.dp)
 
 val Shapes.micro: CornerBasedShape
     get() = RoundedCornerShape(4.dp)

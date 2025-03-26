@@ -7,7 +7,8 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.danilovfa.presentation.cut.CutScreen
 import com.danilovfa.presentation.record.RecordScreen
 import com.danilovfa.common.uikit.composables.snackbar.SnackbarHost
-import com.danilovfa.presentation.analyze.AnalyzeScreen
+import com.danilovfa.presentation.analysis.AnalyzeScreen
+import com.danilovfa.presentation.patient.root.RootPatientScreen
 
 @Composable
 fun RootScreen(
@@ -21,6 +22,7 @@ fun RootScreen(
                 is RootComponent.Child.Analyze -> AnalyzeScreen(child.component)
                 is RootComponent.Child.Record -> RecordScreen(child.component)
                 is RootComponent.Child.Cut -> CutScreen(child.component)
+                is RootComponent.Child.Patient -> RootPatientScreen(child.component)
             }
         }
     }

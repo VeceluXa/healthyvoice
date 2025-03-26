@@ -38,12 +38,8 @@ gradlePlugin {
             implementationClass = "AndroidLibraryDataConventionPlugin"
         }
         register("androidFeature") {
-            id = "com.danilovfa.android.feature"
-            implementationClass = "AndroidFeatureConventionPlugin"
-        }
-        register("androidLibraryCore") {
-            id = "com.danilovfa.android.library.core"
-            implementationClass = "AndroidLibraryCoreConventionPlugin"
+            id = "com.danilovfa.android.library.presentation"
+            implementationClass = "AndroidLibraryPresentationConventionPlugin"
         }
         register("kotlinLibrary") {
             id = "com.danilovfa.kotlin.library"

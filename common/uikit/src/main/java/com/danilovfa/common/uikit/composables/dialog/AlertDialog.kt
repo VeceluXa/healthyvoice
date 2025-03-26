@@ -46,7 +46,7 @@ import com.danilovfa.common.uikit.composables.button.OutlinedButton
 import com.danilovfa.common.uikit.composables.button.TextButtonLarge
 import com.danilovfa.common.uikit.composables.text.Text
 import com.danilovfa.common.uikit.composables.textfield.AppTextFieldDefaults
-import com.danilovfa.common.uikit.composables.textfield.LargeOutlinedTextField
+import com.danilovfa.common.uikit.composables.textfield.TextFieldOutlinedLarge
 import com.danilovfa.common.uikit.modifier.noRippleClickable
 import com.danilovfa.common.uikit.theme.AppDimension
 import com.danilovfa.common.uikit.theme.AppTheme
@@ -351,7 +351,7 @@ private fun TextFieldAlertDialog(
                 )
             }
             VSpacer(8.dp)
-            LargeOutlinedTextField(
+            TextFieldOutlinedLarge(
                 value = textFieldValue,
                 onValueChange = {
                     if (validateText(it)) {
