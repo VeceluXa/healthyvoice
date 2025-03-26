@@ -22,19 +22,21 @@ dependencyResolutionManagement {
 
 rootProject.name = "Healthy Voice"
 include(":app")
+
+include(":common:core:data")
+include(":common:core:domain")
 include(":common:core:presentation")
+
+include(":common:base")
 include(":common:uikit")
 include(":common:resources")
-include(":feature:root:presentation")
-include(":feature:analyze:presentation")
-include(":common:libs:recorder")
-include(":data:common")
-include(":feature:cut:presentation")
-include(":feature:common:domain")
-include(":common:core:domain")
-include(":common:core:data")
-include(":common:base")
 
+include(":common:libs:recorder")
+
+include(":feature:root:presentation")
+include(":feature:common:domain")
+include(":feature:analyze:presentation")
 include(":feature:record:domain")
 include(":feature:record:data")
 include(":feature:record:presentation")
+include(":feature:cut:presentation")

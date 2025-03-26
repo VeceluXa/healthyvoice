@@ -7,6 +7,5 @@ android {
 }
 
 dependencies {
-    implementation(project(":data:common"))
     implementation(project(":feature:record:domain"))
 }
