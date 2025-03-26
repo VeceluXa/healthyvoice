@@ -22,6 +22,7 @@
     <string name="lease">Аренда</string>
     <string name="comment">Комментарий</string>
     <string name="save">Сохранить</string>
+    <string name="choose_time">Выбрать время</string>
     <!-- End General Section -->
 
     <!-- Start Error Section -->
@@ -30,6 +31,7 @@
     <string name="something_went_wrong">Что-то пошло не так</string>
     <string name="network_error_title">Нет Интернет соединения</string>
     <string name="network_error_description">Проверьте Ваше Интернет соединение и обновите страницу</string>
+    <string name="error_message">Попробуйте обновить или зайти чуть позже.</string>
     <!-- End Error Section -->
 
     <!-- Start To-Do section -->

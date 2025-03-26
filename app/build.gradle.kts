@@ -2,16 +2,17 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.chaquo)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
     namespace = "com.danilovfa.healthyvoice"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.danilovfa.healthyvoice"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -68,11 +69,14 @@ chaquopy {
 }
 
 dependencies {
-    implementation(project(":features:root"))
+    implementation(project(":feature:root:presentation"))
     implementation(project(":common:uikit"))
-    implementation(project(":common:core"))
     implementation(project(":common:libs:recorder"))
-    implementation(project(":data:record"))
+    implementation(project(":feature:record:data"))
+
+    implementation(project(":common:base"))
+    implementation(project(":common:core:presentation"))
+    implementation(project(":common:core:domain"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle)

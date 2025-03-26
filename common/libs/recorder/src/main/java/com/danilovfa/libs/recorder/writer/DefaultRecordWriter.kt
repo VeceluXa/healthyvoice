@@ -1,7 +1,8 @@
 package com.danilovfa.libs.recorder.writer
 
 import android.media.AudioRecord
-import com.danilovfa.core.library.log.LOG_TAG
+import co.touchlab.kermit.Logger
+import com.danilovfa.common.core.domain.log.LOG_TAG
 import com.danilovfa.libs.recorder.chunk.AudioChunk
 import com.danilovfa.libs.recorder.chunk.ByteArrayAudioChunk
 import com.danilovfa.libs.recorder.chunk.checkChunkAvailable
@@ -9,7 +10,6 @@ import com.danilovfa.libs.recorder.source.AudioSource
 import com.danilovfa.libs.recorder.source.DefaultAudioSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import java.io.OutputStream
 
 open class DefaultRecordWriter(
@@ -31,7 +31,7 @@ open class DefaultRecordWriter(
 
     override fun stopRecording() {
         if (confirmStart.not()) {
-            Timber.tag(LOG_TAG).e("Tried to stopRecording() before initialization!")
+            Logger.withTag(LOG_TAG).e("Tried to stopRecording() before initialization!")
             return
         }
 
@@ -62,5 +62,9 @@ open class DefaultRecordWriter(
                 outputStream.write(audioChunk.bytes)
             }
         }
+    }
+
+    companion object {
+        private const val LOG_TAG = ""
     }
 }

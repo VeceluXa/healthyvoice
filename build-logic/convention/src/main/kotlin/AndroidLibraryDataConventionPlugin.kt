@@ -13,7 +13,8 @@ class AndroidLibraryDataConventionPlugin : Plugin<Project> {
             }
 
             dependencies {
-                add("implementation", project(":common:core"))
+                add("implementation", project(":common:core:domain"))
+                add("implementation", project(":common:core:data"))
                 add("implementation", libs.findBundle("koin").get())
                 add("implementation", libs.findLibrary("timber").get())
                 add("implementation", libs.findLibrary("kotlin.serialization.json").get())

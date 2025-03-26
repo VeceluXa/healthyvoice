@@ -1,12 +1,7 @@
 package com.danilovfa.libs.recorder.chunk
 
-import com.danilovfa.core.library.log.LOG_TAG
-import timber.log.Timber
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import kotlin.experimental.and
-import kotlin.experimental.or
-import kotlin.math.abs
 
 /**
  * [AudioChunk] which handle [ByteArray]

@@ -6,9 +6,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.arkivanov.decompose.defaultComponentContext
 import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
-import com.danilovfa.feature.root.DefaultRootComponent
-import com.danilovfa.feature.root.RootScreen
-import com.danilovfa.uikit.theme.AppTheme
+import com.danilovfa.presentation.root.DefaultRootComponent
+import com.danilovfa.presentation.root.RootScreen
+import com.danilovfa.common.uikit.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

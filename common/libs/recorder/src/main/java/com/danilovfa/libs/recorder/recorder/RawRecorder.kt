@@ -4,13 +4,13 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.media.AudioRecord
 import android.media.MediaRecorder
-import com.danilovfa.core.library.type.toByteArray
+import co.touchlab.kermit.Logger
+import com.danilovfa.common.core.domain.extensions.toByteArray
 import com.danilovfa.libs.recorder.utils.AudioConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import java.io.FileDescriptor
 import java.io.FileOutputStream
 import java.util.concurrent.atomic.AtomicBoolean
@@ -80,7 +80,7 @@ class RawRecorder(
         try {
             audioRecord.startRecording()
         } catch (e: Exception) {
-            Timber.tag(TAG).e(e, "Couldn't start recording")
+            Logger.withTag(TAG).e("Couldn't start recording", e)
             return@withContext
         }
 
@@ -92,7 +92,7 @@ class RawRecorder(
 
                 rawSize += rawData.size
 
-                Timber.tag(TAG).d("BufferSize: ${buffer.size}, audioRecordSize: ${rawSize}")
+                Logger.withTag(TAG).d("BufferSize: ${buffer.size}, audioRecordSize: ${rawSize}")
                 updateAmplitude(rawData)
             }
         }
@@ -126,7 +126,7 @@ class RawRecorder(
             sum += abs(data[i].toInt())
         }
         val newAmplitude = sum.toInt() / (minBufferSize / 8)
-        Timber.tag(TAG).d("Amplitude: $newAmplitude")
+        Logger.withTag(TAG).d("Amplitude: $newAmplitude")
         _amplitude.emit(newAmplitude)
     }
 

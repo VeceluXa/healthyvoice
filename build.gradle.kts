@@ -9,4 +9,6 @@ plugins {
     alias(libs.plugins.kotlin.parcelize).apply(false)
     alias(libs.plugins.ksp).apply(false)
     alias(libs.plugins.chaquo).apply(false)
+    alias(libs.plugins.compose.compiler).apply(false)
+    alias(libs.plugins.jetbrains.kotlin.jvm) apply false
 }

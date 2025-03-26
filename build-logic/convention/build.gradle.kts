@@ -45,5 +45,13 @@ gradlePlugin {
             id = "com.danilovfa.android.library.core"
             implementationClass = "AndroidLibraryCoreConventionPlugin"
         }
+        register("kotlinLibrary") {
+            id = "com.danilovfa.kotlin.library"
+            implementationClass = "KotlinLibraryConventionPlugin"
+        }
+        register("kotlinLibraryDomain") {
+            id = "com.danilovfa.kotlin.library.domain"
+            implementationClass = "KotlinLibraryDomainConventionPlugin"
+        }
     }
 }

@@ -16,6 +16,7 @@ class AndroidLibraryComposeConventionPlugin : Plugin<Project> {
 
             dependencies {
                 add("implementation", libs.findBundle("compose").get())
+                add("debugImplementation", libs.findLibrary("compose.ui.tooling").get())
             }
         }
     }

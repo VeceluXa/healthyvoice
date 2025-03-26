@@ -7,6 +7,7 @@ import org.gradle.kotlin.dsl.dependencies
 internal fun Project.configureAndroidCompose(
     commonExtension: CommonExtension<*, *, *, *, *, *>,
 ) {
+    pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
     commonExtension.apply {
         buildFeatures {
             compose = true

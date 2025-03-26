@@ -13,15 +13,18 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
             }
 
             dependencies {
-                add("implementation", project(":common:core"))
+                add("implementation", project(":common:core:presentation"))
+                add("implementation", project(":common:core:domain"))
+                add("implementation", project(":common:base"))
                 add("implementation", project(":common:uikit"))
                 add("implementation", project(":common:resources"))
 
                 add("implementation", libs.findBundle("decompose").get())
                 add("implementation", libs.findBundle("mvikotlin").get())
                 add("implementation", libs.findBundle("koin").get())
-                add("implementation", libs.findLibrary("timber").get())
+                add("implementation", libs.findLibrary("kermit").get())
                 add("implementation", libs.findLibrary("kotlin.serialization.json").get())
+                add("implementation", libs.findLibrary("kotlin.datetime").get())
             }
         }
     }
