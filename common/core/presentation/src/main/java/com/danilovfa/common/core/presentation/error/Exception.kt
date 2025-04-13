@@ -2,7 +2,6 @@ package com.danilovfa.common.core.presentation.error
 
 import com.danilovfa.common.core.presentation.Text
 import com.danilovfa.common.resources.strings
-import com.danilovfa.core.presentation.error.Displayable
 import java.net.ConnectException
 import java.net.ProtocolException
 import java.net.SocketTimeoutException

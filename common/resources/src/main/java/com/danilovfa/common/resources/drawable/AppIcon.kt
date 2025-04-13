@@ -3,6 +3,7 @@ package com.danilovfa.common.resources.drawable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.outlined.Help
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Check
@@ -10,8 +11,10 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Female
+import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Male
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Pause
@@ -23,7 +26,9 @@ import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.WarningAmber
+import androidx.compose.material.icons.outlined.AudioFile
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Help
 import androidx.compose.material.icons.outlined.MarkEmailRead
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
@@ -47,6 +52,7 @@ object AppIcon {
     val ExpandMore: Painter @Composable get() = rememberVectorPainter(Icons.Filled.ExpandMore)
     val Add: Painter @Composable get() = rememberVectorPainter(Icons.Filled.Add)
     val Delete: Painter @Composable get() = rememberVectorPainter(Icons.Outlined.Delete)
+    val Edit: Painter @Composable get() = rememberVectorPainter(Icons.Filled.Edit)
     val AppIcon: Painter @Composable get() = painterResource(R.drawable.icon_app)
     val Play: Painter @Composable get() = rememberVectorPainter(Icons.Filled.PlayArrow)
     val Pause: Painter @Composable get() = rememberVectorPainter(Icons.Filled.Pause)
@@ -57,4 +63,6 @@ object AppIcon {
     val SexMale: Painter @Composable get() = rememberVectorPainter(Icons.Filled.Male)
     val SexFemale: Painter @Composable get() = rememberVectorPainter(Icons.Filled.Female)
     val Search: Painter @Composable get() = rememberVectorPainter(Icons.Filled.Search)
+    val Import: Painter @Composable get() = rememberVectorPainter(Icons.Outlined.AudioFile)
+    val Help: Painter @Composable get() = rememberVectorPainter(Icons.AutoMirrored.Outlined.Help)
 }

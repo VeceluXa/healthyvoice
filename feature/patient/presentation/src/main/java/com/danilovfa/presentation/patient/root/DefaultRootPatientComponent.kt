@@ -70,9 +70,10 @@ class DefaultRootPatientComponent(
     }
 
     private fun onDetailOutput(output: PatientDetailComponent.Output) = when (output) {
-        is PatientDetailComponent.Output.NavigateAnalysis -> output(Output.NavigateAnalysis(output.analysisId))
+        is PatientDetailComponent.Output.NavigateAnalysis -> output(Output.NavigateAnalysis(output.recordingId))
         is PatientDetailComponent.Output.NavigateRecord -> output(Output.NavigateRecord(output.patientId))
         PatientDetailComponent.Output.NavigateBack -> navigation.pop()
+        is PatientDetailComponent.Output.NavigateEdit -> navigation.pushNew(Config.Create(output.patient))
     }
 
     @Serializable

@@ -30,4 +30,7 @@ interface PatientDao {
 
     @Update
     suspend fun updatePatient(patient: PatientEntity)
+
+    @Query("UPDATE patient SET note = :note WHERE id = :patientId")
+    suspend fun updateNote(patientId: Long, note: String)
 }

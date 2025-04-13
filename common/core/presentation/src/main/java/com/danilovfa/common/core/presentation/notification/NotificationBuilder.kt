@@ -1,4 +1,4 @@
-package com.danilovfa.core.presentation.notification
+package com.danilovfa.common.core.presentation.notification
 
 import android.app.NotificationChannel
 import android.app.NotificationManager

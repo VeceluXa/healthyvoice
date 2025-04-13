@@ -8,20 +8,17 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AnalysisDao {
-    @Query("SELECT * FROM analysis")
-    suspend fun getAnalyzes(): List<AnalysisEntity>
-
-    @Query("SELECT * FROM analysis WHERE id = :id LIMIT 1")
-    suspend fun getAnalysis(id: String): AnalysisEntity?
+    @Query("SELECT * FROM analysis WHERE recordingId = :recordingId LIMIT 1")
+    suspend fun getAnalysis(recordingId: Long): AnalysisEntity?
 
     @Query("SELECT * FROM analysis")
     fun observeAnalyzes(): Flow<List<AnalysisEntity>>
 
-    @Query("SELECT * FROM analysis WHERE id = :id LIMIT 1")
-    fun observeAnalysis(id: String): Flow<AnalysisEntity?>
+    @Query("SELECT * FROM analysis WHERE recordingId = :recordingId LIMIT 1")
+    fun observeAnalysis(recordingId: Long): Flow<AnalysisEntity?>
 
-    @Query("DELETE FROM analysis WHERE id = :id")
-    suspend fun deleteAnalysis(id: String)
+    @Query("DELETE FROM analysis WHERE recordingId = :recordingId")
+    suspend fun deleteAnalysis(recordingId: Long)
 
     @Insert
     suspend fun addAnalysis(analysis: AnalysisEntity)

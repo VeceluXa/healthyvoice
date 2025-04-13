@@ -1,4 +1,4 @@
-package com.danilovfa.core.presentation.extensions
+package com.danilovfa.common.core.presentation.extensions
 
 import android.content.Context
 import android.content.Intent

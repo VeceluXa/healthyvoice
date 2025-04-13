@@ -1,14 +1,15 @@
 package com.danilovfa.domain.record.repository
 
-import java.io.File
+import com.danilovfa.domain.common.model.Recording
+import com.danilovfa.domain.record.repository.model.AudioData
+import com.danilovfa.domain.record.repository.model.RecordingFull
 
 interface RecordRepository {
+    suspend fun start(patientId: Long): Recording
+    suspend fun endRecording(id: Long): Result<Recording>
 
-    fun getRecordingsDir(): File
+    suspend fun importRecording(patientId: Long, data: ByteArray): Result<Recording>
+    suspend fun saveCut(recordingId: Long, startMillis: Int, endMillis: Int)
 
-    suspend fun saveEncodedRecording(data: ByteArray): Result<String>
-
-    suspend fun loadRecordingByte(filename: String): Result<ByteArray>
-
-    suspend fun loadRecordingShort(filename: String): Result<Array<Short>>
+    suspend fun getFullRecording(recordingId: Long): Result<RecordingFull>
 }

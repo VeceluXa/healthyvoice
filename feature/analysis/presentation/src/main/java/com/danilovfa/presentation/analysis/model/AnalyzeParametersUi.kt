@@ -1,5 +1,7 @@
 package com.danilovfa.presentation.analysis.model
 
+import com.danilovfa.domain.common.model.Analysis
+
 data class AnalyzeParametersUi(
     val j1: Float,
     val j3: Float,
@@ -12,7 +14,7 @@ data class AnalyzeParametersUi(
     val f0Sd: Float
 )
 
-internal fun AnalyzeParametersUi.toParametersData(): List<ParameterDataUi> = listOf(
+internal fun Analysis.toParametersData(): List<ParameterDataUi> = listOf(
     ParameterDataUi(
         label = "Jitter:loc [%]",
         value = j1,
@@ -57,13 +59,13 @@ internal fun AnalyzeParametersUi.toParametersData(): List<ParameterDataUi> = lis
     ),
     ParameterDataUi(
         label = "F0 [Hz]",
-        value = f0Mean,
+        value = f0,
         normMin = null,
         normMax = null
     ),
     ParameterDataUi(
         label = "SD F0 [Hz]",
-        value = f0Sd,
+        value = f0sd,
         normMin = null,
         normMax = null
     )

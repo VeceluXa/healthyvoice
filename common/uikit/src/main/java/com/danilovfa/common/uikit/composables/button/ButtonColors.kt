@@ -48,6 +48,18 @@ object AppButtonColors {
         disabledContainerColor = backgroundColor,
         disabledContentColor = disabledContentColor,
     )
+
+    @Composable
+    fun errorButtonColors(
+        backgroundColor: Color = AppTheme.colors.error,
+        contentColor: Color = AppTheme.colors.onError,
+        disabledContentColor: Color = AppTheme.colors.onError.copy(alpha = 0.6f)
+    ): ButtonColors = ButtonColors(
+        containerColor = backgroundColor,
+        contentColor = contentColor,
+        disabledContainerColor = backgroundColor,
+        disabledContentColor = disabledContentColor,
+    )
 }
 
 fun ButtonColors.contentColor(enabled: Boolean): Color =

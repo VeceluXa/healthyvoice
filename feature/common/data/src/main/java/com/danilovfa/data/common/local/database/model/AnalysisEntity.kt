@@ -5,32 +5,38 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.danilovfa.domain.common.model.Analysis
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.Instant
 
 @Entity(
     tableName = "analysis",
-    foreignKeys = [ForeignKey(
-        entity = PatientEntity::class,
-        parentColumns = ["id"],
-        childColumns = ["patientId"],
-        onDelete = ForeignKey.CASCADE
-    )],
-    indices = [Index(
-        value = ["patientId"],
-        unique = true
-    )]
+    foreignKeys = [
+        ForeignKey(
+            entity = PatientEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["patientId"],
+            onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = RecordingEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["recordingId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [
+        Index(value = ["patientId"]),
+        Index(value = ["recordingId"])
+    ]
 )
 data class AnalysisEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0L,
-    val patientId: String,
-    val filename: String,
-    val timestamp: LocalDateTime,
-    val cutStart: Int,
-    val cutEnd: Int,
-    val j0: Float,
+    @PrimaryKey(autoGenerate = false)
+    val recordingId: Long,
+    val patientId: Long,
+    val timestamp: Instant,
+    val j1: Float,
     val j3: Float,
     val j5: Float,
+    val s1: Float,
     val s3: Float,
     val s5: Float,
     val s11: Float,
@@ -39,15 +45,13 @@ data class AnalysisEntity(
 )
 
 fun AnalysisEntity.toDomain() = Analysis(
-    id = id,
     patientId = patientId,
-    filename = filename,
+    recordingId = recordingId,
     timestamp = timestamp,
-    cutStart = cutStart,
-    cutEnd = cutEnd,
-    j0 = j0,
+    j1 = j1,
     j3 = j3,
     j5 = j5,
+    s1 = s1,
     s3 = s3,
     s5 = s5,
     s11 = s11,
@@ -56,15 +60,13 @@ fun AnalysisEntity.toDomain() = Analysis(
 )
 
 fun Analysis.toEntity() = AnalysisEntity(
-    id = id,
     patientId = patientId,
-    filename = filename,
+    recordingId = recordingId,
     timestamp = timestamp,
-    cutStart = cutStart,
-    cutEnd = cutEnd,
-    j0 = j0,
+    j1 = j1,
     j3 = j3,
     j5 = j5,
+    s1 = s1,
     s3 = s3,
     s5 = s5,
     s11 = s11,

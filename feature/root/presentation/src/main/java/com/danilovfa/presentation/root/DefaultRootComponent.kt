@@ -6,17 +6,15 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.pushNew
+import com.arkivanov.decompose.router.stack.replaceCurrent
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.mvikotlin.core.store.StoreFactory
-import com.danilovfa.domain.record.repository.model.AudioData
-import com.danilovfa.presentation.cut.CutComponent
-import com.danilovfa.presentation.cut.DefaultCutComponent
-import com.danilovfa.presentation.record.DefaultRecordComponent
-import com.danilovfa.presentation.record.RecordComponent
 import com.danilovfa.presentation.analysis.AnalyzeComponent
 import com.danilovfa.presentation.analysis.DefaultAnalyzeComponent
 import com.danilovfa.presentation.patient.root.DefaultRootPatientComponent
 import com.danilovfa.presentation.patient.root.RootPatientComponent
+import com.danilovfa.presentation.record.root.DefaultRecordRootComponent
+import com.danilovfa.presentation.record.root.RecordRootComponent
 import com.danilovfa.presentation.root.RootComponent.Child
 import kotlinx.serialization.Serializable
 
@@ -37,26 +35,10 @@ class DefaultRootComponent(
     override val childStack: Value<ChildStack<*, Child>> = stack
 
     private fun child(config: Config, componentContext: ComponentContext): Child = when (config) {
-        Config.Record -> Child.Record(
-            DefaultRecordComponent(
-                storeFactory = storeFactory,
-                componentContext = componentContext,
-                output = ::onRecordOutput
-            )
-        )
 
-        is Config.Cut -> Child.Cut(
-            DefaultCutComponent(
-                audioData = config.audioData,
-                storeFactory = storeFactory,
-                componentContext = componentContext,
-                output = ::onCutOutput
-            )
-        )
-
-        is Config.Analyze -> Child.Analyze(
+        is Config.Analysis -> Child.Analyze(
             DefaultAnalyzeComponent(
-                audioData = config.audioData,
+                recordingId = config.recordingId,
                 storeFactory = storeFactory,
                 componentContext = componentContext,
                 output = ::onAnalyzeOutput
@@ -70,37 +52,43 @@ class DefaultRootComponent(
                 output = ::onPatientOutput
             )
         )
+
+        is Config.Record -> Child.Recording(
+            DefaultRecordRootComponent(
+                patientId = config.patientId,
+                storeFactory = storeFactory,
+                componentContext = componentContext,
+                output = ::onRecordOutput
+            )
+        )
     }
 
-    private fun onRecordOutput(output: RecordComponent.Output) = when (output) {
-        is RecordComponent.Output.Analyze -> navigation.pushNew(Config.Cut(output.audioData))
-    }
-
-    private fun onCutOutput(output: CutComponent.Output) = when (output) {
-        is CutComponent.Output.Analyze -> navigation.pushNew(Config.Analyze(output.data))
-        CutComponent.Output.NavigateBack -> navigation.pop()
-    }
 
     private fun onAnalyzeOutput(output: AnalyzeComponent.Output) = when (output) {
         AnalyzeComponent.Output.NavigateBack -> navigation.pop()
     }
 
     private fun onPatientOutput(output: RootPatientComponent.Output) = when (output) {
-        is RootPatientComponent.Output.NavigateAnalysis -> TODO()
-        is RootPatientComponent.Output.NavigateRecord -> navigation.pushNew(Config.Record)
+        is RootPatientComponent.Output.NavigateAnalysis -> navigation.pushNew(Config.Analysis(recordingId = output.recordingId))
+        is RootPatientComponent.Output.NavigateRecord -> navigation.pushNew(Config.Record(output.patientId))
+    }
+
+    private fun onRecordOutput(output: RecordRootComponent.Output) = when (output) {
+        is RecordRootComponent.Output.NavigateAnalysis -> {
+            navigation.replaceCurrent(Config.Analysis(recordingId = output.recordingId))
+        }
+
+        RecordRootComponent.Output.NavigateBack -> navigation.pop()
     }
 
     @Serializable
     sealed class Config {
 
         @Serializable
-        data object Record : Config()
+        data class Record(val patientId: Long) : Config()
 
         @Serializable
-        data class Cut(val audioData: AudioData) : Config()
-
-        @Serializable
-        data class Analyze(val audioData: AudioData) : Config()
+        data class Analysis(val recordingId: Long, ) : Config()
 
         @Serializable
         data object Patient : Config()

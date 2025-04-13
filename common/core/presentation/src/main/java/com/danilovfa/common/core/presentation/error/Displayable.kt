@@ -1,4 +1,4 @@
-package com.danilovfa.core.presentation.error
+package com.danilovfa.common.core.presentation.error
 
 import com.danilovfa.common.core.presentation.Text
 

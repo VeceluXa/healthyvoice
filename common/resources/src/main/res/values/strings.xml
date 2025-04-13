@@ -24,6 +24,8 @@
     <string name="save">Сохранить</string>
     <string name="choose_time">Выбрать время</string>
     <string name="search">Поиск</string>
+    <string name="delete">Удалить</string>
+    <string name="export">Экспорт</string>
     <!-- End General Section -->
 
     <!-- Start Error Section -->
@@ -33,6 +35,7 @@
     <string name="network_error_title">Нет Интернет соединения</string>
     <string name="network_error_description">Проверьте Ваше Интернет соединение и обновите страницу</string>
     <string name="error_message">Попробуйте обновить или зайти чуть позже.</string>
+    <string name="search_empty_description">По вашему запросу ничего не найдено</string>
     <!-- End Error Section -->
 
     <!-- Start To-Do section -->
@@ -44,25 +47,33 @@
     <!-- Start Patient Section -->
     <string name="patient_list_empty_title">Нет пациентов!</string>
     <string name="patient_list_empty_description">Добавьте пациента для дальнейшей работы</string>
-    <string name="patient_list_search_empty_description">По вашему запросу ничего не найдено</string>
     <string name="patient_create_title">Добавить пациента</string>
     <string name="patient_edit_title">Изменить пациента</string>
     <string name="patient_name">ФИО</string>
+    <string name="patient">Пациент</string>
     <string name="patient_address">Адрес проживания</string>
     <string name="patient_sex_label">Пол</string>
     <string name="patient_sex_male">Мужской</string>
     <string name="patient_sex_female">Женский</string>
     <string name="patient_note">Примечания</string>
     <string name="patient_birth_date">Дата рождения</string>
+    <string name="patient_delete_dialog_title">Удалить пациента?</string>
+    <string name="patient_delete_dialog_description">Все данные пациента, включая его анализы будут потеряны навсегда</string>
+    <string name="patient_delete">Удалить пациента</string>
+    <string name="patient_edit">Изменить пациента</string>
+    <string name="patient_analyzes_empty_title">Нет анализов!</string>
+    <string name="patient_analyzes_empty_description">Добавьте новый анализ для дальнейшей работы</string>
+    <string name="patient_add_analysis">Добавить анализ</string>
     <!-- End Patient Section -->
 
     <!-- Start Record Section -->
+    <string name="record_title">Запись голоса</string>
     <string name="record_permission_rationale_title">Отсутствует разрешение на запись аудио</string>
     <string name="record_permission_rationale_description">Разрешите приложению HealthyVoice доступ к записи аудио в настройках</string>
     <string name="record_menu_help">Помощь</string>
     <string name="record_menu_import">Импортировать запись</string>
     <string name="record_help_dialog_title">Как правильно записывать голос?</string>
-    <string name="record_help_dialog_description">Поднесите телефон ко рту и громко говорите 5 секунд, для правильной записи аудио.</string>
+    <string name="record_help_dialog_description">Поднесите телефон ко рту и громко произносите звук /а/ в течении 5 секунд.</string>
     <string name="record_wrong_format">Файл записи должен быть с расширением .wav</string>
     <!-- End Record Section -->
 
@@ -79,5 +90,6 @@
     <string name="analyze_back_confirm_text">Вы потеряете текущую запись и анализ!</string>
     <string name="analyze_voice_parameters">Параметры голоса</string>
     <string name="analyze_norm">Норма</string>
+    <string name="analyze_loading">Обрабатываем запись</string>
     <!-- End Analyze Section -->
 </resources>

@@ -82,7 +82,7 @@ object AppTextFieldDefaults {
     fun textFieldColors(
         textColor: Color = AppTheme.colors.textPrimary,
         disabledTextColor: Color = AppTheme.colors.textSecondary,
-        backgroundColor: Color = AppTheme.colors.surface,
+        backgroundColor: Color = AppTheme.colors.background,
         cursorColor: Color = AppTheme.colors.primary,
         errorCursorColor: Color = AppTheme.colors.error,
         focusedIndicatorColor: Color = AppTheme.colors.textDisabled,

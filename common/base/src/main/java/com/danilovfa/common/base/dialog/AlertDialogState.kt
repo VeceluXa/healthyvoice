@@ -30,6 +30,7 @@ sealed interface AlertDialogState {
         val confirmButtonTitle: Text? = null,
         val dismissButtonTitle: Text? = null,
         val onConfirmClick: (() -> Unit)? = null,
+        val isConfirmNegative: Boolean = false,
         val onDismissClick: () -> Unit
     ) : AlertDialogState
 

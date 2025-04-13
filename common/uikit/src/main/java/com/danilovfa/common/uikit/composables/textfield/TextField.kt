@@ -20,6 +20,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults.Container
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
@@ -55,6 +56,7 @@ import com.danilovfa.common.uikit.preview.ThemePreviewParameter
 import com.danilovfa.common.uikit.theme.AppDimension
 import com.danilovfa.common.uikit.theme.AppTheme
 import com.danilovfa.common.uikit.theme.AppTypography
+import com.danilovfa.common.uikit.theme.tiny
 
 @Composable
 fun TextField(
@@ -412,7 +414,7 @@ internal fun BaseTextField(
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    shape: Shape = TextFieldDefaults.shape,
+    shape: Shape = MaterialTheme.shapes.tiny,
     colors: TextFieldColors = AppTextFieldDefaults.textFieldColors(),
 ) {
     val textColor = textStyle.color.takeOrElse {
@@ -560,7 +562,6 @@ private fun TextFieldPreview(@PreviewParameter(ThemePreviewParameter::class) isD
         Column(
             Modifier
                 .padding(8.dp)
-                .background(AppTheme.colors.background)
         ) {
             TextFieldLarge(
                 value = "With label",

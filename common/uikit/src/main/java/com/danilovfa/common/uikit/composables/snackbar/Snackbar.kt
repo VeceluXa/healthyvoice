@@ -38,7 +38,7 @@ import kotlin.math.max
 internal fun Snackbar(
     snackbarData: StyledSnackbarData,
     modifier: Modifier = Modifier,
-    elevation: Dp = 6.dp,
+    elevation: Dp = 2.dp,
 ) {
     Snackbar(
         modifier = modifier

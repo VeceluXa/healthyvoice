@@ -4,7 +4,8 @@ import androidx.room.Room
 import com.danilovfa.data.common.local.database.Database
 import com.danilovfa.data.common.local.database.dao.AnalysisDao
 import com.danilovfa.data.common.local.database.dao.PatientDao
-import com.danilovfa.data.common.local.database.dao.PatientDetailsDao
+import com.danilovfa.data.common.local.database.dao.RecordingAnalysisDao
+import com.danilovfa.data.common.local.database.dao.RecordingDao
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -26,7 +27,11 @@ val dataCommonModule = module {
         get<Database>().analysisDao
     }
 
-    single<PatientDetailsDao> {
-        get<Database>().patientDetailsDao
+    single<RecordingAnalysisDao> {
+        get<Database>().recordingAnalysisDao
+    }
+
+    single<RecordingDao> {
+        get<Database>().recordingDao
     }
 }

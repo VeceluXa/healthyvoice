@@ -9,4 +9,5 @@ android {
 dependencies {
     implementation(project(":feature:common:domain"))
     implementation(project(":feature:patient:domain"))
+    implementation(project(":feature:analysis:domain"))
 }

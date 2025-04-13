@@ -47,7 +47,7 @@ fun PopupMenu(
                 title = item.title.get(),
                 icon = item.icon,
                 enabled = item.enabled,
-                tint = item.tint ?: AppTheme.colors.textPrimary,
+                iconTint = item.tint,
                 onClick = {
                     item.onClick.invoke()
                     expandedState.value = false
@@ -97,7 +97,7 @@ internal fun MenuItems(
     title: String,
     icon: Painter?,
     onClick: () -> Unit,
-    tint: Color = AppTheme.colors.textPrimary,
+    iconTint: Color? = null,
     enabled: Boolean = true
 ) {
     DropdownMenuItem(
@@ -105,7 +105,7 @@ internal fun MenuItems(
             GroupActionsItem(
                 text = title,
                 icon = icon,
-                tint = tint,
+                tint = iconTint,
                 enabled = enabled
             )
         },
@@ -118,8 +118,8 @@ internal fun MenuItems(
 private fun GroupActionsItem(
     text: String,
     icon: Painter?,
-    tint: Color = AppTheme.colors.textPrimary,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    tint: Color? = null
 ) {
     Row(
         modifier = Modifier.padding(end = AppDimension.layoutMediumMargin)
@@ -131,7 +131,7 @@ private fun GroupActionsItem(
                     .size(24.dp),
                 painter = icon,
                 contentDescription = null,
-                tint = if (enabled) AppTheme.colors.primary else AppTheme.colors.primaryDisabled
+                tint = tint ?: if (enabled) AppTheme.colors.primary else AppTheme.colors.primaryDisabled
             )
             HSpacer(AppDimension.layoutMainMargin)
         }

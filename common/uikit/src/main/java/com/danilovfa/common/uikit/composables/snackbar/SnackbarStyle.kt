@@ -2,6 +2,7 @@ package com.danilovfa.common.uikit.composables.snackbar
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarDuration
@@ -13,6 +14,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import com.danilovfa.common.uikit.theme.AppTheme
+import com.danilovfa.common.uikit.theme.tiny
 import kotlinx.coroutines.CancellableContinuation
 import kotlin.coroutines.resume
 
@@ -20,7 +22,7 @@ interface SnackbarStyle {
     val icon: Painter?
         @Composable get() = null
     val shape: Shape
-        @Composable get() = RoundedCornerShape(0.dp)
+        @Composable get() = MaterialTheme.shapes.tiny
 
     val backgroundColor: Color
         @Composable get() = AppTheme.colors.surface
@@ -36,15 +38,6 @@ interface SnackbarStyle {
 
         override val contentColor: Color
             @Composable get() = AppTheme.colors.onError
-    }
-}
-
-@Composable
-private fun StyledSnackbar(snackbarData: SnackbarData) {
-    if (snackbarData is StyledSnackbarData) {
-        Snackbar(snackbarData = snackbarData)
-    } else {
-        Snackbar(snackbarData)
     }
 }
 

@@ -81,6 +81,7 @@ dependencies {
     implementation(project(":feature:common:data"))
     implementation(project(":feature:patient:data"))
     implementation(project(":feature:record:data"))
+    implementation(project(":feature:analysis:data"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle)

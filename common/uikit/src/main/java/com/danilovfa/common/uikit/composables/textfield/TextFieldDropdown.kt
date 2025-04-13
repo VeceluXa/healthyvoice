@@ -61,7 +61,7 @@ fun TextFieldDropdown(
                 MenuItems(
                     title = item.title.get(),
                     icon = item.icon,
-                    tint = item.tint ?: colors.focusedTextColor,
+                    iconTint = item.tint ?: colors.focusedTextColor,
                     onClick = item.onClick
                 )
             }

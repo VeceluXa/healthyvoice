@@ -4,8 +4,7 @@ import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.SimpleBootstrapper
 import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
-import com.danilovfa.domain.record.repository.model.AudioData
-import com.danilovfa.presentation.analysis.model.AnalyzeParametersUi
+import com.danilovfa.domain.common.model.RecordingAnalysis
 import com.danilovfa.presentation.analysis.store.AnalyzeStore.Intent
 import com.danilovfa.presentation.analysis.store.AnalyzeStore.Label
 import com.danilovfa.presentation.analysis.store.AnalyzeStore.State
@@ -14,30 +13,37 @@ internal class AnalyzeStoreFactory(
     private val storeFactory: StoreFactory
 ) {
 
-    fun create(audioData: AudioData): AnalyzeStore = object : AnalyzeStore,
+    fun create(
+        recordingId: Long,
+    ): AnalyzeStore = object : AnalyzeStore,
         Store<Intent, State, Label> by storeFactory.create(
             name = STORE_NAME,
-            initialState = State(audioData = audioData),
-            bootstrapper = SimpleBootstrapper(Action.ProcessRecording),
+            initialState = State(
+                recordingId = recordingId,
+            ),
+            bootstrapper = SimpleBootstrapper(Action.ProcessRecording, Action.ObserveAnalysis),
             executorFactory = ::AnalyzeStoreExecutor,
             reducer = reducer
         ) { }
 
     sealed class Msg {
-        data class UpdateLoading(val isLoading: Boolean) : Msg()
+        data class UpdateRecordingAnalysis(val analysis: RecordingAnalysis) : Msg()
+        data class UpdateRecordingLoading(val isLoading: Boolean) : Msg()
+        data class UpdateAnalysisLoading(val isLoading: Boolean) : Msg()
         data class UpdateAmplitudes(val amplitudes: List<Short>) : Msg()
-        data class UpdateParameters(val parameters: AnalyzeParametersUi) : Msg()
     }
 
     sealed class Action {
         data object ProcessRecording : Action()
+        data object ObserveAnalysis : Action()
     }
 
     private val reducer = Reducer<State, Msg> { msg ->
         when (msg) {
             is Msg.UpdateAmplitudes -> copy(amplitudes = msg.amplitudes)
-            is Msg.UpdateParameters -> copy(parameters = msg.parameters)
-            is Msg.UpdateLoading -> copy(isLoading = msg.isLoading)
+            is Msg.UpdateRecordingLoading -> copy(isRecordingLoading = msg.isLoading)
+            is Msg.UpdateAnalysisLoading -> copy(isAnalysisLoading = msg.isLoading)
+            is Msg.UpdateRecordingAnalysis -> copy(recordingAnalysis = msg.analysis)
         }
     }
 

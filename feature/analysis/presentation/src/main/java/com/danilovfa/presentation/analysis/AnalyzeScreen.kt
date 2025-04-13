@@ -18,11 +18,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import com.danilovfa.domain.record.repository.model.AudioData
 import com.danilovfa.presentation.analysis.waveform.RecordingWaveform
-import com.danilovfa.presentation.analysis.model.AnalyzeParametersUi
 import com.danilovfa.presentation.analysis.model.ParameterDataUi
-import com.danilovfa.presentation.analysis.model.toParametersData
 import com.danilovfa.presentation.analysis.store.AnalyzeStore.Intent
 import com.danilovfa.presentation.analysis.store.AnalyzeStore.State
 import com.danilovfa.common.resources.strings
@@ -37,7 +34,6 @@ import com.danilovfa.common.uikit.event.ObserveEvents
 import com.danilovfa.common.uikit.theme.AppDimension
 import com.danilovfa.common.uikit.theme.AppTheme
 import com.danilovfa.common.uikit.theme.AppTypography
-import java.util.UUID
 
 
 @Composable
@@ -75,10 +71,9 @@ private fun AnalyzeLayout(
         )
 
         when {
-            state.isLoading -> LoaderStub(Modifier.weight(1f))
+            state.isRecordingLoading -> LoaderStub(Modifier.weight(1f))
             else -> AnalyzeContent(
                 state = state,
-                onIntent = onIntent,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -88,7 +83,6 @@ private fun AnalyzeLayout(
 @Composable
 private fun AnalyzeContent(
     state: State,
-    onIntent: (Intent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -101,41 +95,39 @@ private fun AnalyzeContent(
         if (state.amplitudes.isNotEmpty()) {
             RecordingWaveform(
                 amplitudes = state.amplitudes,
-                cut = state.audioData.audioCut,
-                durationMillis = state.audioData.audioDurationMillis
+                cutStartMillis = state.recordingAnalysis?.recording?.cutStart,
+                cutEndMillis = state.recordingAnalysis?.recording?.cutEnd,
+                durationMillis = state.recordingAnalysis?.recording?.durationMillis ?: 0
             )
-        } else {
-//            LargeShimmerItem(
-//                height = WAVEFORM_HEIGHT_DP.dp,
-//                modifier = Modifier
-//                    .padding(horizontal = AppDimension.layoutHorizontalMargin)
-//            )
         }
         
         VSpacer(AppDimension.layoutLargeMargin)
 
-        Text(
-            text = stringResource(strings.analyze_voice_parameters),
-            style = AppTypography.titleMedium20,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = AppDimension.layoutHorizontalMargin)
-        )
-
-        VSpacer(AppDimension.layoutMainMargin)
-        
-        if (state.parameters != null) {
-            ParametersContent(parameters = state.parameters)
+        if (state.isAnalysisLoading) {
+            LoaderStub(
+                text = stringResource(strings.analyze_loading)
+            )
         } else {
-            ParametersLoader()
+            Text(
+                text = stringResource(strings.analyze_voice_parameters),
+                style = AppTypography.titleMedium20,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = AppDimension.layoutHorizontalMargin)
+            )
+
+            VSpacer(AppDimension.layoutMainMargin)
+
+            ParametersContent(parameters = state.parameters)
         }
+
     }
 }
 
 
 @Composable
 private fun ParametersContent(
-    parameters: AnalyzeParametersUi,
+    parameters: List<ParameterDataUi>,
     modifier: Modifier = Modifier
 ) {
     val primaryBackgroundColor = AppTheme.colors.surface
@@ -155,29 +147,11 @@ private fun ParametersContent(
             )
         }
 
-        parameters.toParametersData().forEachIndexed { index, parameterDataUi ->
+        parameters.forEachIndexed { index, parameterDataUi ->
             ParameterItem(
                 data = parameterDataUi,
                 backgroundColor = if (index % 2 == 0) primaryBackgroundColor else secondaryBackgroundColor
             )
-        }
-    }
-}
-
-@Composable
-private fun ParametersLoader(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .padding(horizontal = AppDimension.layoutHorizontalMargin)
-    ) {
-        repeat(9) {
-//            ShimmerItem(
-//                size = DpSize(
-//                    width = (100..140).random().dp,
-//                    height = 24.dp
-//                )
-//            )
-            VSpacer(AppDimension.layoutMediumMargin)
         }
     }
 }
@@ -237,16 +211,7 @@ private fun ParameterItem(
 private fun Preview() {
     AppTheme {
         AnalyzeLayout(
-            state = State(
-                audioData = AudioData(
-                    filename = UUID.randomUUID().toString(),
-                    frequency = 0,
-                    channels = 0,
-                    bitsPerSample = 0,
-                    bufferSize = 0,
-                    audioDurationMillis = 0
-                )
-            ),
+            state = State(recordingId = 0),
             onIntent = {}
         )
     }

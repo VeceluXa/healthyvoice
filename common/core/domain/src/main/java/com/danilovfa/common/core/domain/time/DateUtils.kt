@@ -10,6 +10,7 @@ import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeFormatBuilder
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Duration
 
 /**
  * Convert UTC to local time (UTC+3)
@@ -54,3 +55,17 @@ fun LocalDateTime.format(builder: DateTimeFormatBuilder.WithDateTime.() -> Unit)
 
 fun LocalDate.format(builder: DateTimeFormatBuilder.WithDate.() -> Unit) =
     this.format(LocalDate.Format { builder() })
+
+/**
+ * Convert Duration to SS:mm
+ */
+fun Duration.toSeconds(): String {
+    val seconds = (inWholeSeconds % 60)
+        .toString()
+        .padStart(2, '0')
+
+    val milliseconds = (inWholeMilliseconds % 1000 / 10)
+        .toString()
+        .padStart(2, '0')
+    return "$seconds.$milliseconds"
+}

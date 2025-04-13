@@ -11,5 +11,4 @@ dependencies {
     implementation(project(":feature:record:presentation"))
     implementation(project(":feature:analysis:presentation"))
     implementation(project(":feature:patient:presentation"))
-    implementation(project(":feature:cut:presentation"))
 }

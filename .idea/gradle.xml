@@ -26,20 +26,33 @@
             <option value="$PROJECT_DIR$/build-logic" />
             <option value="$PROJECT_DIR$/build-logic/convention" />
             <option value="$PROJECT_DIR$/common" />
+            <option value="$PROJECT_DIR$/common/base" />
             <option value="$PROJECT_DIR$/common/core" />
+            <option value="$PROJECT_DIR$/common/core/data" />
+            <option value="$PROJECT_DIR$/common/core/domain" />
+            <option value="$PROJECT_DIR$/common/core/presentation" />
             <option value="$PROJECT_DIR$/common/libs" />
             <option value="$PROJECT_DIR$/common/libs/recorder" />
             <option value="$PROJECT_DIR$/common/resources" />
             <option value="$PROJECT_DIR$/common/uikit" />
-            <option value="$PROJECT_DIR$/data" />
-            <option value="$PROJECT_DIR$/data/analyze" />
-            <option value="$PROJECT_DIR$/data/common" />
-            <option value="$PROJECT_DIR$/data/record" />
-            <option value="$PROJECT_DIR$/features" />
-            <option value="$PROJECT_DIR$/features/analyze" />
-            <option value="$PROJECT_DIR$/features/cut" />
-            <option value="$PROJECT_DIR$/features/record" />
-            <option value="$PROJECT_DIR$/features/root" />
+            <option value="$PROJECT_DIR$/feature" />
+            <option value="$PROJECT_DIR$/feature/analysis" />
+            <option value="$PROJECT_DIR$/feature/analysis/data" />
+            <option value="$PROJECT_DIR$/feature/analysis/domain" />
+            <option value="$PROJECT_DIR$/feature/analysis/presentation" />
+            <option value="$PROJECT_DIR$/feature/common" />
+            <option value="$PROJECT_DIR$/feature/common/data" />
+            <option value="$PROJECT_DIR$/feature/common/domain" />
+            <option value="$PROJECT_DIR$/feature/patient" />
+            <option value="$PROJECT_DIR$/feature/patient/data" />
+            <option value="$PROJECT_DIR$/feature/patient/domain" />
+            <option value="$PROJECT_DIR$/feature/patient/presentation" />
+            <option value="$PROJECT_DIR$/feature/record" />
+            <option value="$PROJECT_DIR$/feature/record/data" />
+            <option value="$PROJECT_DIR$/feature/record/domain" />
+            <option value="$PROJECT_DIR$/feature/record/presentation" />
+            <option value="$PROJECT_DIR$/feature/root" />
+            <option value="$PROJECT_DIR$/feature/root/presentation" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

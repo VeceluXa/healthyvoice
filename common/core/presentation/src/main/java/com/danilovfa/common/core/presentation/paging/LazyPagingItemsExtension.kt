@@ -1,4 +1,4 @@
-package com.danilovfa.core.presentation.paging
+package com.danilovfa.common.core.presentation.paging
 
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems

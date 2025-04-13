@@ -16,4 +16,6 @@ android {
 dependencies {
     implementation(project(":common:libs:recorder"))
     implementation(project(":feature:record:domain"))
+    implementation(project(":feature:common:domain"))
+    implementation(project(":feature:analysis:domain"))
 }

@@ -85,7 +85,7 @@ private fun PatientCreateLayout(
         )
 
         ButtonLarge(
-            text = getScreenTitle(state.isEdit),
+            text = getButtonTitle(state.isEdit),
             loading = state.isSaving,
             enabled = state.canSave,
             onClick = { onIntent(Intent.OnSaveClicked) },
@@ -249,7 +249,7 @@ private fun getScreenTitle(isEdit: Boolean) =
 @Composable
 @Preview
 private fun Preview(@PreviewParameter(ThemePreviewParameter::class) isDark: Boolean) {
-    AppTheme {
+    AppTheme(isDark) {
         PatientCreateLayout(
             state = State(patient = null),
             onIntent = {}

@@ -26,6 +26,7 @@ import com.danilovfa.common.core.domain.time.KotlinDateTimeFormatters.date
 import com.danilovfa.common.core.domain.time.format
 import com.danilovfa.common.resources.drawable.AppIcon
 import com.danilovfa.common.resources.strings
+import com.danilovfa.common.uikit.composables.HSpacer
 import com.danilovfa.common.uikit.composables.VSpacer
 import com.danilovfa.common.uikit.composables.stub.EmptyStub
 import com.danilovfa.common.uikit.composables.textfield.TextFieldLarge
@@ -37,6 +38,7 @@ import com.danilovfa.common.uikit.theme.AppDimension
 import com.danilovfa.common.uikit.theme.AppTheme
 import com.danilovfa.common.uikit.theme.AppTypography
 import com.danilovfa.domain.common.model.Patient
+import com.danilovfa.presentation.patient.common.PatientCard
 import com.danilovfa.presentation.patient.common.iconPainter
 import com.danilovfa.presentation.patient.list.store.PatientListStore.Intent
 import com.danilovfa.presentation.patient.list.store.PatientListStore.State
@@ -132,7 +134,7 @@ private fun PatientListLayout(
                     } else if (state.patientSearched.isEmpty()) {
                         EmptyStub(
                             title = stringResource(strings.patient_list_empty_title),
-                            message = stringResource(strings.patient_list_search_empty_description),
+                            message = stringResource(strings.search_empty_description),
                             modifier = Modifier.fillParentMaxSize()
                         )
                     }
@@ -146,7 +148,7 @@ private fun PatientListLayout(
                     items = state.patientSearched,
                     key = { it.id }
                 ) { patient ->
-                    PatientItem(
+                    PatientCard(
                         patient = patient,
                         onClick = { onIntent(Intent.OnPatientClicked(patient)) },
                         modifier = Modifier
@@ -163,51 +165,9 @@ private fun PatientListLayout(
 }
 
 @Composable
-private fun PatientItem(
-    patient: Patient,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .surface(
-                onClick = onClick
-            )
-            .padding(
-                horizontal = AppDimension.layoutHorizontalMargin,
-                vertical = AppDimension.layoutMediumMargin
-            )
-    ) {
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            Text(
-                text = patient.name,
-                style = AppTypography.titleRegular18,
-                color = AppTheme.colors.textPrimary,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Text(
-                text = patient.birthDate.format { date() },
-                style = AppTypography.bodyRegular16,
-                color = AppTheme.colors.textPrimary,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        Icon(
-            painter = patient.sex.iconPainter,
-            tint = AppTheme.colors.textDisabled,
-            contentDescription = "Patient sex",
-        )
-    }
-}
-
-@Composable
 @Preview
 private fun Preview(@PreviewParameter(ThemePreviewParameter::class) isDark: Boolean) {
-    AppTheme {
+    AppTheme(isDark) {
         PatientListLayout(
             state = State(),
             onIntent = {}

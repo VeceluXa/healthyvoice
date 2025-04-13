@@ -1,4 +1,4 @@
-package com.danilovfa.core.presentation.notification
+package com.danilovfa.common.core.presentation.notification
 
 import android.Manifest
 import android.annotation.SuppressLint

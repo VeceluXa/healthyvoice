@@ -11,7 +11,7 @@ interface RootPatientComponent {
     val childStack: Value<ChildStack<*, Child>>
 
     sealed class Output {
-        data class NavigateAnalysis(val analysisId: Long) : Output()
+        data class NavigateAnalysis(val recordingId: Long) : Output()
         data class NavigateRecord(val patientId: Long) : Output()
     }
 

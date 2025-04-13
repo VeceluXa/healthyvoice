@@ -41,6 +41,7 @@ import com.danilovfa.common.resources.strings
 import com.danilovfa.common.uikit.composables.HSpacer
 import com.danilovfa.common.uikit.composables.VSpacer
 import com.danilovfa.common.uikit.composables.animation.AnimatedVisibilityNullableValue
+import com.danilovfa.common.uikit.composables.button.AppButtonColors
 import com.danilovfa.common.uikit.composables.button.ButtonLarge
 import com.danilovfa.common.uikit.composables.button.OutlinedButton
 import com.danilovfa.common.uikit.composables.button.TextButtonLarge
@@ -66,6 +67,7 @@ fun AlertDialog(
                 confirmButtonTitle = state.confirmButtonTitle,
                 dismissButtonTitle = state.dismissButtonTitle,
                 onConfirmClick = state.onConfirmClick,
+                isConfirmNegative = state.isConfirmNegative,
                 onDismissClick = state.onDismissClick
             )
 
@@ -251,6 +253,7 @@ private fun DefaultAlertDialog(
     title: Text? = null,
     illustration: Painter? = null,
     confirmButtonTitle: Text? = null,
+    isConfirmNegative: Boolean = false,
     dismissButtonTitle: Text? = null,
     onConfirmClick: (() -> Unit)? = null
 ) {
@@ -297,18 +300,19 @@ private fun DefaultAlertDialog(
 
             VSpacer(16.dp)
 
-            confirmButtonTitle?.let {
-                ButtonLarge(
-                    text = confirmButtonTitle.get(context),
-                    onClick = { onConfirmClick?.invoke() }
-                )
-                VSpacer(4.dp)
-            }
-
             dismissButtonTitle?.let {
                 TextButtonLarge(
                     text = dismissButtonTitle.get(context),
                     onClick = onDismissClick
+                )
+                VSpacer(4.dp)
+            }
+
+            confirmButtonTitle?.let {
+                ButtonLarge(
+                    text = confirmButtonTitle.get(context),
+                    colors = if (isConfirmNegative) AppButtonColors.errorButtonColors() else AppButtonColors.primaryButtonColors(),
+                    onClick = { onConfirmClick?.invoke() }
                 )
             }
         }

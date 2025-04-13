@@ -4,11 +4,12 @@ import co.touchlab.kermit.Logger
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.chaquo.python.PyObject
 import com.chaquo.python.Python
-import com.danilovfa.common.core.domain.log.LOG_TAG
 import com.danilovfa.common.core.presentation.Text
+import com.danilovfa.domain.analysis.AnalysisRepository
+import com.danilovfa.domain.common.model.Analysis
 import com.danilovfa.domain.record.repository.RecordRepository
 import com.danilovfa.domain.record.repository.model.AudioCut
-import com.danilovfa.domain.record.repository.model.AudioData
+import com.danilovfa.domain.record.repository.model.RecordingFull
 import com.danilovfa.presentation.analysis.model.AnalyzeParametersUi
 import com.danilovfa.presentation.analysis.store.AnalyzeStore.Intent
 import com.danilovfa.presentation.analysis.store.AnalyzeStore.Label
@@ -18,6 +19,10 @@ import com.danilovfa.presentation.analysis.store.AnalyzeStoreFactory.Msg
 import com.danilovfa.libs.recorder.utils.AudioConstants
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
@@ -29,69 +34,100 @@ internal class AnalyzeStoreExecutor : KoinComponent,
     CoroutineExecutor<Intent, Action, State, Msg, Label>() {
 
     private val recordRepository: RecordRepository by inject()
+    private val analysisRepository: AnalysisRepository by inject()
 
     override fun executeAction(action: Action, getState: () -> State) = when (action) {
-        Action.ProcessRecording -> processRecording(getState().audioData)
+        Action.ProcessRecording -> getAnalysis(recordingId = getState().recordingId)
+        Action.ObserveAnalysis -> observeRecordingAnalysis(getState().recordingId)
     }
 
     override fun executeIntent(intent: Intent, getState: () -> State) = when (intent) {
-        Intent.OnBackClicked -> publish(Label.ShowConfirmNavigateBack)
-        Intent.OnBackConfirmed -> publish(Label.NavigateBack)
-        Intent.RetryAnalyze -> processRecording(getState().audioData)
+        Intent.OnBackClicked -> publish(Label.NavigateBack)
+        Intent.RetryAnalyze -> getAnalysis(recordingId = getState().recordingId)
     }
 
-    private fun processRecording(audioData: AudioData) {
+    private fun observeRecordingAnalysis(recordingId: Long) {
+        dispatch(Msg.UpdateAnalysisLoading(true))
+        analysisRepository.observeRecordingAnalysis(recordingId)
+            .filterNotNull()
+            .distinctUntilChanged()
+            .onEach { recordingAnalysis ->
+                dispatch(Msg.UpdateRecordingAnalysis(recordingAnalysis))
+
+                if (recordingAnalysis.analysis != null) {
+                    dispatch(Msg.UpdateAnalysisLoading(false))
+                }
+            }
+            .launchIn(scope)
+    }
+
+    private fun getAnalysis(recordingId: Long) {
         scope.launch {
-            dispatch(Msg.UpdateLoading(true))
-            val recordingRaw = recordRepository.loadRecordingShort(audioData.filename).getOrElse {
-                Logger.withTag(TAG).e("processRecording", it)
-                publish(Label.ShowError(text = Text.Plain(it.message ?: "")))
-                dispatch(Msg.UpdateLoading(false))
+            dispatch(Msg.UpdateRecordingLoading(true))
+
+            val recording = recordRepository.getFullRecording(recordingId).getOrNull()
+
+            if (recording == null) {
+                publish(Label.ShowError(text = Text.Plain("Error")))
                 return@launch
             }
-            dispatch(Msg.UpdateLoading(false))
 
-            scope.launch { getParameters(audioData, recordingRaw) }
-            scope.launch { getWaveform(audioData, recordingRaw) }
+            getWaveform(recording.rawData)
+
+            dispatch(Msg.UpdateRecordingLoading(false))
+
+            if (analysisRepository.isAnalysisProcessed(recordingId).not()) {
+                processRecording(recording)
+                    .onSuccess {
+                        saveParameters(
+                            recordingId = recordingId,
+                            patientId = recording.recording.patientId,
+                            parameters = it
+                        )
+                    }
+            }
         }
     }
 
-    private suspend fun getWaveform(audioData: AudioData, rawData: Array<Short>) {
-        val amplitudes = rawData
-            .toList()
-            .chunked(10)
-            .map { chunk ->
-                chunk.average().roundToInt().toShort()
-            }
+    private suspend fun getWaveform(rawData: Array<Short>) {
+        val amplitudes = withContext(Dispatchers.Default) {
+            rawData
+                .toList()
+                .chunked(10)
+                .map { chunk ->
+                    chunk.average().roundToInt().toShort()
+                }
+        }
 
         dispatch(Msg.UpdateAmplitudes(amplitudes))
     }
 
-    private suspend fun getParameters(audioData: AudioData, rawData: Array<Short>) {
+    private suspend fun processRecording(recording: RecordingFull): Result<AnalyzeParametersUi> {
         if (Python.isStarted().not()) {
             Logger.withTag(TAG).e("Python is not initialized!")
             publish(Label.ShowError())
-            return
+            return Result.failure(Exception("Python is not initialized"))
         }
 
         val analyzer = Python.getInstance().getModule("signal_processor")
 
-        try {
-            val cutData = audioData.audioCut?.let { cut ->
-                val (startIndex, endIndex) = getCutIndices(cut, audioData.byteRate)
-                rawData.copyOfRange(startIndex, endIndex + 1)
-            } ?: rawData
+        return try {
+            val cutData = recording.audioData.audioCut?.let { cut ->
+                val (startIndex, endIndex) = getCutIndices(cut, recording.audioData.byteRate)
+                recording.rawData.copyOfRange(startIndex, endIndex + 1)
+            } ?: recording.rawData
 
-            analyze(analyzer, cutData)
+            Result.success(analyze(analyzer, cutData))
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
             Logger.withTag(TAG).e("getParameters", e)
-            publish(Label.ShowError())
+            publish(Label.ShowError(Text.Plain(e.message ?: "")))
+            Result.failure(e)
         }
     }
 
-    private suspend fun analyze(analyzer: PyObject, recordingRaw: Array<Short>) {
+    private suspend fun analyze(analyzer: PyObject, recordingRaw: Array<Short>): AnalyzeParametersUi {
         var startTime = Clock.System.now().toEpochMilliseconds()
 
         Logger.withTag(TAG).d("Started python analysis")
@@ -115,16 +151,15 @@ internal class AnalyzeStoreExecutor : KoinComponent,
         Logger.withTag(TAG)
             .d("voice_parameters: ${Clock.System.now().toEpochMilliseconds() - startTime} ms")
 
-        updateParameters(pyParams)
-
+        return getParametersFromProcessing(pyParams)
     }
 
-    private fun updateParameters(pyParams: PyObject) {
+    private fun getParametersFromProcessing(pyParams: PyObject): AnalyzeParametersUi {
         val paramsList = pyParams.asList().map {
             it.toFloat()
         }
 
-        val params = AnalyzeParametersUi(
+        return AnalyzeParametersUi(
             j1 = paramsList.getOrNull(0) ?: 0f,
             j3 = paramsList.getOrNull(1) ?: 0f,
             j5 = paramsList.getOrNull(2) ?: 0f,
@@ -135,11 +170,29 @@ internal class AnalyzeStoreExecutor : KoinComponent,
             f0Mean = paramsList.getOrNull(7) ?: 0f,
             f0Sd = paramsList.getOrNull(8) ?: 0f
         )
+    }
 
-        Logger.withTag(TAG).d("Params: $params")
+    private suspend fun saveParameters(
+        patientId: Long,
+        recordingId: Long,
+        parameters: AnalyzeParametersUi
+    ) {
+        val analysis = Analysis(
+            recordingId = recordingId,
+            patientId = patientId,
+            timestamp = Clock.System.now(),
+            j1 = parameters.j1,
+            j3 = parameters.j3,
+            j5 = parameters.j5,
+            s1 = parameters.s1,
+            s3 = parameters.s3,
+            s5 = parameters.s5,
+            s11 = parameters.s11,
+            f0 = parameters.f0Mean,
+            f0sd = parameters.f0Sd
+        )
 
-        dispatch(Msg.UpdateParameters(params))
-
+        analysisRepository.addAnalysis(analysis)
     }
 
     /**

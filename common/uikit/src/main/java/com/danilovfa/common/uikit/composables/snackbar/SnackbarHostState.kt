@@ -20,14 +20,15 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import androidx.compose.material3.Snackbar as Material3Snackbar
+import androidx.compose.material3.SnackbarHostState as Material3SnackbarHostState
 
 @Composable
 fun rememberSnackbarHostState(): SnackbarHostState = remember {
-    SnackbarHostState(androidx.compose.material3.SnackbarHostState())
+    SnackbarHostState(Material3SnackbarHostState())
 }
 
 @Stable
-class SnackbarHostState(val delegate: androidx.compose.material3.SnackbarHostState) {
+class SnackbarHostState(val delegate: Material3SnackbarHostState) {
     var snackbarAlignment: SnackbarAlignment by mutableStateOf(SnackbarAlignment.BOTTOM)
 
     var paddingTop: Dp by mutableStateOf(0.dp)
@@ -80,7 +81,7 @@ class SnackbarHostState(val delegate: androidx.compose.material3.SnackbarHostSta
 
     @Suppress("ExplicitCollectionElementAccessMethod")
     private inline fun <reified T> getField(): T {
-        return androidx.compose.material3.SnackbarHostState::class.java.declaredFields
+        return Material3SnackbarHostState::class.java.declaredFields
             .first { T::class.java.isAssignableFrom(it.type) }
             .apply { isAccessible = true }
             .get(delegate) as T
@@ -125,6 +126,6 @@ fun SnackbarPaddingEffect(
 }
 
 @Composable
-internal fun rememberSnackbarHostState(snackbarHostState: androidx.compose.material3.SnackbarHostState): SnackbarHostState {
+internal fun rememberSnackbarHostState(snackbarHostState: Material3SnackbarHostState): SnackbarHostState {
     return remember(snackbarHostState) { SnackbarHostState(snackbarHostState) }
 }

@@ -18,13 +18,13 @@ import com.danilovfa.presentation.analysis.store.AnalyzeStoreFactory
 import com.danilovfa.common.resources.strings
 
 class DefaultAnalyzeComponent(
-    private val audioData: AudioData,
+    private val recordingId: Long,
     private val storeFactory: StoreFactory,
     componentContext: ComponentContext,
     private val output: (Output) -> Unit
 ) : AnalyzeComponent, StatefulDefaultComponent<Intent, State, Label>(componentContext) {
     private val store = instanceKeeper.getStore {
-        AnalyzeStoreFactory(storeFactory).create(audioData)
+        AnalyzeStoreFactory(storeFactory).create(recordingId = recordingId)
     }
 
     override val stateFlow = store.stateFlow
@@ -34,29 +34,12 @@ class DefaultAnalyzeComponent(
         observeLabels(store.labels) { label ->
             when (label) {
                 Label.NavigateBack -> output(Output.NavigateBack)
-                Label.ShowConfirmNavigateBack -> showConfirmNavigateBack()
                 is Label.ShowError -> showAnalyzeError(label.text)
             }
         }
     }
 
     override fun onIntent(intent: Intent) = store.accept(intent)
-
-    private fun showConfirmNavigateBack() {
-        val alertDialogState = AlertDialogState.DefaultDialogState(
-            title = Text.Resource(strings.analyze_back_confirm_title),
-            text = Text.Resource(strings.analyze_back_confirm_text),
-            confirmButtonTitle = Text.Resource(strings.confirm),
-            dismissButtonTitle = Text.Resource(strings.dismiss),
-            onConfirmClick = {
-                onIntent(Intent.OnBackConfirmed)
-                alertDialogDelegate.dismissAlertDialog()
-            },
-            onDismissClick = alertDialogDelegate::dismissAlertDialog
-        )
-
-        alertDialogDelegate.updateAlertDialogState(alertDialogState)
-    }
 
     private fun showAnalyzeError(text: Text?) {
         val alertDialogState = AlertDialogState.DefaultDialogState(
@@ -69,7 +52,7 @@ class DefaultAnalyzeComponent(
                 alertDialogDelegate.dismissAlertDialog()
             },
             onDismissClick = {
-                onIntent(Intent.OnBackConfirmed)
+                onIntent(Intent.OnBackClicked)
                 alertDialogDelegate.dismissAlertDialog()
             }
         )
