@@ -164,7 +164,7 @@ def voice_parameters(data, segments, F0):
         amplitudes[i] = max_amplitude - min_amplitude          
         
 
-    J1 = perturbation_L(periods, 1)        
+    J1 = perturbation_L(periods, 1)
     J3 = perturbation_L(periods, 3)    
     J5 = perturbation_L(periods, 5)
 

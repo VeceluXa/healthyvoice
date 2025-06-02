@@ -26,14 +26,12 @@ internal class PatientCreateStoreFactory(private val storeFactory: StoreFactory)
         data class ChangeName(val name: String) : Msg()
         data class ChangeBirthDate(val birthDate: LocalDate) : Msg()
         data class ChangeSex(val sex: Sex) : Msg()
-        data class ChangeAddress(val address: String) : Msg()
         data class ChangeNote(val note: String) : Msg()
         data class ChangeSaving(val isSaving: Boolean) : Msg()
     }
 
     private val reducer = Reducer<State, Msg> { msg ->
         when (msg) {
-            is Msg.ChangeAddress -> copy(address = msg.address)
             is Msg.ChangeBirthDate -> copy(birthDate = msg.birthDate)
             is Msg.ChangeName -> copy(name = msg.name)
             is Msg.ChangeNote -> copy(note = msg.note)

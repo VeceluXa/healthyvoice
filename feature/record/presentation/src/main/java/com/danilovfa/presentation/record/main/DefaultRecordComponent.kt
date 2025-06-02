@@ -8,6 +8,7 @@ import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import com.danilovfa.common.base.component.stateful.StatefulDefaultComponent
 import com.danilovfa.common.base.dialog.AlertDialogState
+import com.danilovfa.common.base.utils.decompose.onBackClicked
 import com.danilovfa.common.core.presentation.Text
 import com.danilovfa.presentation.record.main.RecordComponent.Output
 import com.danilovfa.presentation.record.main.store.RecordStore.Intent
@@ -31,8 +32,10 @@ internal class DefaultRecordComponent(
     override val stateFlow = store.stateFlow
 
     init {
+        backHandler.onBackClicked { onIntent(Intent.OnBackClicked) }
         observeLabels(store.labels) { label ->
             when (label) {
+                Label.NavigateBack -> output(Output.NavigateBack)
                 is Label.Analyze -> output(Output.NavigateCut(label.recordingId))
                 Label.RequestAudioPermission -> requestPermissionEventDelegate.requestPermission(Manifest.permission.RECORD_AUDIO)
                 Label.ShowRationale -> showAudioPermissionRationale()

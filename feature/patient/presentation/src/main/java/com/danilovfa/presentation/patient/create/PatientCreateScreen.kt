@@ -143,19 +143,6 @@ private fun PatientCreateContent(
 
         item {
             TextFieldLarge(
-                value = state.address,
-                onValueChange = { onIntent(Intent.OnAddressChanged(it)) },
-                labelText = stringResource(strings.patient_address),
-                isRequired = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = AppDimension.layoutHorizontalMargin)
-            )
-            VSpacer(AppDimension.layoutMainMargin)
-        }
-
-        item {
-            TextFieldLarge(
                 value = state.note,
                 onValueChange = { onIntent(Intent.OnNoteChanged(it)) },
                 labelText = stringResource(strings.patient_note),

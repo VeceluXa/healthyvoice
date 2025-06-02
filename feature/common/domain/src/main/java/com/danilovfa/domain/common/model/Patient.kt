@@ -8,7 +8,6 @@ data class Patient(
     val id: Long = 0L,
     val name: String,
     val birthDate: LocalDate,
-    val address: String,
     val sex: Sex,
     val note: String = ""
 )

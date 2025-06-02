@@ -12,7 +12,6 @@ data class PatientEntity(
     val id: Long = 0L,
     val name: String,
     val birthDate: LocalDate,
-    val address: String,
     val sex: Sex,
     val note: String
 )
@@ -21,7 +20,6 @@ fun PatientEntity.toDomain() = Patient(
     id = id,
     name = name,
     birthDate = birthDate,
-    address = address,
     sex = sex,
     note = note
 )
@@ -30,7 +28,6 @@ fun Patient.toEntity() = PatientEntity(
     id = id,
     name = name,
     birthDate = birthDate,
-    address = address,
     sex = sex,
     note = note
 )

@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -76,6 +77,11 @@ internal class PatientDetailsStoreExecutor : KoinComponent,
     private fun observeAnalyzes(patientId: Long) {
         analysisRepository.observePatientRecordingAnalyzes(patientId)
             .distinctUntilChanged()
+            .map { analyzes ->
+                analyzes
+                    .sortedBy { it.recording.timestamp }
+                    .reversed()
+            }
             .onEach { analyzes ->
                 dispatch(Msg.ChangeAnalyzes(analyzes))
                 observeSearchQuery(analyzes)
@@ -111,7 +117,8 @@ internal class PatientDetailsStoreExecutor : KoinComponent,
         val optimizedQuery = query.lowercase().trim()
 
         val searchedAnalyzes = analyzes.filter {
-            it.recording.timestamp.toLocalDateTime(TimeZone.UTC).format { dateTime() }.lowercase().contains(optimizedQuery)
+            it.recording.timestamp.toLocalDateTime(TimeZone.UTC).format { dateTime() }.lowercase()
+                .contains(optimizedQuery)
         }
 
         dispatch(Msg.ChangeSearchedAnalyzes(searchedAnalyzes))

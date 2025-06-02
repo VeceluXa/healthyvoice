@@ -3,6 +3,7 @@ package com.danilovfa.presentation.record.main.store
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
+import com.danilovfa.domain.common.model.Recording
 import com.danilovfa.presentation.record.main.store.RecordStore.Intent
 import com.danilovfa.presentation.record.main.store.RecordStore.Label
 import com.danilovfa.presentation.record.main.store.RecordStore.State

@@ -1,5 +1,6 @@
 plugins {
     id("com.danilovfa.android.library.presentation")
+    id("com.xcporter.metaview")
 }
 
 android {
@@ -7,4 +8,9 @@ android {
 }
 
 dependencies {
+}
+
+generateUml {
+    classTree {  }
+    functionTree {  }
 }

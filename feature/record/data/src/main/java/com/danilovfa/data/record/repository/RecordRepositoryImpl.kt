@@ -45,31 +45,23 @@ internal class RecordRepositoryImpl(
 
         recording.file.createNewFile()
 
-        val recordingId = dao.addRecording(recording.toEntity())
-
-        return@withContext recording.copy(
-            id = recordingId
-        )
+        return@withContext recording
     }
 
-    override suspend fun endRecording(id: Long): Result<Recording> =
+    override suspend fun endRecording(recording: Recording): Result<Recording> =
         try {
-            val recording = dao.getRecording(id)?.toDomain(context)?.let { recording ->
-                val file = recording.file
+            val file = recording.file
+            val audioData = getAudioDataFromFile(file)
 
-                val audioData = getAudioDataFromFile(file)
+            val updatedRecording = recording.copy(
+                durationMillis = audioData.audioDurationMillis,
+                cutStart = 0,
+                cutEnd = audioData.audioDurationMillis
+            )
 
-                val updatedRecording = recording.copy(
-                    durationMillis = audioData.audioDurationMillis,
-                    cutStart = 0,
-                    cutEnd = audioData.audioDurationMillis
-                )
+            val recordingId = dao.addRecording(updatedRecording.toEntity())
 
-                dao.updateRecording(updatedRecording.toEntity())
-                updatedRecording
-            } ?: throw Exception("Recording not found")
-
-            Result.success(recording)
+            Result.success(recording.copy(id = recordingId))
         } catch (e: Exception) {
             Result.failure(e)
         }

@@ -88,7 +88,7 @@ class DefaultRootComponent(
         data class Record(val patientId: Long) : Config()
 
         @Serializable
-        data class Analysis(val recordingId: Long, ) : Config()
+        data class Analysis(val recordingId: Long) : Config()
 
         @Serializable
         data object Patient : Config()

@@ -11,4 +11,5 @@ plugins {
     alias(libs.plugins.chaquo).apply(false)
     alias(libs.plugins.compose.compiler).apply(false)
     alias(libs.plugins.jetbrains.kotlin.jvm) apply false
+    id("com.xcporter.metaview").version("0.0.5").apply(false)
 }

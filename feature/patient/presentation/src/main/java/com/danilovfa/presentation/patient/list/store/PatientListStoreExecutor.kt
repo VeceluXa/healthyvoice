@@ -72,7 +72,6 @@ internal class PatientListStoreExecutor : KoinComponent,
         val searchedPatients = patients.filter { patient ->
             patient.name.lowercase().contains(lcQuery) ||
                     patient.birthDate.format { date() }.contains(lcQuery) ||
-                    patient.address.lowercase().contains(lcQuery) ||
                     patient.note.lowercase().contains(lcQuery)
         }
 

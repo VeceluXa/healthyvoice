@@ -55,7 +55,7 @@ internal fun RecordingWaveform(
     }
 
     var scrollDelta by remember {
-        mutableFloatStateOf(-0f)//-(screenWidthPx / 2))
+        mutableFloatStateOf(-0f) //-(screenWidthPx / 2))
     }
 
     val waveformController = rememberWaveformController(amplitudes) { prev, new ->

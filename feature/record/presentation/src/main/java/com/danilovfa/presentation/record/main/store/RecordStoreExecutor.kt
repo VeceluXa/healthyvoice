@@ -6,6 +6,7 @@ import co.touchlab.kermit.Logger
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.danilovfa.common.base.permission.PermissionStatus
 import com.danilovfa.common.core.presentation.Text
+import com.danilovfa.common.core.presentation.error.getErrorText
 import com.danilovfa.common.resources.strings
 import com.danilovfa.domain.record.repository.RecordRepository
 import com.danilovfa.libs.recorder.config.AudioRecordConfig
@@ -39,6 +40,7 @@ internal class RecordStoreExecutor : KoinComponent,
     private var hasRecordClicked: Boolean = false
 
     override fun executeIntent(intent: Intent, getState: () -> State): Unit = when (intent) {
+        Intent.OnBackClicked -> publish(Label.NavigateBack)
         Intent.OnRecordStartClicked -> onRecordClicked()
         is Intent.OnPermissionStatusChanged -> onPermissionStatusChanged(
             patientId = getState().patientId,
@@ -99,8 +101,9 @@ internal class RecordStoreExecutor : KoinComponent,
             startTimer()
             stopRecording()
 
-            recordRepository.endRecording(recording.id)
-            publish(Label.Analyze(recording.id))
+            recordRepository.endRecording(recording)
+                .onSuccess { publish(Label.Analyze(it.id)) }
+                .onFailure { publish(Label.ShowError(it.getErrorText())) }
         }
     }
 
