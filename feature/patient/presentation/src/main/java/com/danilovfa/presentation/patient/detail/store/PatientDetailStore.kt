@@ -32,7 +32,6 @@ internal interface PatientDetailStore : Store<Intent, State, Label> {
 
     sealed class Label {
         data object NavigateBack : Label()
-        data object ExportPatient : Label()
         data object NewRecord : Label()
         data class EditPatient(val patient: Patient) : Label()
         data class ShowAnalysis(val recordingId: Long) : Label()

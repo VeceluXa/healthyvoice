@@ -7,16 +7,19 @@ import com.chaquo.python.Python
 import com.danilovfa.common.core.presentation.Text
 import com.danilovfa.domain.analysis.AnalysisRepository
 import com.danilovfa.domain.common.model.Analysis
+import com.danilovfa.domain.common.model.RecordingAnalysis
 import com.danilovfa.domain.record.repository.RecordRepository
 import com.danilovfa.domain.record.repository.model.AudioCut
 import com.danilovfa.domain.record.repository.model.RecordingFull
+import com.danilovfa.export.presentation.ExportWorkFactory
+import com.danilovfa.export.presentation.model.ExportRequestData
+import com.danilovfa.libs.recorder.utils.AudioConstants
 import com.danilovfa.presentation.analysis.model.AnalyzeParametersUi
 import com.danilovfa.presentation.analysis.store.AnalyzeStore.Intent
 import com.danilovfa.presentation.analysis.store.AnalyzeStore.Label
 import com.danilovfa.presentation.analysis.store.AnalyzeStore.State
 import com.danilovfa.presentation.analysis.store.AnalyzeStoreFactory.Action
 import com.danilovfa.presentation.analysis.store.AnalyzeStoreFactory.Msg
-import com.danilovfa.libs.recorder.utils.AudioConstants
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -35,6 +38,7 @@ internal class AnalyzeStoreExecutor : KoinComponent,
 
     private val recordRepository: RecordRepository by inject()
     private val analysisRepository: AnalysisRepository by inject()
+    private val exportWorkFactory: ExportWorkFactory by inject()
 
     override fun executeAction(action: Action, getState: () -> State) = when (action) {
         Action.ProcessRecording -> getAnalysis(recordingId = getState().recordingId)
@@ -44,6 +48,8 @@ internal class AnalyzeStoreExecutor : KoinComponent,
     override fun executeIntent(intent: Intent, getState: () -> State) = when (intent) {
         Intent.OnBackClicked -> publish(Label.NavigateBack)
         Intent.RetryAnalyze -> getAnalysis(recordingId = getState().recordingId)
+        Intent.OnExportClicked -> export(getState().recordingAnalysis)
+        Intent.OnDeleteClicked -> publish(Label.ShowTodo)
     }
 
     private fun observeRecordingAnalysis(recordingId: Long) {
@@ -127,7 +133,10 @@ internal class AnalyzeStoreExecutor : KoinComponent,
         }
     }
 
-    private suspend fun analyze(analyzer: PyObject, recordingRaw: Array<Short>): AnalyzeParametersUi {
+    private suspend fun analyze(
+        analyzer: PyObject,
+        recordingRaw: Array<Short>
+    ): AnalyzeParametersUi {
         var startTime = Clock.System.now().toEpochMilliseconds()
 
         Logger.withTag(TAG).d("Started python analysis")
@@ -137,7 +146,13 @@ internal class AnalyzeStoreExecutor : KoinComponent,
         }.asList()
 
         val pyWmMethod = withContext(Dispatchers.Default) {
-            analyzer.callAttr("WM_method", recordingRaw, pySegments[1], AudioConstants.FREQUENCY_44100, pySegments[0])
+            analyzer.callAttr(
+                "WM_method",
+                recordingRaw,
+                pySegments[1],
+                AudioConstants.FREQUENCY_44100,
+                pySegments[0]
+            )
         }.asList()
 
         Logger.withTag(TAG)
@@ -203,6 +218,17 @@ internal class AnalyzeStoreExecutor : KoinComponent,
         val endIndexByte = (cut.endMillis * byteRate / 1000).toInt()
 
         return Pair(startIndexByte / 2, endIndexByte / 2)
+    }
+
+    private fun export(recordingAnalysis: RecordingAnalysis?) {
+        recordingAnalysis?.let { recording ->
+            exportWorkFactory.create(
+                ExportRequestData.Analysis(
+                    patientId = recording.recording.patientId,
+                    analysisId = recording.recording.id
+                )
+            )
+        }
     }
 
     companion object {

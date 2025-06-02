@@ -60,6 +60,7 @@
     <string name="patient_delete_dialog_title">Удалить пациента?</string>
     <string name="patient_delete_dialog_description">Все данные пациента, включая его анализы будут потеряны навсегда</string>
     <string name="patient_delete">Удалить пациента</string>
+    <string name="patient_delete_all">Удалить всех пациентов</string>
     <string name="patient_edit">Изменить пациента</string>
     <string name="patient_analyzes_empty_title">Нет анализов!</string>
     <string name="patient_analyzes_empty_description">Добавьте новый анализ для дальнейшей работы</string>
@@ -90,6 +91,19 @@
     <string name="analyze_back_confirm_text">Вы потеряете текущую запись и анализ!</string>
     <string name="analyze_voice_parameters">Параметры голоса</string>
     <string name="analyze_norm">Норма</string>
+    <string name="analyze_min">МИН</string>
+    <string name="analyze_max">МАКС</string>
     <string name="analyze_loading">Обрабатываем запись</string>
+    <string name="analyze_delete">Удалить анализ</string>
     <!-- End Analyze Section -->
+
+    <!-- Start Export Section -->
+    <string name="export_dialog_title">Поделиться ZIP экспортом</string>
+    <string name="export_notification_title">Экспорт создан</string>
+    <string name="export_notification_description">Нажмите на уведомления для отправки экспорта</string>
+    <string name="export_notification_channel_description">Экспорт данных</string>
+    <string name="dialog_notifications_rationale_title">Требуется разрешение</string>
+    <string name="dialog_notifications_rationale_text">Требуется разрешение на отображение уведомлений для возможности экспортировать данные в фоне.</string>
+    <string name="dialog_permissions_open_settings">Открыть настройки</string>
+    <!-- End Export Section -->
 </resources>

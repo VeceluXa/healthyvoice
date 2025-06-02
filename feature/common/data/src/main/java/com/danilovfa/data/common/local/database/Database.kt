@@ -7,6 +7,7 @@ import com.danilovfa.data.common.local.database.converters.InstantConverter
 import com.danilovfa.data.common.local.database.converters.LocalDateConverter
 import com.danilovfa.data.common.local.database.converters.LocalDateTimeConverter
 import com.danilovfa.data.common.local.database.dao.AnalysisDao
+import com.danilovfa.data.common.local.database.dao.ExportDao
 import com.danilovfa.data.common.local.database.dao.PatientDao
 import com.danilovfa.data.common.local.database.dao.RecordingAnalysisDao
 import com.danilovfa.data.common.local.database.dao.RecordingDao
@@ -29,4 +30,5 @@ internal abstract class Database : RoomDatabase() {
     abstract val analysisDao: AnalysisDao
     abstract val recordingDao: RecordingDao
     abstract val recordingAnalysisDao: RecordingAnalysisDao
+    abstract val exportDao: ExportDao
 }

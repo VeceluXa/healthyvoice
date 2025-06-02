@@ -15,6 +15,8 @@ interface AnalyzeStore : Store<Intent, State, Label> {
     sealed class Intent {
         data object RetryAnalyze : Intent()
         data object OnBackClicked : Intent()
+        data object OnExportClicked : Intent()
+        data object OnDeleteClicked : Intent()
     }
 
     @Immutable
@@ -31,5 +33,6 @@ interface AnalyzeStore : Store<Intent, State, Label> {
     sealed class Label {
         data object NavigateBack : Label()
         data class ShowError(val text: Text? = null) : Label()
+        data object ShowTodo : Label()
     }
 }

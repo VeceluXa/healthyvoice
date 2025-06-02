@@ -10,7 +10,6 @@ import com.danilovfa.common.base.dialog.AlertDialogState
 import com.danilovfa.common.base.utils.decompose.onBackClicked
 import com.danilovfa.common.core.presentation.Text
 import com.danilovfa.common.resources.strings
-import com.danilovfa.common.uikit.event.showTodo
 import com.danilovfa.presentation.patient.detail.PatientDetailComponent.Output
 import com.danilovfa.presentation.patient.detail.store.PatientDetailStore.Intent
 import com.danilovfa.presentation.patient.detail.store.PatientDetailStore.Label
@@ -34,7 +33,6 @@ internal class DefaultPatientDetailComponent(
         observeLabels(store.labels) { label ->
             when (label) {
                 is Label.EditPatient -> output(Output.NavigateEdit(label.patient))
-                Label.ExportPatient -> eventDelegate.showTodo()
                 Label.NavigateBack -> output(Output.NavigateBack)
                 Label.NewRecord -> output(Output.NavigateRecord(patientId))
                 is Label.ShowAnalysis -> output(Output.NavigateAnalysis(label.recordingId))

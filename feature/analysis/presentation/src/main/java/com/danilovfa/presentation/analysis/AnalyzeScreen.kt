@@ -10,14 +10,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import com.danilovfa.common.core.presentation.Text
+import com.danilovfa.common.resources.drawable.AppIcon
 import com.danilovfa.presentation.analysis.waveform.RecordingWaveform
 import com.danilovfa.presentation.analysis.model.ParameterDataUi
 import com.danilovfa.presentation.analysis.store.AnalyzeStore.Intent
@@ -26,6 +33,8 @@ import com.danilovfa.common.resources.strings
 import com.danilovfa.common.uikit.composables.VSpacer
 import com.danilovfa.common.uikit.composables.WSpacer
 import com.danilovfa.common.uikit.composables.dialog.AlertDialog
+import com.danilovfa.common.uikit.composables.popup.MenuItemsData
+import com.danilovfa.common.uikit.composables.popup.PopupMenu
 import com.danilovfa.common.uikit.composables.state.LoaderStub
 import com.danilovfa.common.uikit.composables.text.Text
 import com.danilovfa.common.uikit.composables.toolbar.NavigationIcon
@@ -65,9 +74,9 @@ private fun AnalyzeLayout(
             .systemBarsPadding()
     ) {
         Toolbar(
-            title = stringResource(strings.analyze_title),
-            navigationIcon = NavigationIcon.Back,
-            onNavigationClick = { onIntent(Intent.OnBackClicked) }
+            onBackClicked = { onIntent(Intent.OnBackClicked) },
+            onExportClicked = { onIntent(Intent.OnExportClicked) },
+            onDeleteClicked = { onIntent(Intent.OnDeleteClicked) }
         )
 
         when {
@@ -78,6 +87,54 @@ private fun AnalyzeLayout(
             )
         }
     }
+}
+
+@Composable
+private fun Toolbar(
+    onBackClicked: () -> Unit,
+    onExportClicked: () -> Unit,
+    onDeleteClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Toolbar(
+        title = stringResource(strings.analyze_title),
+        navigationIcon = NavigationIcon.Back,
+        onNavigationClick = onBackClicked,
+        actions = {
+            val isPopupExpanded = remember { mutableStateOf(false) }
+
+            val popupItems = arrayOf(
+                MenuItemsData(
+                    title = Text.Resource(strings.export),
+                    icon = AppIcon.Export,
+                    tint = AppTheme.colors.primary,
+                    onClick = onExportClicked,
+                ),
+                MenuItemsData(
+                    title = Text.Resource(strings.analyze_delete),
+                    icon = AppIcon.Delete,
+                    tint = AppTheme.colors.error,
+                    onClick = onDeleteClicked,
+                ),
+            )
+
+            Column(modifier) {
+                IconButton(
+                    onClick = { isPopupExpanded.value = true }
+                ) {
+                    Icon(
+                        painter = AppIcon.VerticalMore,
+                        tint = AppTheme.colors.primary,
+                        contentDescription = "More"
+                    )
+                }
+                PopupMenu(
+                    menuItemsData = popupItems,
+                    expandedState = isPopupExpanded
+                )
+            }
+        }
+    )
 }
 
 @Composable
@@ -137,13 +194,23 @@ private fun ParametersContent(
         modifier = modifier
             .fillMaxWidth()
     ) {
-        Row(Modifier.fillMaxWidth()) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = AppDimension.toolbarHorizontalMargin)
+        ) {
             Box(Modifier.weight(4f / 6f))
             Text(
-                text = stringResource(strings.analyze_norm),
+                text = stringResource(strings.analyze_min),
                 textAlign = TextAlign.Center,
-                style = AppTypography.titleMedium20,
-                modifier = Modifier.weight(2f / 6f)
+                style = AppTypography.bodyRegular16,
+                modifier = Modifier.weight(1f / 6f)
+            )
+            Text(
+                text = stringResource(strings.analyze_max),
+                textAlign = TextAlign.Center,
+                style = AppTypography.bodyRegular16,
+                modifier = Modifier.weight(1f / 6f)
             )
         }
 
@@ -184,6 +251,8 @@ private fun ParameterItem(
                 style = AppTypography.bodyRegular16,
                 modifier = Modifier.weight(1f)
             )
+
+            VerticalDivider()
 
             data.normMin?.let { normMin ->
                 Text(

@@ -82,6 +82,8 @@ dependencies {
     implementation(project(":feature:patient:data"))
     implementation(project(":feature:record:data"))
     implementation(project(":feature:analysis:data"))
+    implementation(project(":feature:export:presentation"))
+    implementation(project(":feature:export:data"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle)
@@ -91,5 +93,6 @@ dependencies {
     implementation(libs.bundles.decompose)
     implementation(libs.bundles.mvikotlin)
     implementation(libs.bundles.koin)
+    implementation(libs.koin.workmanager)
     implementation(libs.timber)
 }

@@ -16,6 +16,7 @@ import com.danilovfa.presentation.analysis.store.AnalyzeStore.Label
 import com.danilovfa.presentation.analysis.store.AnalyzeStore.State
 import com.danilovfa.presentation.analysis.store.AnalyzeStoreFactory
 import com.danilovfa.common.resources.strings
+import com.danilovfa.common.uikit.event.showTodo
 
 class DefaultAnalyzeComponent(
     private val recordingId: Long,
@@ -35,6 +36,7 @@ class DefaultAnalyzeComponent(
             when (label) {
                 Label.NavigateBack -> output(Output.NavigateBack)
                 is Label.ShowError -> showAnalyzeError(label.text)
+                Label.ShowTodo -> eventDelegate.showTodo()
             }
         }
     }

@@ -1,10 +1,13 @@
 package com.danilovfa.presentation.patient.list.store
 
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
+import com.danilovfa.common.base.permission.PermissionStatus
 import com.danilovfa.common.core.domain.time.KotlinDateTimeFormatters.date
 import com.danilovfa.common.core.domain.time.format
 import com.danilovfa.domain.common.model.Patient
 import com.danilovfa.domain.patient.repository.PatientRepository
+import com.danilovfa.export.presentation.ExportWorkFactory
+import com.danilovfa.export.presentation.model.ExportRequestData
 import com.danilovfa.presentation.patient.list.store.PatientListStore.Intent
 import com.danilovfa.presentation.patient.list.store.PatientListStore.Label
 import com.danilovfa.presentation.patient.list.store.PatientListStore.State
@@ -26,6 +29,7 @@ internal class PatientListStoreExecutor : KoinComponent,
     private val searchStateFlow = MutableStateFlow("")
 
     private val repository: PatientRepository by inject()
+    private val exportWorkFactory: ExportWorkFactory by inject()
 
     override fun executeAction(action: Action, getState: () -> State) = when (action) {
         Action.ObservePatients -> observePatients()
@@ -33,9 +37,12 @@ internal class PatientListStoreExecutor : KoinComponent,
 
     override fun executeIntent(intent: Intent, getState: () -> State) = when (intent) {
         Intent.OnCreatePatientClicked -> publish(Label.CreatePatient)
-        Intent.OnExportClicked -> publish(Label.ExportPatients)
+        Intent.OnExportClicked -> export()
         is Intent.OnPatientClicked -> publish(Label.ShowPatientDetails(intent.patient.id))
         is Intent.OnQueryChanged -> onSearchQueryChanged(intent.query)
+        is Intent.OnNotificationPermissionRequested -> onPermissionRequested(intent.permissionStatus)
+        Intent.RequestNotificationPermission -> publish(Label.RequestNotificationPermission)
+        Intent.OnDeleteClicked -> publish(Label.ShowTodo)
     }
 
     private fun observePatients() {
@@ -76,6 +83,18 @@ internal class PatientListStoreExecutor : KoinComponent,
         }
 
         dispatch(Msg.ChangeSearchedPatients(searchedPatients))
+    }
+
+    private fun export() {
+        exportWorkFactory.create(ExportRequestData.AllPatients)
+    }
+
+    private fun onPermissionRequested(permissionStatus: PermissionStatus) {
+        when (permissionStatus) {
+            is PermissionStatus.Denied -> publish(Label.ShowNotificationPermissionRationale)
+            is PermissionStatus.Granted -> publish(Label.DismissRequestNotificationPermission)
+            is PermissionStatus.NeedsRationale -> publish(Label.ShowNotificationPermissionRationale)
+        }
     }
 
     companion object {

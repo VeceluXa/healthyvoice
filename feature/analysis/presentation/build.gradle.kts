@@ -18,4 +18,5 @@ dependencies {
     implementation(project(":feature:record:domain"))
     implementation(project(":feature:common:domain"))
     implementation(project(":feature:analysis:domain"))
+    implementation(project(":feature:export:presentation"))
 }

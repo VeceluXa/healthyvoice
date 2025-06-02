@@ -1,6 +1,5 @@
 plugins {
     id("com.danilovfa.android.library.presentation")
-    id("com.xcporter.metaview")
 }
 
 android {
@@ -11,9 +10,6 @@ dependencies {
     implementation(project(":feature:common:domain"))
     implementation(project(":feature:patient:domain"))
     implementation(project(":feature:analysis:domain"))
-}
-
-generateUml {
-    classTree {  }
-    functionTree {  }
+    implementation(project(":feature:export:presentation"))
+    implementation(libs.androidx.activity.compose)
 }

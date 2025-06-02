@@ -6,6 +6,7 @@ import com.chaquo.python.android.AndroidPlatform
 import com.danilovfa.healthyvoice.di.modules
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
+import org.koin.androidx.workmanager.koin.workManagerFactory
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import timber.log.Timber
@@ -21,6 +22,7 @@ class App : Application() {
     private fun initKoin() {
         startKoin {
             androidContext(this@App)
+            workManagerFactory()
             modules(modules)
             if (BuildConfig.DEBUG) {
                 androidLogger(Level.DEBUG)

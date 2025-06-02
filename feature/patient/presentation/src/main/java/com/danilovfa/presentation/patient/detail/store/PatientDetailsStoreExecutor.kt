@@ -7,6 +7,8 @@ import com.danilovfa.domain.analysis.AnalysisRepository
 import com.danilovfa.domain.common.model.Patient
 import com.danilovfa.domain.common.model.RecordingAnalysis
 import com.danilovfa.domain.patient.repository.PatientRepository
+import com.danilovfa.export.presentation.ExportWorkFactory
+import com.danilovfa.export.presentation.model.ExportRequestData
 import com.danilovfa.presentation.patient.detail.store.PatientDetailStore.Intent
 import com.danilovfa.presentation.patient.detail.store.PatientDetailStore.Label
 import com.danilovfa.presentation.patient.detail.store.PatientDetailStore.State
@@ -38,6 +40,7 @@ internal class PatientDetailsStoreExecutor : KoinComponent,
 
     private val repository: PatientRepository by inject()
     private val analysisRepository: AnalysisRepository by inject()
+    private val exportWorkFactory: ExportWorkFactory by inject()
 
     override fun executeAction(action: Action, getState: () -> State) = when (action) {
         Action.ObservePatient -> observePatient(getState().patientId)
@@ -53,7 +56,7 @@ internal class PatientDetailsStoreExecutor : KoinComponent,
 
         Intent.OnBackClicked -> publish(Label.NavigateBack)
         Intent.OnEditPatientClicked -> onEditClicked(getState().patient)
-        Intent.OnExportClicked -> publish(Label.ExportPatient)
+        Intent.OnExportClicked -> export(getState().patientId)
         is Intent.OnNoteChanged -> onNoteChanged(intent.note)
         Intent.OnRecordClicked -> publish(Label.NewRecord)
         is Intent.OnSearchQueryChanged -> onQueryChanged(intent.query)
@@ -143,6 +146,10 @@ internal class PatientDetailsStoreExecutor : KoinComponent,
             repository.deletePatient(patientId)
             publish(Label.NavigateBack)
         }
+    }
+
+    private fun export(patientId: Long) {
+        exportWorkFactory.create(ExportRequestData.Patient(patientId))
     }
 
     companion object {

@@ -4,7 +4,7 @@ import android.content.Context
 import java.io.File
 
 object RecordingUtils {
-    const val RECORDING_DIR = "recordings"
+    private const val RECORDING_DIR = "recordings"
 
     fun getRecordingsDir(context: Context): File {
         val cacheDir = context.cacheDir

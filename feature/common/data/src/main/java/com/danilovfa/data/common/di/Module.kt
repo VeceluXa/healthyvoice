@@ -3,6 +3,7 @@ package com.danilovfa.data.common.di
 import androidx.room.Room
 import com.danilovfa.data.common.local.database.Database
 import com.danilovfa.data.common.local.database.dao.AnalysisDao
+import com.danilovfa.data.common.local.database.dao.ExportDao
 import com.danilovfa.data.common.local.database.dao.PatientDao
 import com.danilovfa.data.common.local.database.dao.RecordingAnalysisDao
 import com.danilovfa.data.common.local.database.dao.RecordingDao
@@ -33,5 +34,9 @@ val dataCommonModule = module {
 
     single<RecordingDao> {
         get<Database>().recordingDao
+    }
+
+    single<ExportDao> {
+        get<Database>().exportDao
     }
 }
