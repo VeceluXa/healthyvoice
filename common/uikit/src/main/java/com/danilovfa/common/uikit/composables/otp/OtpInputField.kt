@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.danilovfa.common.uikit.composables.VSpacer
 import com.danilovfa.common.uikit.composables.text.Text
+import com.danilovfa.common.uikit.modifier.adaptiveMaxWidth
 import com.danilovfa.common.uikit.modifier.autofill
 import com.danilovfa.common.uikit.preview.ThemePreviewParameter
 import com.danilovfa.common.uikit.theme.AppTheme
@@ -83,7 +84,7 @@ fun OtpInputField(
     }
 
     Column(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.adaptiveMaxWidth(),
     ) {
         OtpInputField(
             textValue = textFieldValue,

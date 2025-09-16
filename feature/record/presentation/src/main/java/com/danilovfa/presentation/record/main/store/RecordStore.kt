@@ -12,6 +12,7 @@ import com.danilovfa.presentation.record.main.store.RecordStore.Intent
 import com.danilovfa.presentation.record.main.store.RecordStore.Label
 import com.danilovfa.presentation.record.main.store.RecordStore.State
 import kotlinx.datetime.Instant
+import java.io.File
 
 internal interface RecordStore : Store<Intent, State, Label> {
     sealed class Intent {
@@ -21,7 +22,7 @@ internal interface RecordStore : Store<Intent, State, Label> {
         data object OnRecordStopClicked : Intent()
         data class OnPermissionStatusChanged(val permissionStatus: PermissionStatus) : Intent()
         data object OnShowHelpDialogClicked : Intent()
-        data class OnRecordImported(val context: Context, val uri: Uri) : Intent()
+        data class OnRecordImported(val file: File) : Intent()
     }
 
     @Immutable

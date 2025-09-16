@@ -66,25 +66,35 @@ def voice_segmentation(data,fs):
 def WM_method(x, x_filtered, fs, I_N):
     """
     x – input signal
+    x_filtered – filtered signal from voice_segmentation
     fs – sampling frequency
     I_N – rough marking of the input signal
+    Returns: F0 (frequencies) and P (refined peaks)
     """
     x = np.array(x)
     PERC = 0.05
     Nc = len(I_N)
+    if Nc < 3:
+        # Not enough segments to calculate
+        return np.array([]), np.array([])
+
     F0 = np.zeros(Nc - 3)
     P = np.zeros(Nc - 2, dtype=int)
 
-    # Find the minimum point and set P[0]
+    # Initialize P[0] with min point
     P[0] = np.argmin(x_filtered[I_N[0]:I_N[1]]) + I_N[0]
 
     for i in range(1, Nc - 2):
         P[i] = I_N[i] + (P[i - 1] - I_N[i - 1])
-        J1 = P[i] - round(PERC * (P[i] - P[i - 1]))
-        J2 = P[i] + round(PERC * (P[i] - P[i - 1]))
-        search_complete = False
+        J1 = max(0, P[i] - round(PERC * (P[i] - P[i - 1])))
+        J2 = min(len(x) - 1, P[i] + round(PERC * (P[i] - P[i - 1])))
 
-        while not search_complete:
+        search_complete = False
+        max_iter = 50
+        iter_count = 0
+
+        while not search_complete and iter_count < max_iter:
+            iter_count += 1
             err_min = np.inf
             Jm = None
 
@@ -94,33 +104,54 @@ def WM_method(x, x_filtered, fs, I_N):
                     err_min = err_cur
                     Jm = j
 
+            # If boundaries are hit, shrink range conservatively
             if Jm == J1:
-                J1 = J1 - round(0.5 * (J2 - J1))
+                J1 = max(0, J1 - max(1, round(0.5 * (J2 - J1))))
             elif Jm == J2:
-                J2 = J2 + round(0.5 * (J2 - J1))
+                J2 = min(len(x) - 1, J2 + max(1, round(0.5 * (J2 - J1))))
             else:
                 search_complete = True
 
+        if iter_count >= max_iter:
+            # Safety fallback: pick midpoint
+            Jm = (J1 + J2) // 2
+
         P[i] = Jm
 
-        # Calculate the error at Jm+1, Jm-1, and Jm
-        err_Jm_plus1, err_Jm_minus1, err_Jm = ERR(Jm+1, P, i, x), ERR(Jm-1, P, i, x), ERR(Jm, P, i, x)
-        delta = -0.5 * ((err_Jm_plus1 - err_Jm_minus1) / (err_Jm_plus1 - 2 * err_Jm + err_Jm_minus1))
+        # Delta correction for frequency
+        err_Jm_plus1 = ERR(Jm + 1, P, i, x)
+        err_Jm_minus1 = ERR(Jm - 1, P, i, x)
+        err_Jm = ERR(Jm, P, i, x)
 
-        # Frequency calculation
+        denom = err_Jm_plus1 - 2 * err_Jm + err_Jm_minus1
+        if denom != 0:
+            delta = -0.5 * ((err_Jm_plus1 - err_Jm_minus1) / denom)
+        else:
+            delta = 0
+
         F0[i - 1] = fs / (P[i] - P[i - 1] + delta)
 
-    return F0,P
+    return F0, P
 
 def ERR(j, P, i, buff):
     """
     Calculate error for current j, given P and i.
+    Returns np.inf if the slice is invalid.
     """
-    # sum_error = 0
-    err_cur = np.mean((buff[j:j + (j - P[i - 1])] - buff[P[i - 1]:j])**2)
-    # for k in range(P[i - 1], j):
-    #     sum_error += (buff[k + (j - P[i - 1])] - buff[k]) ** 2
-    # err_cur = (1 / (j - P[i - 1])) * sum_error
+    start_idx = P[i - 1]
+    end_idx = j
+    length = end_idx - start_idx
+
+    if length <= 0 or end_idx + length > len(buff):
+        return np.inf
+
+    segment = buff[end_idx:end_idx + length]
+    reference = buff[start_idx:end_idx]
+
+    if len(segment) != len(reference) or len(segment) == 0:
+        return np.inf
+
+    err_cur = np.mean((segment - reference) ** 2)
     return err_cur
 
 def perturbation_L(data, L):

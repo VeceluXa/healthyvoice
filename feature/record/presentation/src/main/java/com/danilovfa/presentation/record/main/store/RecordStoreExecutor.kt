@@ -2,6 +2,7 @@ package com.danilovfa.presentation.record.main.store
 
 import android.content.Context
 import android.net.Uri
+import androidx.core.net.toFile
 import co.touchlab.kermit.Logger
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.danilovfa.common.base.permission.PermissionStatus
@@ -25,6 +26,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.io.File
 
 internal class RecordStoreExecutor : KoinComponent,
     CoroutineExecutor<Intent, Nothing, State, Msg, Label>() {
@@ -50,7 +52,7 @@ internal class RecordStoreExecutor : KoinComponent,
         Intent.OnRecordStopClicked -> stopRecording()
         Intent.OnShowHelpDialogClicked -> publish(Label.ShowHelpDialog)
         Intent.OnImportRecordingClicked -> publish(Label.OpenFilePicker)
-        is Intent.OnRecordImported -> importRecording(getState().patientId, intent.uri, intent.context)
+        is Intent.OnRecordImported -> importRecording(getState().patientId, intent.file)
     }
 
     private fun onRecordClicked() {
@@ -127,9 +129,9 @@ internal class RecordStoreExecutor : KoinComponent,
         recorderJob?.cancel()
     }
 
-    private fun importRecording(patientId: Long, uri: Uri, context: Context) {
+    private fun importRecording(patientId: Long, file: File) {
         scope.launch {
-            val fileType = uri.path?.let { path ->
+            val fileType = file.path.let { path ->
                 path.substring(path.lastIndexOf('.'))
             }
 
@@ -138,7 +140,7 @@ internal class RecordStoreExecutor : KoinComponent,
                 return@launch
             }
 
-            context.contentResolver.openInputStream(uri)?.use { inputStream ->
+            file.inputStream().use { inputStream ->
                 inputStream.readBytes().takeUnless { it.size < WavHeader.HEADER_SIZE_BYTES }
                     ?.let { bytes ->
                         recordRepository.importRecording(patientId, bytes)

@@ -18,6 +18,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -40,6 +41,7 @@ import com.danilovfa.common.uikit.composables.text.Text
 import com.danilovfa.common.uikit.composables.toolbar.NavigationIcon
 import com.danilovfa.common.uikit.composables.toolbar.Toolbar
 import com.danilovfa.common.uikit.event.ObserveEvents
+import com.danilovfa.common.uikit.modifier.adaptiveMaxWidth
 import com.danilovfa.common.uikit.theme.AppDimension
 import com.danilovfa.common.uikit.theme.AppTheme
 import com.danilovfa.common.uikit.theme.AppTypography
@@ -68,6 +70,7 @@ private fun AnalyzeLayout(
     onIntent: (Intent) -> Unit
 ) {
     Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .background(AppTheme.colors.background)
@@ -169,7 +172,7 @@ private fun AnalyzeContent(
                 text = stringResource(strings.analyze_voice_parameters),
                 style = AppTypography.titleMedium20,
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .adaptiveMaxWidth()
                     .padding(horizontal = AppDimension.layoutHorizontalMargin)
             )
 
@@ -192,7 +195,7 @@ private fun ParametersContent(
 
     Column(
         modifier = modifier
-            .fillMaxWidth()
+            .adaptiveMaxWidth()
     ) {
         Row(
             Modifier

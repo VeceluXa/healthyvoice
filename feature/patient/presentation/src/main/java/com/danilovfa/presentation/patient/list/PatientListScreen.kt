@@ -3,7 +3,9 @@ package com.danilovfa.presentation.patient.list
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,6 +23,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -39,6 +42,7 @@ import com.danilovfa.common.uikit.composables.textfield.TextFieldLarge
 import com.danilovfa.common.uikit.composables.toolbar.Toolbar
 import com.danilovfa.common.uikit.event.ObserveEvents
 import com.danilovfa.common.uikit.event.ObserveRequestPermissionEvents
+import com.danilovfa.common.uikit.modifier.adaptiveMaxWidth
 import com.danilovfa.common.uikit.preview.ThemePreviewParameter
 import com.danilovfa.common.uikit.theme.AppDimension
 import com.danilovfa.common.uikit.theme.AppTheme
@@ -111,6 +115,7 @@ private fun PatientListLayout(
             .statusBarsPadding()
     ) { scaffoldPadding ->
         Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(scaffoldPadding)
@@ -141,7 +146,7 @@ private fun PatientListContent(
 ) {
     LazyColumn(
         modifier = modifier
-            .fillMaxWidth()
+            .adaptiveMaxWidth()
     ) {
         item {
             if (patients.isEmpty()) {
@@ -171,7 +176,7 @@ private fun PatientListContent(
                 patient = patient,
                 onClick = { onPatientClicked(patient) },
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .adaptiveMaxWidth()
                     .padding(
                         horizontal = AppDimension.layoutHorizontalMargin,
                         vertical = AppDimension.layoutSmallMargin
@@ -204,12 +209,13 @@ private fun Toolbar(
                     tint = AppTheme.colors.primary,
                     onClick = onExportClicked,
                 ),
-                MenuItemsData(
-                    title = Text.Resource(strings.patient_delete_all),
-                    icon = AppIcon.Delete,
-                    tint = AppTheme.colors.error,
-                    onClick = onDeleteClicked,
-                ),
+                // TODO Add option to delete all patients
+//                MenuItemsData(
+//                    title = Text.Resource(strings.patient_delete_all),
+//                    icon = AppIcon.Delete,
+//                    tint = AppTheme.colors.error,
+//                    onClick = onDeleteClicked,
+//                ),
             )
 
             Column {
@@ -229,22 +235,28 @@ private fun Toolbar(
             }
         },
         contentBelowToolbar = {
-            TextFieldLarge(
-                value = searchQuery,
-                onValueChange = onSearchQueryChanged,
-                labelText = stringResource(strings.search),
-                leadingIcon = {
-                    Icon(
-                        painter = AppIcon.Search,
-                        tint = AppTheme.colors.textDisabled,
-                        contentDescription = "Search patient"
-                    )
-
-                },
+            Row(
+                horizontalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = AppDimension.layoutHorizontalMargin)
-            )
+            ) {
+                TextFieldLarge(
+                    value = searchQuery,
+                    onValueChange = onSearchQueryChanged,
+                    labelText = stringResource(strings.search),
+                    leadingIcon = {
+                        Icon(
+                            painter = AppIcon.Search,
+                            tint = AppTheme.colors.textDisabled,
+                            contentDescription = "Search patient"
+                        )
+
+                    },
+                    modifier = Modifier
+                        .adaptiveMaxWidth()
+                        .padding(horizontal = AppDimension.layoutHorizontalMargin)
+                )
+            }
         }
     )
 }

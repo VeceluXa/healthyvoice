@@ -1,6 +1,9 @@
 package com.danilovfa.common.uikit.modifier
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -9,10 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
 
 /** Remembers minimal size if the given [predicate] returns `true`. */
 fun Modifier.rememberMinSize(predicate: (old: IntSize, new: IntSize) -> Boolean): Modifier = composed(
@@ -47,3 +52,17 @@ fun Modifier.fillWidthOfParent(parentPadding: Dp) = this.then(
         }
     },
 )
+
+@Composable
+fun Modifier.adaptiveMaxWidth(): Modifier {
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+
+    return this.then(
+        if (screenWidth >= 600.dp) { // Tablet threshold
+            Modifier.widthIn(max = 600.dp) // Or percentage of screen
+        } else {
+            Modifier.fillMaxWidth()
+        }
+    )
+}

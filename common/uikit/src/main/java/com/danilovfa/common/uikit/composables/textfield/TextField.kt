@@ -349,8 +349,7 @@ fun TextFieldOutlinedLarge(
     TextFieldOutlined(
         value = value,
         onValueChange = onValueChange,
-        modifier = modifier
-            .fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         enabled = enabled,
         readOnly = readOnly,
         textStyle = textStyle,

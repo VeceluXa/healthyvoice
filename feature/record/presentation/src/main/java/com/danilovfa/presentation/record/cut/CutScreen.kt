@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,6 +25,7 @@ import com.danilovfa.common.uikit.composables.dialog.AlertDialog
 import com.danilovfa.common.uikit.composables.state.LoaderStub
 import com.danilovfa.common.uikit.composables.toolbar.NavigationIcon
 import com.danilovfa.common.uikit.composables.toolbar.Toolbar
+import com.danilovfa.common.uikit.modifier.adaptiveMaxWidth
 import com.danilovfa.common.uikit.preview.ThemePreviewParameter
 import com.danilovfa.common.uikit.theme.AppDimension
 import com.danilovfa.common.uikit.theme.AppTheme
@@ -49,6 +51,7 @@ private fun CutLayout(
     onIntent: (Intent) -> Unit
 ) {
     Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .background(AppTheme.colors.background)
@@ -64,7 +67,9 @@ private fun CutLayout(
             CutContent(
                 state = state,
                 onIntent = onIntent,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             )
         } else {
             LoaderStub(Modifier.weight(1f))
@@ -79,6 +84,7 @@ private fun CutContent(
     modifier: Modifier = Modifier
 ) {
     Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
             .fillMaxWidth()
     ) {
@@ -96,7 +102,9 @@ private fun CutContent(
         ButtonLarge(
             text = stringResource(strings.cut_analyze_button),
             onClick = { onIntent(Intent.OnAnalyzeClicked) },
-            modifier = Modifier.padding(AppDimension.layoutMainMargin)
+            modifier = Modifier
+                .adaptiveMaxWidth()
+                .padding(AppDimension.layoutMainMargin)
         )
     }
 }

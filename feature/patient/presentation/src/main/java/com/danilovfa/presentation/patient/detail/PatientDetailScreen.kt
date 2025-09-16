@@ -40,6 +40,7 @@ import com.danilovfa.common.uikit.composables.textfield.TextFieldLarge
 import com.danilovfa.common.uikit.composables.toolbar.NavigationIcon
 import com.danilovfa.common.uikit.composables.toolbar.Toolbar
 import com.danilovfa.common.uikit.event.ObserveEvents
+import com.danilovfa.common.uikit.modifier.adaptiveMaxWidth
 import com.danilovfa.common.uikit.modifier.surface
 import com.danilovfa.common.uikit.preview.ThemePreviewParameter
 import com.danilovfa.common.uikit.theme.AppDimension
@@ -73,6 +74,7 @@ private fun PatientDetailLayout(
     onIntent: (Intent) -> Unit
 ) {
     Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .background(AppTheme.colors.background)
@@ -87,7 +89,7 @@ private fun PatientDetailLayout(
 
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .adaptiveMaxWidth()
                 .weight(1f)
         ) {
             PatientContent(
@@ -101,7 +103,7 @@ private fun PatientDetailLayout(
                 text = stringResource(strings.patient_add_analysis),
                 onClick = { onIntent(Intent.OnRecordClicked) },
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .adaptiveMaxWidth()
                     .padding(AppDimension.layoutMainMargin)
                     .align(Alignment.BottomCenter)
             )
@@ -125,7 +127,7 @@ private fun PatientContent(
                 PatientCard(
                     patient = patient,
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .adaptiveMaxWidth()
                         .padding(horizontal = AppDimension.layoutHorizontalMargin)
                 )
             }
@@ -137,7 +139,7 @@ private fun PatientContent(
                 note = state.note,
                 onNoteChanged = { onIntent(Intent.OnNoteChanged(it)) },
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .adaptiveMaxWidth()
                     .padding(horizontal = AppDimension.layoutHorizontalMargin)
             )
             VSpacer(AppDimension.layoutMediumMargin)
@@ -148,9 +150,9 @@ private fun PatientContent(
                 query = state.searchQuery,
                 onQueryChanged = { onIntent(Intent.OnSearchQueryChanged(it)) },
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .adaptiveMaxWidth()
                     .background(AppTheme.colors.background)
-                    .padding(top = AppDimension.layoutMediumMargin)
+                    .padding(vertical = AppDimension.layoutMediumMargin)
                     .padding(horizontal = AppDimension.layoutHorizontalMargin)
             )
         }
@@ -162,7 +164,7 @@ private fun PatientContent(
                     message = stringResource(strings.patient_analyzes_empty_description),
                     fillMaxSize = false,
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .adaptiveMaxWidth()
                         .padding(vertical = AppDimension.layoutLargeMargin)
                 )
             } else if (state.searchedAnalyzes.isEmpty()) {
@@ -171,7 +173,7 @@ private fun PatientContent(
                     message = stringResource(strings.search_empty_description),
                     fillMaxSize = false,
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .adaptiveMaxWidth()
                         .padding(vertical = AppDimension.layoutLargeMargin)
                 )
             }
@@ -186,11 +188,11 @@ private fun PatientContent(
                     analysis = analysis,
                     onClick = { onIntent(Intent.OnAnalysisClicked(analysis)) },
                     modifier = Modifier
-                        .fillMaxWidth()
                         .padding(
                             horizontal = AppDimension.layoutHorizontalMargin,
                             vertical = AppDimension.layoutSmallMargin
                         )
+                        .adaptiveMaxWidth()
                 )
             }
         }
@@ -210,6 +212,7 @@ private fun AnalysisCard(
 ) {
     Column(
         modifier = modifier
+            .fillMaxWidth()
             .surface(onClick = onClick)
             .padding(
                 vertical = AppDimension.layoutMediumMargin,
@@ -269,7 +272,7 @@ private fun PatientNote(
         decorationBox = { innerTextField ->
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .adaptiveMaxWidth()
                     .surface()
                     .padding(
                         vertical = AppDimension.layoutMediumMargin,

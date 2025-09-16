@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
@@ -48,6 +49,7 @@ import com.danilovfa.common.uikit.composables.button.TextButtonLarge
 import com.danilovfa.common.uikit.composables.text.Text
 import com.danilovfa.common.uikit.composables.textfield.AppTextFieldDefaults
 import com.danilovfa.common.uikit.composables.textfield.TextFieldOutlinedLarge
+import com.danilovfa.common.uikit.modifier.adaptiveMaxWidth
 import com.danilovfa.common.uikit.modifier.noRippleClickable
 import com.danilovfa.common.uikit.theme.AppDimension
 import com.danilovfa.common.uikit.theme.AppTheme
@@ -144,7 +146,7 @@ private fun TextAlertDialog(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .adaptiveMaxWidth()
                 .padding(16.dp)
         ) {
             Text(
@@ -160,7 +162,7 @@ private fun TextAlertDialog(
 
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .adaptiveMaxWidth()
             ) {
                 dismissButtonTitle?.let {
                     OutlinedButton(
@@ -204,7 +206,7 @@ private fun ImageAlertDialog(
         modifier = modifier
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.adaptiveMaxWidth()
         ) {
             Row {
                 Text(
@@ -231,7 +233,7 @@ private fun ImageAlertDialog(
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .adaptiveMaxWidth()
             )
 
             confirmButtonTitle?.let {
@@ -266,7 +268,7 @@ private fun DefaultAlertDialog(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .fillMaxWidth()
+                .adaptiveMaxWidth()
                 .padding(16.dp)
         ) {
             illustration?.let { painter ->
@@ -283,7 +285,7 @@ private fun DefaultAlertDialog(
                     style = AppTypography.titleRegular22,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .adaptiveMaxWidth(),
                 )
 
                 VSpacer(8.dp)
@@ -294,7 +296,7 @@ private fun DefaultAlertDialog(
                 style = AppTypography.bodyRegular16,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .adaptiveMaxWidth()
                     .padding(horizontal = 24.dp),
             )
 
@@ -342,7 +344,7 @@ private fun TextFieldAlertDialog(
         Column(
             modifier = modifier
                 .imePadding()
-                .fillMaxWidth()
+                .adaptiveMaxWidth()
                 .background(AppTheme.colors.background)
                 .padding(AppDimension.layoutMainMargin)
         ) {
@@ -434,7 +436,7 @@ fun BaseDialog(
             Surface(
                 modifier = modifier
                     .padding(paddingValues)
-                    .fillMaxWidth(),
+                    .adaptiveMaxWidth(),
                 shape = shape,
                 color = backgroundColor,
                 contentColor = contentColor

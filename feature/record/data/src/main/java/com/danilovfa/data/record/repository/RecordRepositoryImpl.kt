@@ -87,7 +87,8 @@ internal class RecordRepositoryImpl(
                     cutEnd = audioData.audioDurationMillis,
                     file = file
                 )
-                Result.success(recording)
+                val recordingId = dao.addRecording(recording.toEntity())
+                Result.success(recording.copy(id = recordingId))
             } catch (e: Exception) {
                 Result.failure(e)
             }

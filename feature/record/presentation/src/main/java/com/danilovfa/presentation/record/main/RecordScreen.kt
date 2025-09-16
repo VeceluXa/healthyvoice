@@ -39,6 +39,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.danilovfa.common.core.presentation.Text
+import com.danilovfa.common.core.presentation.extensions.getWavFile
 import com.danilovfa.common.core.presentation.time.tickerInstant
 import com.danilovfa.presentation.record.main.store.RecordStore.Intent
 import com.danilovfa.presentation.record.main.store.RecordStore.State
@@ -76,7 +77,9 @@ internal fun RecordScreen(
     val filePickerLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             it.data?.data?.let { uri ->
-                component.onIntent(Intent.OnRecordImported(context, uri))
+                uri.getWavFile(context)?.let {
+                    component.onIntent(Intent.OnRecordImported(it))
+                }
             }
         }
 

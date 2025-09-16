@@ -21,6 +21,7 @@ import com.danilovfa.common.core.presentation.get
 import com.danilovfa.common.uikit.composables.HSpacer
 import com.danilovfa.common.uikit.composables.state.Loader
 import com.danilovfa.common.uikit.composables.text.Text
+import com.danilovfa.common.uikit.modifier.adaptiveMaxWidth
 import com.danilovfa.common.uikit.theme.AppDimension
 import com.danilovfa.common.uikit.theme.AppTheme
 import com.danilovfa.common.uikit.theme.AppTypography
@@ -78,7 +79,7 @@ internal fun MenuItemLoader(
         text = {
             Row(
                 horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.adaptiveMaxWidth()
             ) {
                 Loader(
                     strokeWidth = 2.dp,

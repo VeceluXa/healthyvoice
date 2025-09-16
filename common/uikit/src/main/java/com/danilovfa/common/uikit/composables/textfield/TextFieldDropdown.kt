@@ -12,6 +12,7 @@ import com.danilovfa.common.core.presentation.get
 import com.danilovfa.common.uikit.composables.popup.MenuItemLoader
 import com.danilovfa.common.uikit.composables.popup.MenuItems
 import com.danilovfa.common.uikit.composables.popup.MenuItemsData
+import com.danilovfa.common.uikit.modifier.adaptiveMaxWidth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,7 +45,7 @@ fun TextFieldDropdown(
             hintText = hintText,
             showHint = false,
             modifier = Modifier
-                .fillMaxWidth()
+                .adaptiveMaxWidth()
                 .menuAnchor(MenuAnchorType.PrimaryNotEditable)
         )
 

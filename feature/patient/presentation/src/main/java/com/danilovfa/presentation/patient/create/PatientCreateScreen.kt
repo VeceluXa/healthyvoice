@@ -36,6 +36,7 @@ import com.danilovfa.common.uikit.composables.textfield.TextFieldLarge
 import com.danilovfa.common.uikit.composables.toolbar.NavigationIcon
 import com.danilovfa.common.uikit.composables.toolbar.Toolbar
 import com.danilovfa.common.uikit.event.ObserveEvents
+import com.danilovfa.common.uikit.modifier.adaptiveMaxWidth
 import com.danilovfa.common.uikit.modifier.surface
 import com.danilovfa.common.uikit.preview.ThemePreviewParameter
 import com.danilovfa.common.uikit.theme.AppDimension
@@ -65,6 +66,7 @@ private fun PatientCreateLayout(
     onIntent: (Intent) -> Unit
 ) {
     Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .background(AppTheme.colors.background)
@@ -80,7 +82,7 @@ private fun PatientCreateLayout(
             state = state,
             onIntent = onIntent,
             modifier = Modifier
-                .fillMaxWidth()
+                .adaptiveMaxWidth()
                 .weight(1f)
         )
 
@@ -90,7 +92,7 @@ private fun PatientCreateLayout(
             enabled = state.canSave,
             onClick = { onIntent(Intent.OnSaveClicked) },
             modifier = Modifier
-                .fillMaxWidth()
+                .adaptiveMaxWidth()
                 .padding(AppDimension.layoutMainMargin)
         )
     }

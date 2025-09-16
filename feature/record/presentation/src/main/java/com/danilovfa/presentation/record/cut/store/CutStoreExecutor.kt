@@ -52,6 +52,7 @@ internal class CutStoreExecutor : KoinComponent,
                     dispatch(Msg.ChangeAudioData(recording.audioData))
                     getAmplitudes(recording.rawData)
                 }
+                .onFailure { Logger.e("loadRecording", it) }
         }
     }
 

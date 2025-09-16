@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.danilovfa.common.uikit.composables.HSpacer
 import com.danilovfa.common.uikit.composables.text.Text
+import com.danilovfa.common.uikit.modifier.adaptiveMaxWidth
 import com.danilovfa.common.uikit.theme.AppDimension
 import com.danilovfa.common.uikit.theme.AppTypography
 import kotlin.math.max
@@ -42,7 +43,7 @@ internal fun Snackbar(
 ) {
     Snackbar(
         modifier = modifier
-            .fillMaxWidth()
+            .adaptiveMaxWidth()
             .padding(AppDimension.layoutMainMargin),
         content = {
             SnackbarTextOnly(
@@ -77,7 +78,7 @@ private fun SnackbarTextOnly(
             color = style.contentColor,
             textAlign = TextAlign.Center,
             modifier = Modifier
-                .fillMaxWidth()
+                .adaptiveMaxWidth()
                 .padding(end = if (style.icon != null) 32.dp else 0.dp)
         )
 
