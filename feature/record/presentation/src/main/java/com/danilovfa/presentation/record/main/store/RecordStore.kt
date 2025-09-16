@@ -11,7 +11,7 @@ import com.danilovfa.domain.record.repository.model.AudioData
 import com.danilovfa.presentation.record.main.store.RecordStore.Intent
 import com.danilovfa.presentation.record.main.store.RecordStore.Label
 import com.danilovfa.presentation.record.main.store.RecordStore.State
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import java.io.File
 
 internal interface RecordStore : Store<Intent, State, Label> {

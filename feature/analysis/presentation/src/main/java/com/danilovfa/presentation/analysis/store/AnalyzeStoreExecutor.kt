@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.math.roundToInt
@@ -40,15 +40,15 @@ internal class AnalyzeStoreExecutor : KoinComponent,
     private val analysisRepository: AnalysisRepository by inject()
     private val exportWorkFactory: ExportWorkFactory by inject()
 
-    override fun executeAction(action: Action, getState: () -> State) = when (action) {
-        Action.ProcessRecording -> getAnalysis(recordingId = getState().recordingId)
-        Action.ObserveAnalysis -> observeRecordingAnalysis(getState().recordingId)
+    override fun executeAction(action: Action) = when (action) {
+        Action.ProcessRecording -> getAnalysis(recordingId = state().recordingId)
+        Action.ObserveAnalysis -> observeRecordingAnalysis(state().recordingId)
     }
 
-    override fun executeIntent(intent: Intent, getState: () -> State) = when (intent) {
+    override fun executeIntent(intent: Intent) = when (intent) {
         Intent.OnBackClicked -> publish(Label.NavigateBack)
-        Intent.RetryAnalyze -> getAnalysis(recordingId = getState().recordingId)
-        Intent.OnExportClicked -> export(getState().recordingAnalysis)
+        Intent.RetryAnalyze -> getAnalysis(recordingId = state().recordingId)
+        Intent.OnExportClicked -> export(state().recordingAnalysis)
         Intent.OnDeleteClicked -> publish(Label.ShowTodo)
     }
 

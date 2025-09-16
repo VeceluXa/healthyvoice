@@ -58,7 +58,7 @@ import com.danilovfa.common.uikit.theme.AppDimension
 import com.danilovfa.common.uikit.theme.AppTheme
 import com.danilovfa.common.uikit.theme.AppTypography
 import com.danilovfa.common.core.presentation.extensions.launchAppSettings
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import android.content.Intent as AndroidIntent
 
 @Composable

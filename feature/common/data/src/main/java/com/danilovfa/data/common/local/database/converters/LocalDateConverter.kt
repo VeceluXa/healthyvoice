@@ -8,12 +8,12 @@ import kotlinx.datetime.LocalDateTime
 
 internal class LocalDateConverter {
     @TypeConverter
-    fun entityToDatabase(localDate: LocalDate): Int {
+    fun entityToDatabase(localDate: LocalDate): Long {
         return localDate.toEpochDays()
     }
 
     @TypeConverter
-    fun databaseToEntity(epochDays: Int): LocalDate {
+    fun databaseToEntity(epochDays: Long): LocalDate {
         return LocalDate.fromEpochDays(epochDays)
     }
 }

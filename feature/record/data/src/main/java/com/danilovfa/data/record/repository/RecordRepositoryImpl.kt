@@ -16,7 +16,7 @@ import com.danilovfa.libs.recorder.config.AudioRecordConfig
 import com.danilovfa.libs.recorder.recorder.wav.WavHeader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream

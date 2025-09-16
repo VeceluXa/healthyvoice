@@ -1,5 +1,5 @@
 plugins {
-    id("com.danilovfa.kotlin.library")
+    alias(libs.plugins.danilovfa.kotlin.library.common)
     alias(libs.plugins.kotlin.serialization)
 }
 

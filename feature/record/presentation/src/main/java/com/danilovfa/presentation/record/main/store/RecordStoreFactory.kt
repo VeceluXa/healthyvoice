@@ -7,7 +7,7 @@ import com.danilovfa.domain.common.model.Recording
 import com.danilovfa.presentation.record.main.store.RecordStore.Intent
 import com.danilovfa.presentation.record.main.store.RecordStore.Label
 import com.danilovfa.presentation.record.main.store.RecordStore.State
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 internal class RecordStoreFactory(
     private val storeFactory: StoreFactory

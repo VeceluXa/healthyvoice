@@ -1,6 +1,6 @@
 plugins {
-    id("com.danilovfa.android.library")
-    id("com.danilovfa.android.library.compose")
+    alias(libs.plugins.danilovfa.android.library.compose)
+    alias(libs.plugins.danilovfa.android.library.common)
 }
 
 android {

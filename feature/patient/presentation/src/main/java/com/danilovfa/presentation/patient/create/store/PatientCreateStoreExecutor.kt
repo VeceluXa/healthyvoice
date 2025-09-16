@@ -16,13 +16,13 @@ internal class PatientCreateStoreExecutor : KoinComponent,
 
     private val repository: PatientRepository by inject()
 
-    override fun executeIntent(intent: Intent, getState: () -> State) = when (intent) {
+    override fun executeIntent(intent: Intent) = when (intent) {
         Intent.OnBackClicked -> publish(Label.NavigateBack)
         is Intent.OnBirthDateChanged -> dispatch(Msg.ChangeBirthDate(intent.birthDate))
         is Intent.OnNameChanged -> dispatch(Msg.ChangeName(intent.name))
         is Intent.OnNoteChanged -> dispatch(Msg.ChangeNote(intent.note))
         is Intent.OnSexChanged -> dispatch(Msg.ChangeSex(intent.sex))
-        Intent.OnSaveClicked -> savePatient(getState())
+        Intent.OnSaveClicked -> savePatient(state())
     }
 
     private fun savePatient(state: State) {

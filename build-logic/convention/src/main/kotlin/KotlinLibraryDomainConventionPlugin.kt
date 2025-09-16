@@ -7,16 +7,16 @@ class KotlinLibraryDomainConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             with(pluginManager) {
-                apply("com.danilovfa.kotlin.library")
-                apply("org.jetbrains.kotlin.plugin.serialization")
+                apply(libs.plugins.danilovfa.kotlin.library.common.get().pluginId)
+                apply(libs.plugins.kotlin.serialization.get().pluginId)
             }
 
             dependencies {
                 add("implementation", project(":common:core:domain"))
 
-                add("implementation", libs.findLibrary("kotlin.coroutines").get())
-                add("implementation", libs.findLibrary("kotlin.serialization.json").get())
-                add("implementation", libs.findLibrary("kotlin.datetime").get())
+                add("implementation", libs.kotlin.coroutines)
+                add("implementation", libs.kotlin.serialization.json)
+                add("implementation", libs.kotlin.datetime)
             }
         }
     }

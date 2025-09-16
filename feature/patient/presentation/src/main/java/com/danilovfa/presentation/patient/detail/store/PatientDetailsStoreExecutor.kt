@@ -42,12 +42,12 @@ internal class PatientDetailsStoreExecutor : KoinComponent,
     private val analysisRepository: AnalysisRepository by inject()
     private val exportWorkFactory: ExportWorkFactory by inject()
 
-    override fun executeAction(action: Action, getState: () -> State) = when (action) {
-        Action.ObservePatient -> observePatient(getState().patientId)
-        Action.ObserveAnalyzes -> observeAnalyzes(getState().patientId)
+    override fun executeAction(action: Action) = when (action) {
+        Action.ObservePatient -> observePatient(state().patientId)
+        Action.ObserveAnalyzes -> observeAnalyzes(state().patientId)
     }
 
-    override fun executeIntent(intent: Intent, getState: () -> State) = when (intent) {
+    override fun executeIntent(intent: Intent) = when (intent) {
         is Intent.OnAnalysisClicked -> publish(
             Label.ShowAnalysis(
                 recordingId = intent.analysis.recording.id
@@ -55,12 +55,12 @@ internal class PatientDetailsStoreExecutor : KoinComponent,
         )
 
         Intent.OnBackClicked -> publish(Label.NavigateBack)
-        Intent.OnEditPatientClicked -> onEditClicked(getState().patient)
-        Intent.OnExportClicked -> export(getState().patientId)
+        Intent.OnEditPatientClicked -> onEditClicked(state().patient)
+        Intent.OnExportClicked -> export(state().patientId)
         is Intent.OnNoteChanged -> onNoteChanged(intent.note)
         Intent.OnRecordClicked -> publish(Label.NewRecord)
         is Intent.OnSearchQueryChanged -> onQueryChanged(intent.query)
-        Intent.ConfirmDeletePatient -> deletePatient(getState().patientId)
+        Intent.ConfirmDeletePatient -> deletePatient(state().patientId)
         Intent.OnDeletePatientClicked -> publish(Label.ShowConfirmDeleteDialog)
     }
 

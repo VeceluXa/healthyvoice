@@ -9,7 +9,7 @@ import androidx.core.app.NotificationCompat
 
 data class NotificationChannelData(
     val id: String,
-    @StringRes val descriptionRes: Int,
+    @field:StringRes val descriptionRes: Int,
     val group: String? = null,
     val importance: Int = NotificationManager.IMPORTANCE_HIGH
 )

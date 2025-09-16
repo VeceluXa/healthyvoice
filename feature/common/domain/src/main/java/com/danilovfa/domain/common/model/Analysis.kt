@@ -1,6 +1,6 @@
 package com.danilovfa.domain.common.model
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 data class Analysis(
     val recordingId: Long,

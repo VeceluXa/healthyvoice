@@ -7,9 +7,9 @@ class AndroidLibraryPresentationConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             pluginManager.apply {
-                apply("com.danilovfa.android.library")
-                apply("com.danilovfa.android.library.compose")
-                apply("org.jetbrains.kotlin.plugin.serialization")
+                apply(libs.plugins.danilovfa.android.library.common.get().pluginId)
+                apply(libs.plugins.danilovfa.android.library.compose.get().pluginId)
+                apply(libs.plugins.kotlin.serialization.get().pluginId)
             }
 
             dependencies {
@@ -19,12 +19,12 @@ class AndroidLibraryPresentationConventionPlugin : Plugin<Project> {
                 add("implementation", project(":common:uikit"))
                 add("implementation", project(":common:resources"))
 
-                add("implementation", libs.findBundle("decompose").get())
-                add("implementation", libs.findBundle("mvikotlin").get())
-                add("implementation", libs.findBundle("koin").get())
-                add("implementation", libs.findLibrary("kermit").get())
-                add("implementation", libs.findLibrary("kotlin.serialization.json").get())
-                add("implementation", libs.findLibrary("kotlin.datetime").get())
+                add("implementation", libs.bundles.decompose)
+                add("implementation", libs.bundles.mvikotlin)
+                add("implementation", libs.bundles.koin)
+                add("implementation", libs.kermit)
+                add("implementation", libs.kotlin.serialization.json)
+                add("implementation", libs.kotlin.datetime)
             }
         }
     }

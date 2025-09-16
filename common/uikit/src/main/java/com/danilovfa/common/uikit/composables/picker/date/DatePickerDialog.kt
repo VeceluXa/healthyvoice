@@ -11,7 +11,7 @@ import androidx.compose.ui.res.stringResource
 import com.danilovfa.common.resources.strings
 import com.danilovfa.common.uikit.composables.button.Button
 import com.danilovfa.common.uikit.composables.button.OutlinedButton
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn

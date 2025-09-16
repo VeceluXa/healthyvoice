@@ -7,7 +7,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.danilovfa.data.common.utils.RecordingUtils
 import com.danilovfa.domain.common.model.Recording
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import java.io.File
 
 @Entity(

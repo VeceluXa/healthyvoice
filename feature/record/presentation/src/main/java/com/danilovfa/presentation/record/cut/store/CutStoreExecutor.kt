@@ -19,29 +19,29 @@ internal class CutStoreExecutor : KoinComponent,
 
     private val recordRepository: RecordRepository by inject()
 
-    override fun executeAction(action: Action, getState: () -> State) = when (action) {
-        Action.LoadRecording -> loadRecording(getState().recordingId)
+    override fun executeAction(action: Action) = when (action) {
+        Action.LoadRecording -> loadRecording(state().recordingId)
     }
 
-    override fun executeIntent(intent: Intent, getState: () -> State) = when (intent) {
+    override fun executeIntent(intent: Intent) = when (intent) {
         Intent.OnAnalyzeClicked -> finishCut(
-            recordingId = getState().recordingId,
-            startOffset = getState().startOffset,
-            endOffset = getState().endOffset
+            recordingId = state().recordingId,
+            startOffset = state().startOffset,
+            endOffset = state().endOffset
         )
 
         Intent.OnBackClicked -> publish(Label.ShowBackConfirmationDialog)
         Intent.OnBackConfirmed -> publish(Label.NavigateBack)
-        Intent.RetryLoadRecording -> loadRecording(getState().recordingId)
+        Intent.RetryLoadRecording -> loadRecording(state().recordingId)
         is Intent.OnEndOffsetMoved -> onEndOffsetMoved(
-            startOffset = getState().startOffset,
+            startOffset = state().startOffset,
             newEndOffset = intent.endOffset,
-            duration = getState().audioData?.audioDurationMillis
+            duration = state().audioData?.audioDurationMillis
         )
 
         is Intent.OnStartOffsetMoved -> onStartOffsetMoved(
             newStartOffset = intent.startOffset,
-            endOffset = getState().endOffset
+            endOffset = state().endOffset
         )
     }
 

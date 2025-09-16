@@ -14,11 +14,11 @@ internal fun Project.configureAndroidCompose(
         }
 
         composeOptions {
-            kotlinCompilerExtensionVersion = libs.findVersion("android-compose-compiler").get().toString()
+            kotlinCompilerExtensionVersion = libs.versions.android.compose.compiler.get()
         }
 
         dependencies {
-            val bom = libs.findLibrary("compose-bom").get()
+            val bom = libs.compose.bom
             add("implementation", platform(bom))
             add("androidTestImplementation", platform(bom))
         }

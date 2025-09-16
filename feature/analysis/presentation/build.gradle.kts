@@ -1,5 +1,5 @@
 plugins {
-    id("com.danilovfa.android.library.presentation")
+    alias(libs.plugins.danilovfa.android.library.presentation)
     alias(libs.plugins.chaquo)
 }
 

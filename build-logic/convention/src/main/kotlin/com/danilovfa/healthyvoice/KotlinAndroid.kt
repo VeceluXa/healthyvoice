@@ -14,10 +14,10 @@ internal fun Project.configureKotlinAndroid(
     commonExtension: CommonExtension<*, *, *, *, *, *>,
 ) {
     commonExtension.apply {
-        compileSdk =  libs.findVersion("compileSdk").get().toString().toInt()
+        compileSdk =  libs.versions.compileSdk.get().toInt()
 
         defaultConfig {
-            minSdk = libs.findVersion("minSdk").get().toString().toInt()
+            minSdk = libs.versions.minSdk.get().toInt()
         }
 
         compileOptions {
@@ -50,9 +50,9 @@ private fun Project.configureKotlin() {
             freeCompilerArgs.set(
                 freeCompilerArgs.get() + listOf(
                     "-opt-in=kotlin.RequiresOptIn",
-                    // Enable experimental coroutines APIs, including Flow
                     "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
                     "-opt-in=kotlinx.coroutines.FlowPreview",
+                    "-opt-in=kotlin.time.ExperimentalTime"
                 )
             )
         }

@@ -1,35 +1,31 @@
 [versions]
-compileSdk = "35"
-targetSdk = "35"
+compileSdk = "36"
+targetSdk = "36"
 minSdk = "26"
 android-compose-compiler = "1.5.15"
 
-agp = "8.11.1"
-androidx-datastore = "1.1.3"
-kotlin = "2.1.10"
-kotlin-coroutines = "1.8.1"
-kotlin-serialization-json = "1.7.0"
-kotlin-datetime = "0.6.0"
-coreKtx = "1.15.0"
-lifecycleRuntimeKtx = "2.8.7"
-activityCompose = "1.10.1"
-composeBom = "2025.03.00"
-decompose = "3.1.0"
-mvikotlin = "3.3.0"
-koin = "3.5.6"
-ksp = "2.1.10-1.0.29"
+agp = "8.11.2"
+androidx-datastore = "1.1.7"
+kotlin = "2.2.20"
+kotlin-coroutines = "1.10.2"
+kotlin-serialization-json = "1.9.0"
+kotlin-datetime = "0.7.1"
+coreKtx = "1.17.0"
+lifecycleRuntimeKtx = "2.9.3"
+activityCompose = "1.11.0"
+composeBom = "2025.09.00"
+decompose = "3.3.0"
+mvikotlin = "4.3.0"
+koin = "4.1.1"
+ksp = "2.2.20-2.0.2"
 timber = "5.0.1"
-appcompat = "1.7.0"
-google-crypto = "1.14.1"
+appcompat = "1.7.1"
+google-crypto = "1.18.0"
 chaquo = "16.1.0"
-kermit = "2.0.4"
-room = "2.6.1"
+kermit = "2.0.8"
+room = "2.8.0"
 androidx-paging = "3.3.6"
-jetbrainsKotlinJvm = "1.9.24"
-junit = "4.13.2"
-junitVersion = "1.2.1"
-espressoCore = "3.6.1"
-material = "1.12.0"
+jetbrainsKotlinJvm = "2.2.20"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -74,10 +70,6 @@ room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-kotlin-extensions = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [bundles]
 compose = [
@@ -102,3 +94,12 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 chaquo = { id = "com.chaquo.python", version.ref = "chaquo" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
+java-library = { id = "java-library" }
+
+# Convention plugins
+danilovfa-android-library-common = { id = "com.danilovfa.android.library" }
+danilovfa-android-library-compose = { id = "com.danilovfa.android.library.compose" }
+danilovfa-android-library-data = { id = "com.danilovfa.android.library.data" }
+danilovfa-android-library-presentation = { id = "com.danilovfa.android.library.presentation" }
+danilovfa-kotlin-library-common = { id = "com.danilovfa.kotlin.library" }
+danilovfa-kotlin-library-domain = { id = "com.danilovfa.kotlin.library.domain" }

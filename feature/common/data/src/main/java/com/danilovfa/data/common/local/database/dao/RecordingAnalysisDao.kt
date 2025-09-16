@@ -13,8 +13,10 @@ interface RecordingAnalysisDao {
     fun observeRecordingAnalyzes(patientId: Long) : Flow<List<RecordingAnalysisEntity>>
 
     @Query("SELECT * FROM recording WHERE id = :recordingId LIMIT 1")
+    @Transaction
     fun observeRecordingAnalysis(recordingId: Long) : Flow<RecordingAnalysisEntity?>
 
     @Query("SELECT * FROM recording WHERE id = :recordingId LIMIT 1")
+    @Transaction
     suspend fun getRecordingAnalysis(recordingId: Long) : RecordingAnalysisEntity?
 }

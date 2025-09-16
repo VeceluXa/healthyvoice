@@ -31,11 +31,11 @@ internal class PatientListStoreExecutor : KoinComponent,
     private val repository: PatientRepository by inject()
     private val exportWorkFactory: ExportWorkFactory by inject()
 
-    override fun executeAction(action: Action, getState: () -> State) = when (action) {
+    override fun executeAction(action: Action) = when (action) {
         Action.ObservePatients -> observePatients()
     }
 
-    override fun executeIntent(intent: Intent, getState: () -> State) = when (intent) {
+    override fun executeIntent(intent: Intent) = when (intent) {
         Intent.OnCreatePatientClicked -> publish(Label.CreatePatient)
         Intent.OnExportClicked -> export()
         is Intent.OnPatientClicked -> publish(Label.ShowPatientDetails(intent.patient.id))

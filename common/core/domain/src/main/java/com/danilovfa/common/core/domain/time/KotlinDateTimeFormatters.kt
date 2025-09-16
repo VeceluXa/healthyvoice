@@ -13,7 +13,7 @@ object KotlinDateTimeFormatters {
         char('-')
         monthNumber()
         char('-')
-        dayOfMonth()
+        day()
     }
 
     /**
@@ -73,7 +73,7 @@ object KotlinDateTimeFormatters {
      * 01.11.2024 -> 01.11.2024
      */
     fun DateTimeFormatBuilder.WithDate.date() {
-        dayOfMonth()
+        day()
         char('.')
         monthNumber()
         char('.')

@@ -23,7 +23,7 @@ import com.danilovfa.presentation.record.main.store.RecordStoreFactory.Msg
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.io.File
@@ -41,18 +41,18 @@ internal class RecordStoreExecutor : KoinComponent,
      */
     private var hasRecordClicked: Boolean = false
 
-    override fun executeIntent(intent: Intent, getState: () -> State): Unit = when (intent) {
+    override fun executeIntent(intent: Intent): Unit = when (intent) {
         Intent.OnBackClicked -> publish(Label.NavigateBack)
         Intent.OnRecordStartClicked -> onRecordClicked()
         is Intent.OnPermissionStatusChanged -> onPermissionStatusChanged(
-            patientId = getState().patientId,
+            patientId = state().patientId,
             permissionStatus = intent.permissionStatus,
         )
 
         Intent.OnRecordStopClicked -> stopRecording()
         Intent.OnShowHelpDialogClicked -> publish(Label.ShowHelpDialog)
         Intent.OnImportRecordingClicked -> publish(Label.OpenFilePicker)
-        is Intent.OnRecordImported -> importRecording(getState().patientId, intent.file)
+        is Intent.OnRecordImported -> importRecording(state().patientId, intent.file)
     }
 
     private fun onRecordClicked() {

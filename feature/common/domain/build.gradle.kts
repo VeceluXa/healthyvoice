@@ -1,3 +1,3 @@
 plugins {
-    id("com.danilovfa.kotlin.library.domain")
+    alias(libs.plugins.danilovfa.kotlin.library.domain)
 }

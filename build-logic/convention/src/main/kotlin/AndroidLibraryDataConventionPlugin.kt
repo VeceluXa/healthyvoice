@@ -2,24 +2,25 @@
 import com.danilovfa.healthyvoice.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
 
 class AndroidLibraryDataConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             with(pluginManager) {
-                apply("com.danilovfa.android.library")
-                apply("org.jetbrains.kotlin.plugin.serialization")
+                apply(libs.plugins.danilovfa.android.library.common.get().pluginId)
+                apply(libs.plugins.kotlin.serialization.get().pluginId)
             }
 
             dependencies {
                 add("implementation", project(":common:core:domain"))
                 add("implementation", project(":common:core:data"))
-                add("implementation", libs.findBundle("koin").get())
-                add("implementation", libs.findLibrary("kotlin.datetime").get())
-                add("implementation", libs.findLibrary("kotlin.coroutines").get())
-                add("implementation", libs.findLibrary("kotlin.serialization.json").get())
-                add("implementation", libs.findLibrary("timber").get())
+                add("implementation", libs.bundles.koin)
+                add("implementation", libs.kotlin.datetime)
+                add("implementation", libs.kotlin.coroutines)
+                add("implementation", libs.kotlin.serialization.json)
+                add("implementation", libs.timber)
             }
         }
     }

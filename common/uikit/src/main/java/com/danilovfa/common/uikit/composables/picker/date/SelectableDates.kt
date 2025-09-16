@@ -3,7 +3,7 @@ package com.danilovfa.common.uikit.composables.picker.date
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SelectableDates
 import com.danilovfa.common.core.domain.time.utcToLocal
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime

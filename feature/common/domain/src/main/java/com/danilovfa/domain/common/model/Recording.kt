@@ -1,6 +1,6 @@
 package com.danilovfa.domain.common.model
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import java.io.File
 
 data class Recording(

@@ -30,12 +30,12 @@ sealed class Text {
     }
 
     /** String resource, requires [Context] to get [String]. */
-    data class Resource(@StringRes val resourceId: Int) : Text() {
+    data class Resource(@param:StringRes val resourceId: Int) : Text() {
         override fun get(context: Context): String = context.getString(resourceId)
     }
 
     /** String resource with arguments, requires [Context] to get [String]. */
-    class ResourceArgs(@StringRes val resourceId: Int, vararg val args: Any) : Text() {
+    class ResourceArgs(@param:StringRes val resourceId: Int, vararg val args: Any) : Text() {
         override fun get(context: Context): String = context.getString(resourceId, *args)
     }
 }
