@@ -57,6 +57,7 @@ fun Toolbar(
     modifier: Modifier = Modifier,
     colors: AppToolbarColors = AppToolbarColors.primaryToolbarColors(),
     title: String = "",
+    titleModifier: Modifier = Modifier,
     enableShadow: Boolean = false
 ) {
     val elevation = if (enableShadow) 6.dp else 0.dp
@@ -79,7 +80,11 @@ fun Toolbar(
                     .padding(horizontal = AppDimension.layoutHorizontalMargin)
                     .weight(1f),
             ) {
-                Text(text = title, style = AppTypography.titleMedium18)
+                Text(
+                    text = title,
+                    style = AppTypography.titleMedium18,
+                    modifier = titleModifier
+                )
             }
         }
     }
@@ -94,6 +99,7 @@ fun Toolbar(
     colors: AppToolbarColors = AppToolbarColors.primaryToolbarColors(),
     contentBelowToolbar: @Composable (ColumnScope.() -> Unit)? = null,
     title: String = "",
+    titleModifier: Modifier = Modifier,
     enableShadow: Boolean = false,
     isActionsVisible: Boolean = true,
 ) {
@@ -120,7 +126,11 @@ fun Toolbar(
                         .padding(horizontal = titleHorizontalPadding)
                         .weight(1f),
                 ) {
-                    Text(text = title, style = AppTypography.titleMedium18)
+                    Text(
+                        text = title,
+                        style = AppTypography.titleMedium18,
+                        modifier = titleModifier
+                    )
                 }
 
                 IconAnimatedVisibility(visible = isActionsVisible) {

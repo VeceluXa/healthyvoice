@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.QuestionMark
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Stop
@@ -58,6 +59,7 @@ object AppIcon {
     val Pause: Painter @Composable get() = rememberVectorPainter(Icons.Filled.Pause)
     val Stop: Painter @Composable get() = rememberVectorPainter(Icons.Filled.Stop)
     val Question: Painter @Composable get() = rememberVectorPainter(Icons.Filled.QuestionMark)
+    val Refresh: Painter @Composable get() = rememberVectorPainter(Icons.Filled.Refresh)
     val ArrowUp: Painter @Composable get() = rememberVectorPainter(Icons.Filled.ArrowUpward)
     val Export: Painter @Composable get() = rememberVectorPainter(Icons.Filled.Download)
     val SexMale: Painter @Composable get() = rememberVectorPainter(Icons.Filled.Male)

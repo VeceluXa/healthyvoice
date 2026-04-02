@@ -1,67 +1,41 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import soundfile as sf
 from scipy.signal import find_peaks, firwin
-import numba
 
-def voice_segmentation(data,fs):    
-
-    # print("RecordingAnalyze voice_segmentation: Started processing")
-
-    # Slow autocorrelation
-    # N = 2048
-    # x = data[:2*N]
-    # lags = np.array(range(0, N-1))
-    # r_xx = np.zeros_like(lags).astype(float)
-    # for lag in lags:
-    #     tmp_sum = 0
-    #     for n in range(N):
-    #         if ((n+lag)<N) and ((n+lag)>=0):
-    #             tmp_sum = tmp_sum + x[n]*x[n+lag]
-    #     r_xx[lag] = tmp_sum
-
-    # Fast autocorrelation
-    N = 2*2048
-    x = data[:N]
-    r_xx = np.zeros((2*N)).astype(float)
-
-    x_ = np.zeros((2*N))
-    x_[:N] = x
+def voice_segmentation(data, fs):
+    signal = np.asarray(data, dtype=np.float64)
+    N = 2 * 2048
+    x = signal[:N]
+    x_ = np.zeros((2 * N), dtype=np.float64)
+    x_[: x.shape[0]] = x
     X = np.fft.fft(x_)
-    r_xx = np.real(np.fft.ifft(X*np.conj(X)))
+    r_xx = np.real(np.fft.ifft(X * np.conj(X)))
     r_xx = r_xx[:N]
 
-    # print("RecordingAnalyze voice_segmentation: Computed r_xx")
-
     peaks, _ = find_peaks(r_xx)
-    
-    # print("RecordingAnalyze voice_segmentation: Found peaks")
 
-    max_peak = peaks[0]
-    for i in range(1, len(peaks)):
-        if r_xx[peaks[i]] > r_xx[max_peak]:
-            max_peak = peaks[i]
-            
-    # print("RecordingAnalyze voice_segmentation: Found max peaks")
+    if len(peaks) == 0:
+        max_peak = int(np.argmax(r_xx[1:]) + 1)
+    else:
+        max_peak = int(peaks[np.argmax(r_xx[peaks])])
 
-    nyq = 0.5*fs
+    nyq = 0.5 * fs
     T0 = max_peak
-    T0_s = T0/fs      # seconds
-    F0 = 1.0/(T0_s)   
-    cutoff = 1.8*F0/nyq 
+    T0_s = T0 / fs
+    F0 = 1.0 / T0_s
+    cutoff = 1.8 * F0 / nyq
     N_filter = np.round(1.0*T0).astype(np.int32)
     N_filter = N_filter - (N_filter%2)
 
-    taps = firwin(N_filter, cutoff, fs=fs, window=('kaiser',8))
+    taps = firwin(N_filter, cutoff, fs=fs, window=("kaiser", 8))
 
-    filtered_signal = np.convolve(data, taps, mode='full')
-    filtered_signal = filtered_signal[(N_filter-1)//2:]
+    filtered_signal = np.convolve(signal, taps, mode="full")
+    filtered_signal = filtered_signal[(N_filter - 1) // 2 :]
 
     # Zero-crossing
     signal_sign = np.sign(filtered_signal[:len(data)])
-    I_N = np.where(np.diff(signal_sign)<0)[0] + 1
+    I_N = np.where(np.diff(signal_sign) < 0)[0] + 1
 
-    return I_N,filtered_signal
+    return I_N, filtered_signal
 
 def WM_method(x, x_filtered, fs, I_N):
     """
@@ -178,7 +152,6 @@ def perturbation_L(data, L):
     return PPQ_L
 
 def voice_parameters(data, segments, F0):
-    print("RecordingAnalyze voice_parameters: Start processing")
     data = np.array(data)
 
     periods = np.array(segments[1:]) - np.array(segments[:-1])
@@ -188,12 +161,10 @@ def voice_parameters(data, segments, F0):
         start_idx = segments[i]
         end_idx = segments[i+1]
 
-        # Нахождение минимального и максимального значения амплитуды в периоде
-        min_amplitude,max_amplitude = minmax_np(data[start_idx:end_idx])
+        min_amplitude, max_amplitude = minmax_np(data[start_idx:end_idx])
 
-        # Вычисление амплитуды в периоде
-        amplitudes[i] = max_amplitude - min_amplitude          
-        
+        amplitudes[i] = max_amplitude - min_amplitude
+
 
     J1 = perturbation_L(periods, 1)
     J3 = perturbation_L(periods, 3)    
@@ -207,21 +178,9 @@ def voice_parameters(data, segments, F0):
     F0_mean = np.mean(F0)
     F0_sd = np.std(F0)    
 
-    print("RecordingAnalyze voice_parameters: Finish processing")
     return J1, J3, J5, S1, S3, S5, S11, F0_mean, F0_sd
-  
-@numba.jit
-def minmax(x):
-    maximum = x[0]
-    minimum = x[0]
-    for i in x[1:]:
-        if i > maximum:
-            maximum = i
-        elif i < minimum:
-            minimum = i
-    return (minimum, maximum)
 
 def minmax_np(x):
     maximum = np.max(x)
-    minimum = np.min(x)            
+    minimum = np.min(x)
     return (minimum, maximum)

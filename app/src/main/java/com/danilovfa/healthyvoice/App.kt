@@ -37,6 +37,8 @@ class App : Application() {
     }
 
     private fun initPython() {
-        Python.start(AndroidPlatform(this))
+        if (BuildConfig.DEBUG && Python.isStarted().not()) {
+            Python.start(AndroidPlatform(this))
+        }
     }
 }

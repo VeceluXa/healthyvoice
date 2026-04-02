@@ -11,6 +11,8 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.danilovfa.presentation.analysis.AnalyzeComponent
 import com.danilovfa.presentation.analysis.DefaultAnalyzeComponent
+import com.danilovfa.presentation.analysis.benchmark.AnalyzeBenchmarkComponent
+import com.danilovfa.presentation.analysis.benchmark.DefaultAnalyzeBenchmarkComponent
 import com.danilovfa.presentation.patient.root.DefaultRootPatientComponent
 import com.danilovfa.presentation.patient.root.RootPatientComponent
 import com.danilovfa.presentation.record.root.DefaultRecordRootComponent
@@ -20,6 +22,7 @@ import kotlinx.serialization.Serializable
 
 class DefaultRootComponent(
     private val storeFactory: StoreFactory,
+    private val isDebugToolsEnabled: Boolean,
     private val componentContext: ComponentContext
 ) : RootComponent, ComponentContext by componentContext {
     private val navigation = StackNavigation<Config>()
@@ -45,9 +48,17 @@ class DefaultRootComponent(
             )
         )
 
+        Config.Benchmark -> Child.Benchmark(
+            DefaultAnalyzeBenchmarkComponent(
+                componentContext = componentContext,
+                output = ::onBenchmarkOutput
+            )
+        )
+
         Config.Patient -> Child.Patient(
             DefaultRootPatientComponent(
                 storeFactory = storeFactory,
+                isDebugToolsEnabled = isDebugToolsEnabled,
                 componentContext = componentContext,
                 output = ::onPatientOutput
             )
@@ -68,9 +79,14 @@ class DefaultRootComponent(
         AnalyzeComponent.Output.NavigateBack -> navigation.pop()
     }
 
+    private fun onBenchmarkOutput(output: AnalyzeBenchmarkComponent.Output) = when (output) {
+        AnalyzeBenchmarkComponent.Output.NavigateBack -> navigation.pop()
+    }
+
     private fun onPatientOutput(output: RootPatientComponent.Output) = when (output) {
         is RootPatientComponent.Output.NavigateAnalysis -> navigation.pushNew(Config.Analysis(recordingId = output.recordingId))
         is RootPatientComponent.Output.NavigateRecord -> navigation.pushNew(Config.Record(output.patientId))
+        RootPatientComponent.Output.NavigateBenchmark -> navigation.pushNew(Config.Benchmark)
     }
 
     private fun onRecordOutput(output: RecordRootComponent.Output) = when (output) {
@@ -89,6 +105,9 @@ class DefaultRootComponent(
 
         @Serializable
         data class Analysis(val recordingId: Long) : Config()
+
+        @Serializable
+        data object Benchmark : Config()
 
         @Serializable
         data object Patient : Config()

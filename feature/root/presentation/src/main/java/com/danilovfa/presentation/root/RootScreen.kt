@@ -10,6 +10,7 @@ import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.danilovfa.common.uikit.composables.snackbar.SnackbarHost
 import com.danilovfa.presentation.analysis.AnalyzeScreen
+import com.danilovfa.presentation.analysis.benchmark.AnalyzeBenchmarkScreen
 import com.danilovfa.presentation.patient.root.RootPatientScreen
 import com.danilovfa.presentation.record.root.RecordRootScreen
 
@@ -28,6 +29,7 @@ fun RootScreen(
             Children(stack = childStack) {
                 when (val child = it.instance) {
                     is RootComponent.Child.Analyze -> AnalyzeScreen(child.component)
+                    is RootComponent.Child.Benchmark -> AnalyzeBenchmarkScreen(child.component)
                     is RootComponent.Child.Patient -> RootPatientScreen(child.component)
                     is RootComponent.Child.Recording -> RecordRootScreen(child.component)
                 }

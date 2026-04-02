@@ -56,9 +56,9 @@ internal class CutStoreExecutor : KoinComponent,
         }
     }
 
-    private fun getAmplitudes(raw: Array<Short>) {
+    private fun getAmplitudes(raw: ShortArray) {
         val amplitudes = raw
-            .toList()
+            .asList()
             .chunked(CHUNK_SIZE)
             .map { chunk ->
                 chunk.maxBy { abs(it.toInt()) }

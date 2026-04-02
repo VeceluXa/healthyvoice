@@ -13,6 +13,7 @@ interface RootPatientComponent {
     sealed class Output {
         data class NavigateAnalysis(val recordingId: Long) : Output()
         data class NavigateRecord(val patientId: Long) : Output()
+        data object NavigateBenchmark : Output()
     }
 
     sealed class Child {

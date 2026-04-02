@@ -37,6 +37,7 @@ internal class PatientListStoreExecutor : KoinComponent,
 
     override fun executeIntent(intent: Intent) = when (intent) {
         Intent.OnCreatePatientClicked -> publish(Label.CreatePatient)
+        Intent.OnBenchmarkTriggered -> publish(Label.NavigateBenchmark)
         Intent.OnExportClicked -> export()
         is Intent.OnPatientClicked -> publish(Label.ShowPatientDetails(intent.patient.id))
         is Intent.OnQueryChanged -> onSearchQueryChanged(intent.query)

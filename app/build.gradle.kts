@@ -62,16 +62,13 @@ chaquopy {
     defaultConfig {
         pip {
             install("numpy")
-            install("matplotlib")
-            install("soundfile")
             install("scipy")
-            install("numba")
         }
     }
 }
 
 dependencies {
-    implementation(project(":feature:root:presentation"))
+    implementation(projects.feature.root.presentation)
     implementation(project(":common:uikit"))
     implementation(project(":common:libs:recorder"))
 
@@ -96,4 +93,10 @@ dependencies {
     implementation(libs.bundles.koin)
     implementation(libs.koin.workmanager)
     implementation(libs.timber)
+
+    testImplementation(libs.junit4)
+    androidTestImplementation(libs.androidx.test.core.ktx)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(project(":feature:analysis:presentation"))
 }

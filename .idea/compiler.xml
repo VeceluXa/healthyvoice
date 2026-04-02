@@ -2,7 +2,24 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="17">
+      <module name="Healthy_Voice.app" target="21" />
+      <module name="Healthy_Voice.common.base" target="21" />
+      <module name="Healthy_Voice.common.core.data" target="21" />
+      <module name="Healthy_Voice.common.core.presentation" target="21" />
+      <module name="Healthy_Voice.common.libs.recorder" target="21" />
+      <module name="Healthy_Voice.common.resources" target="21" />
+      <module name="Healthy_Voice.common.uikit" target="21" />
+      <module name="Healthy_Voice.feature.analysis.data" target="21" />
+      <module name="Healthy_Voice.feature.analysis.presentation" target="21" />
+      <module name="Healthy_Voice.feature.common.data" target="21" />
       <module name="Healthy_Voice.feature.cut.presentation" target="21" />
+      <module name="Healthy_Voice.feature.export.data" target="21" />
+      <module name="Healthy_Voice.feature.export.presentation" target="21" />
+      <module name="Healthy_Voice.feature.patient.data" target="21" />
+      <module name="Healthy_Voice.feature.patient.presentation" target="21" />
+      <module name="Healthy_Voice.feature.record.data" target="21" />
+      <module name="Healthy_Voice.feature.record.presentation" target="21" />
+      <module name="Healthy_Voice.feature.root.presentation" target="21" />
     </bytecodeTargetLevel>
   </component>
 </project>

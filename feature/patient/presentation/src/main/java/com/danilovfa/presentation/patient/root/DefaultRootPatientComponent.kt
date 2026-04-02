@@ -20,6 +20,7 @@ import kotlinx.serialization.Serializable
 
 class DefaultRootPatientComponent(
     private val storeFactory: StoreFactory,
+    private val isDebugToolsEnabled: Boolean,
     componentContext: ComponentContext,
     private val output: (Output) -> Unit
 ) : RootPatientComponent, ComponentContext by componentContext {
@@ -53,6 +54,7 @@ class DefaultRootPatientComponent(
         Config.List -> Child.List(
             DefaultPatientListComponent(
                 storeFactory = storeFactory,
+                isBenchmarkEnabled = isDebugToolsEnabled,
                 componentContext = componentContext,
                 output = ::onListOutput
             )
@@ -62,6 +64,7 @@ class DefaultRootPatientComponent(
     private fun onListOutput(output: PatientListComponent.Output) = when (output) {
         PatientListComponent.Output.NavigatePatientCreate -> navigation.pushNew(Config.Create(null))
         is PatientListComponent.Output.NavigatePatientDetails -> navigation.pushNew(Config.Detail(output.patientId))
+        PatientListComponent.Output.NavigateBenchmark -> output(Output.NavigateBenchmark)
     }
 
     private fun onCreateOutput(output: PatientCreateComponent.Output) = when (output) {

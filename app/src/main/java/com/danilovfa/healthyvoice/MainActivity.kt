@@ -17,6 +17,7 @@ class MainActivity : ComponentActivity() {
 
         val rootComponent = DefaultRootComponent(
             storeFactory = DefaultStoreFactory(),
+            isDebugToolsEnabled = BuildConfig.DEBUG,
             componentContext = defaultComponentContext()
         )
 

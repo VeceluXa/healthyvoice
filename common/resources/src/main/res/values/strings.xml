@@ -95,6 +95,26 @@
     <string name="analyze_max">МАКС</string>
     <string name="analyze_loading">Обрабатываем запись</string>
     <string name="analyze_delete">Удалить анализ</string>
+    <string name="analyze_benchmark_title">Сравнение движков анализа</string>
+    <string name="analyze_benchmark_running">Сравниваем Python и JNI</string>
+    <string name="analyze_benchmark_sample">Тестовый WAV</string>
+    <string name="analyze_benchmark_sample_rate">Частота</string>
+    <string name="analyze_benchmark_sample_count">Сэмплы</string>
+    <string name="analyze_benchmark_duration">Длительность</string>
+    <string name="analyze_benchmark_speedup">Ускорение JNI: %.2fx</string>
+    <string name="analyze_benchmark_native">JNI</string>
+    <string name="analyze_benchmark_python">Python</string>
+    <string name="analyze_benchmark_native_stages">Средние этапы JNI</string>
+    <string name="analyze_benchmark_parameter_delta">Итоговые значения и дельта</string>
+    <string name="analyze_benchmark_warmup_runs">Прогрев</string>
+    <string name="analyze_benchmark_measured_runs">Измеренные прогоны</string>
+    <string name="analyze_benchmark_mean">Среднее</string>
+    <string name="analyze_benchmark_median">Медиана</string>
+    <string name="analyze_benchmark_min">Минимум</string>
+    <string name="analyze_benchmark_max">Максимум</string>
+    <string name="analyze_benchmark_native_value">JNI: %.4f</string>
+    <string name="analyze_benchmark_python_value">Python: %.4f</string>
+    <string name="analyze_benchmark_delta_value">|Δ|: %.4f</string>
     <!-- End Analyze Section -->
 
     <!-- Start Export Section -->

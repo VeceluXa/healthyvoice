@@ -12,13 +12,12 @@ import com.danilovfa.domain.record.repository.RecordRepository
 import com.danilovfa.domain.record.repository.model.AudioCut
 import com.danilovfa.domain.record.repository.model.AudioData
 import com.danilovfa.domain.record.repository.model.RecordingFull
-import com.danilovfa.libs.recorder.config.AudioRecordConfig
-import com.danilovfa.libs.recorder.recorder.wav.WavHeader
+import com.danilovfa.libs.recorder.recorder.wav.DecodedWavPcm
+import com.danilovfa.libs.recorder.recorder.wav.WavPcmReader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.time.Clock
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.util.UUID
 import kotlin.coroutines.CoroutineContext
@@ -94,30 +93,10 @@ internal class RecordRepositoryImpl(
             }
         }
 
-    private suspend fun loadRecordingShort(file: File): Result<Array<Short>> =
+    private suspend fun loadRecordingShort(file: File): Result<ShortArray> =
         withContext(ioDispatcher) {
             return@withContext try {
-                val shortArray = ShortArray((file.length() / 2).toInt())
-
-                FileInputStream(file).use { inputStream ->
-
-                    inputStream.skip(WavHeader.HEADER_SIZE_BYTES.toLong())
-
-                    var byteHigh = inputStream.read()
-                    var byteLow = inputStream.read()
-                    var i = 0
-
-                    while (byteHigh != -1 && byteLow != -1) {
-                        shortArray[i] =
-                            (((byteHigh and 0xFF) shl 8) or (byteLow and 0xFF)).toShort()
-
-                        i++
-                        byteLow = inputStream.read()
-                        byteHigh = inputStream.read()
-                    }
-                }
-
-                Result.success(shortArray.toTypedArray())
+                Result.success(WavPcmReader.read(file).samples)
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -128,11 +107,14 @@ internal class RecordRepositoryImpl(
             return@withContext try {
                 val recordingFull =
                     dao.getRecording(recordingId)?.toDomain(context)?.let { recording ->
-                        val rawData = loadRecordingShort(recording.file).getOrElse {
-                            return@withContext Result.failure(Exception("Couldn't load recording"))
+                        val decoded = runCatching { WavPcmReader.read(recording.file) }.getOrElse {
+                            return@withContext Result.failure(Exception("Couldn't load recording", it))
                         }
 
-                        val audioData = getAudioDataFromFile(recording.file).copy(
+                        val audioData = getAudioDataFromDecoded(
+                            filename = recording.file.name,
+                            decoded = decoded
+                        ).copy(
                             audioCut = AudioCut(
                                 startMillis = recording.cutStart,
                                 endMillis = recording.cutEnd
@@ -141,7 +123,7 @@ internal class RecordRepositoryImpl(
 
                         RecordingFull(
                             recording = recording,
-                            rawData = rawData,
+                            rawData = decoded.samples,
                             audioData = audioData
                         )
                     } ?: throw Exception("Couldn't load recording")
@@ -169,70 +151,27 @@ internal class RecordRepositoryImpl(
 
     private suspend fun getAudioDataFromFile(
         file: File
-    ): AudioData {
-        val header = ByteArray(WavHeader.HEADER_SIZE_BYTES)
-
-        withContext(Dispatchers.IO) {
-            FileInputStream(file).use {
-                it.read(header)
-            }
-        }
-
-        return getAudioDataFromHeader(
-            header = header,
-            filename = file.name
+    ): AudioData = withContext(Dispatchers.IO) {
+        getAudioDataFromDecoded(
+            filename = file.name,
+            decoded = WavPcmReader.read(file)
         )
     }
 
-    private fun getAudioDataFromHeader(
-        header: ByteArray,
+    private fun getAudioDataFromDecoded(
         filename: String,
-    ): AudioData {
-        val config = WavHeader.getConfigFromHeader(header)
-        val audioLength = WavHeader.getAudioLengthBytes(header)
-
-        val bufferSize = AudioRecord.getMinBufferSize(
-            config.frequency,
-            config.channel,
-            config.audioEncoding
-        )
-
-        val channels = if (config.channel == AudioFormat.CHANNEL_IN_MONO) 1 else 2
-        val bitsPerSample = when (config.audioEncoding) {
-            AudioFormat.ENCODING_PCM_16BIT -> 16
-            AudioFormat.ENCODING_PCM_8BIT -> 8
-            else -> 16
-        }.toByte()
-
-        val byteRate = (bitsPerSample.toLong() / 8) * config.frequency * channels.toLong()
-        val durationMillis = ((audioLength.toFloat() / byteRate) * 1000).toInt()
-
-        return getAudioData(
-            filename = filename,
-            config = config,
-            bufferSize = bufferSize,
-            durationMillis = durationMillis
-        )
-    }
-
-    private fun getAudioData(
-        filename: String,
-        config: AudioRecordConfig,
-        bufferSize: Int,
-        durationMillis: Int
+        decoded: DecodedWavPcm
     ): AudioData = AudioData(
         filename = filename,
-        frequency = config.frequency,
-        channels = when (config.channel) {
-            AudioFormat.CHANNEL_IN_MONO -> 1
-            else -> 2
-        },
-        bitsPerSample = when (config.audioEncoding) {
-            AudioFormat.ENCODING_PCM_16BIT -> 16
-            else -> 8
-        },
-        bufferSize = bufferSize,
-        audioDurationMillis = durationMillis
+        frequency = decoded.config.frequency,
+        channels = decoded.channels,
+        bitsPerSample = decoded.bitsPerSample,
+        bufferSize = AudioRecord.getMinBufferSize(
+            decoded.config.frequency,
+            decoded.config.channel,
+            decoded.config.audioEncoding
+        ),
+        audioDurationMillis = decoded.durationMillis
     )
 
     companion object {

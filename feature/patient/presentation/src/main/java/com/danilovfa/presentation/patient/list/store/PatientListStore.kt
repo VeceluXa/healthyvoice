@@ -13,6 +13,7 @@ internal interface PatientListStore : Store<Intent, State, Label> {
         data class OnPatientClicked(val patient: Patient) : Intent()
         data object OnExportClicked : Intent()
         data object OnDeleteClicked : Intent()
+        data object OnBenchmarkTriggered : Intent()
         data class OnQueryChanged(val query: String) : Intent()
         data object RequestNotificationPermission : Intent()
         data class OnNotificationPermissionRequested(val permissionStatus: PermissionStatus) : Intent()
@@ -30,6 +31,7 @@ internal interface PatientListStore : Store<Intent, State, Label> {
         data object RequestNotificationPermission : Label()
         data object DismissRequestNotificationPermission : Label()
         data object ShowNotificationPermissionRationale : Label()
+        data object NavigateBenchmark : Label()
         data object ShowTodo : Label()
     }
 }

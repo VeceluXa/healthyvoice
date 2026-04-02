@@ -22,6 +22,7 @@ import com.danilovfa.presentation.patient.list.store.PatientListStoreFactory
 internal class DefaultPatientListComponent(
     componentContext: ComponentContext,
     storeFactory: StoreFactory,
+    override val isBenchmarkEnabled: Boolean,
     private val output: (Output) -> Unit
 ) : PatientListComponent, StatefulDefaultComponent<Intent, State, Label>(componentContext) {
     private val store = instanceKeeper.getStore {
@@ -41,6 +42,7 @@ internal class DefaultPatientListComponent(
                 }
                 Label.RequestNotificationPermission -> requestNotificationsPermission()
                 Label.ShowNotificationPermissionRationale -> showNotificationPermissionRationale()
+                Label.NavigateBenchmark -> output(Output.NavigateBenchmark)
                 Label.ShowTodo -> eventDelegate.showTodo()
             }
         }

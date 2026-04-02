@@ -3,6 +3,7 @@ package com.danilovfa.presentation.patient.list
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -84,6 +85,7 @@ internal fun PatientListScreen(component: PatientListComponent) {
 
     PatientListLayout(
         state = state,
+        isBenchmarkEnabled = component.isBenchmarkEnabled,
         onIntent = component::onIntent
     )
 
@@ -93,6 +95,7 @@ internal fun PatientListScreen(component: PatientListComponent) {
 @Composable
 private fun PatientListLayout(
     state: State,
+    isBenchmarkEnabled: Boolean,
     onIntent: (Intent) -> Unit
 ) {
     Scaffold(
@@ -124,7 +127,9 @@ private fun PatientListLayout(
                 searchQuery = state.searchQuery,
                 onSearchQueryChanged = { onIntent(Intent.OnQueryChanged(it)) },
                 onDeleteClicked = { onIntent(Intent.OnDeleteClicked) },
-                onExportClicked = { onIntent(Intent.OnExportClicked) }
+                onExportClicked = { onIntent(Intent.OnExportClicked) },
+                isBenchmarkEnabled = isBenchmarkEnabled,
+                onBenchmarkTriggered = { onIntent(Intent.OnBenchmarkTriggered) },
             )
 
             PatientListContent(
@@ -192,10 +197,20 @@ private fun Toolbar(
     onSearchQueryChanged: (String) -> Unit,
     onExportClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
+    isBenchmarkEnabled: Boolean,
+    onBenchmarkTriggered: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Toolbar(
         title = stringResource(strings.app_title),
+        titleModifier = if (isBenchmarkEnabled) {
+            Modifier.combinedClickable(
+                onClick = {},
+                onLongClick = onBenchmarkTriggered,
+            )
+        } else {
+            Modifier
+        },
         navigationIcon = null,
         onNavigationClick = {},
         modifier = modifier,
@@ -267,6 +282,7 @@ private fun Preview(@PreviewParameter(ThemePreviewParameter::class) isDark: Bool
     AppTheme(isDark) {
         PatientListLayout(
             state = State(),
+            isBenchmarkEnabled = false,
             onIntent = {}
         )
     }
