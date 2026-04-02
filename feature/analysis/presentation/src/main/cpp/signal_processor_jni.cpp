@@ -14,6 +14,8 @@
 
 namespace {
 
+// These constants mirror the Python implementation so the JNI path stays numerically aligned
+// with the reference engine used in the hidden benchmark screen.
 constexpr double kPi = 3.141592653589793238462643383279502884;
 constexpr int kMetricCount = 9;
 constexpr double kWindowBeta = 8.0;
@@ -62,6 +64,8 @@ double i0(double x) {
             y * 0.00392377))))))));
 }
 
+// Minimal radix-2 Cooley-Tukey FFT used for the autocorrelation stage.
+// We keep it local to avoid pulling a heavier DSP dependency into the JNI library.
 void fft(std::vector<std::complex<double>>& values, bool inverse) {
     const std::size_t n = values.size();
     if (n == 0 || (n & (n - 1)) != 0U) {
@@ -105,6 +109,8 @@ void fft(std::vector<std::complex<double>>& values, bool inverse) {
     }
 }
 
+// The Python code uses FFT-based autocorrelation to estimate the dominant pitch period.
+// Zero-padding to 2 * n matches the circular-convolution trick used there.
 std::vector<double> autocorrelate(const std::vector<double>& samples, int count) {
     const int n = std::min<int>(count, static_cast<int>(samples.size()));
     if (n <= 1) {
@@ -130,6 +136,8 @@ std::vector<double> autocorrelate(const std::vector<double>& samples, int count)
     return result;
 }
 
+// Equivalent to scipy.signal.find_peaks for the simple "strict local maximum" behavior
+// used by the original script.
 std::vector<int> find_peaks(const std::vector<double>& signal) {
     std::vector<int> peaks;
     if (signal.size() < 3U) {
@@ -145,6 +153,8 @@ std::vector<int> find_peaks(const std::vector<double>& signal) {
     return peaks;
 }
 
+// Reimplementation of scipy.signal.firwin(..., window=("kaiser", beta)).
+// This low-pass filter smooths the waveform before the zero-crossing search.
 std::vector<double> firwin_lowpass(int num_taps, double cutoff, double sample_rate, double beta) {
     if (num_taps < 2) {
         throw std::invalid_argument("Filter must have at least two taps");
@@ -188,6 +198,10 @@ std::vector<double> convolve_full(const std::vector<double>& signal, const std::
     return output;
 }
 
+// Stage 1: derive coarse glottal-cycle boundaries.
+// 1. Estimate the fundamental period from the autocorrelation peak.
+// 2. Build a low-pass filter tuned to that period.
+// 3. Use downward zero crossings of the filtered signal as rough cycle boundaries.
 VoiceSegmentationOutput voice_segmentation(const std::vector<double>& samples, int sample_rate) {
     const std::vector<double> rxx = autocorrelate(samples, std::min<int>(4096, static_cast<int>(samples.size())));
     std::vector<int> peaks = find_peaks(rxx);
@@ -212,6 +226,8 @@ VoiceSegmentationOutput voice_segmentation(const std::vector<double>& samples, i
 
     const double nyquist = 0.5 * static_cast<double>(sample_rate);
     const double fundamental = static_cast<double>(sample_rate) / static_cast<double>(max_peak);
+    // Keep the same cutoff math as the Python code, even though it looks unusual,
+    // to preserve output parity between both implementations.
     const double cutoff = 1.8 * fundamental / nyquist;
     int filter_size = static_cast<int>(std::llround(static_cast<double>(max_peak)));
     filter_size -= filter_size % 2;
@@ -245,6 +261,8 @@ VoiceSegmentationOutput voice_segmentation(const std::vector<double>& samples, i
     return output;
 }
 
+// Compare two adjacent cycles by mean squared error. WM refinement searches for the next
+// peak location that makes consecutive cycles look as similar as possible.
 double err(int candidate, const std::vector<int>& peaks, int peak_index, const std::vector<double>& buffer) {
     if (candidate < 0 || candidate >= static_cast<int>(buffer.size())) {
         return std::numeric_limits<double>::infinity();
@@ -266,6 +284,9 @@ double err(int candidate, const std::vector<int>& peaks, int peak_index, const s
     return error_sum / static_cast<double>(length);
 }
 
+// Stage 2: refine cycle peaks with the WM method.
+// The rough zero crossings give us approximate cycle lengths; this step slides each next peak
+// inside a local window and picks the position that minimizes cycle-to-cycle mismatch.
 std::pair<std::vector<double>, std::vector<int>> wm_method(
     const std::vector<double>& samples,
     const std::vector<double>& filtered_signal,
@@ -339,6 +360,7 @@ std::pair<std::vector<double>, std::vector<int>> wm_method(
 
         peaks[static_cast<std::size_t>(index)] = best_candidate;
 
+        // Quadratic interpolation gives a sub-sample correction around the best discrete candidate.
         const double error_plus = err(best_candidate + 1, peaks, index, samples);
         const double error_minus = err(best_candidate - 1, peaks, index, samples);
         const double error_current = err(best_candidate, peaks, index, samples);
@@ -388,6 +410,9 @@ std::pair<double, double> minmax(const std::vector<double>& values, int start_in
     return { minimum, maximum };
 }
 
+// Shared perturbation metric used for both jitter and shimmer families.
+// window_size == 1 computes local frame-to-frame deviation; wider windows reproduce the
+// RAP/PPQ/APQ variants from the Python implementation.
 double perturbation_l(const std::vector<double>& values, int window_size) {
     if (values.empty()) {
         return 0.0;
@@ -427,6 +452,9 @@ double perturbation_l(const std::vector<double>& values, int window_size) {
     return mean(deltas) / average * 100.0;
 }
 
+// Stage 3: derive the final voice metrics from refined cycles.
+// Period lengths feed the jitter metrics, cycle amplitudes feed the shimmer metrics,
+// and the WM frequencies feed mean F0 and F0 standard deviation.
 std::array<float, kMetricCount> voice_parameters(
     const std::vector<double>& samples,
     const std::vector<int>& segments,
@@ -470,6 +498,8 @@ std::array<float, kMetricCount> voice_parameters(
     };
 }
 
+// Top-level native pipeline: segmentation -> WM refinement -> perturbation metrics.
+// The benchmark screen calls the timed path, while production uses the same logic without timing.
 SignalProcessorOutput analyze_samples(const std::vector<double>& samples, int sample_rate, bool capture_timings) {
     SignalProcessorOutput output;
     const auto total_started_at = std::chrono::steady_clock::now();
@@ -523,6 +553,7 @@ SignalProcessorOutput analyze_samples(const std::vector<double>& samples, int sa
     return output;
 }
 
+// JNI boundary helpers keep the algorithm code working with plain std::vector buffers.
 std::vector<double> read_samples(JNIEnv* env, jshortArray samples_array) {
     const jsize length = env->GetArrayLength(samples_array);
     std::vector<jshort> shorts(static_cast<std::size_t>(length));
